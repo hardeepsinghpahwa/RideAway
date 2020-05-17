@@ -53,6 +53,7 @@
         android:textColor="@color/buttoncolor"
         android:textColorHint="@color/buttoncolor"
         android:textSize="20sp"
+        android:text="+91 1234567890"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/getverificationcode"
         app:layout_constraintEnd_toEndOf="parent"

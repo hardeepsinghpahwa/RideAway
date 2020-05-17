@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity{
                     intent.putExtra("phone", phone.getText().toString());
                     startActivity(intent);
                     customType(MainActivity.this, "left-to-right");
-
+                    finish();
 
                 } else {
                     MDToast.makeText(MainActivity.this, "Enter a valid phone number", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();

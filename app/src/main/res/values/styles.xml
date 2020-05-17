@@ -19,6 +19,12 @@
 
     </style>
 
+    <style name="FullScreenDialog" parent="NoBarAppTheme">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
+
     <style name="NoBarAppTheme2" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -29,6 +35,14 @@
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="fontFamily">@font/bitter</item>
 
+    </style>
+
+    <style name="ProgressDialog" parent="android:Theme.DeviceDefault.Dialog">
+        <item name="DialogTitleAppearance">@android:style/TextAppearance.Medium</item>
+        <item name="DialogTitleText">Verifying Phone...</item>
+        <item name="DialogSpotColor">#FFFFFF</item>
+        <item name="DialogSpotCount">5</item>
+        <item name="android:background">@color/buttoncolor</item>
     </style>
 
 </resources>

@@ -5,6 +5,6 @@
     <color name="colorAccent">#2196F3</color>
 
     <color name="buttoncolor">#2196F3</color>
-
-
+    <color name="greycolor">#B1ACAC</color>
+    <color name="whitelite">#8FFFFFFF</color>
 </resources>
