@@ -99,6 +99,7 @@ public class PhoneVerification extends AppCompatActivity {
         proceed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                proceed.setEnabled(false);
 
                 progressBar2.bringToFront();
                 progressBar2.setVisibility(View.VISIBLE);

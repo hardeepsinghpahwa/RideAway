@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/cons3"
+    android:background="@drawable/setupbackground"
+    tools:context=".SetupProfile">
+
+    <TextView
+        android:id="@+id/gotdetailstext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:text="We Got Your Details"
+        android:textColor="@color/buttoncolor"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/completelottie"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/savebutton"
+        app:layout_constraintTop_toBottomOf="@+id/gotdetailstext"
+        app:lottie_rawRes="@raw/complete" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Fill Up Your Details"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="75dp"
+        app:cardElevation="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
+
+        <ImageView
+            android:id="@+id/profilepicture"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:foreground="?attr/selectableItemBackground"
+            android:scaleType="centerCrop"
+            app:srcCompat="@drawable/profilepicture" />
+
+    </androidx.cardview.widget.CardView>
+
+
+
+    <EditText
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/edittextselected"
+        android:drawableLeft="@drawable/person"
+        android:drawablePadding="10dp"
+        android:drawableTint="#FFFFFF"
+        android:ems="10"
+        android:layout_marginTop="30dp"
+        android:hint="Your Name"
+        android:inputType="textPersonName"
+        android:paddingLeft="20dp"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#8FFFFFFF"
+        android:textCursorDrawable="@null"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+    <EditText
+        android:id="@+id/phonenumber"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/edittextselected"
+        android:drawableLeft="@drawable/phone"
+        android:drawablePadding="10dp"
+        android:drawableTint="#FFFFFF"
+        android:ems="10"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:hint="Phone"
+        android:inputType="number"
+        android:paddingLeft="20dp"
+        android:textColorHint="#8FFFFFFF"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/name" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/edittextselected"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/phonenumber">
+
+        <TextView
+            android:id="@+id/gendertext"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_weight="2"
+            android:drawableLeft="@drawable/gender"
+            android:drawablePadding="10dp"
+            android:drawableTint="#FFFFFF"
+            android:gravity="center_vertical"
+            android:text="Gender "
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+
+        <CheckBox
+            android:id="@+id/malecheck"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:button="@drawable/checkbox"
+            android:gravity="center_vertical"
+            android:text="Male"
+            android:textStyle="bold"
+            android:textColor="#8FFFFFFF"
+            android:textSize="16sp" />
+
+        <CheckBox
+            android:id="@+id/femalecheck"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:textStyle="bold"
+            android:button="@drawable/checkbox"
+            android:gravity="center_vertical"
+            android:text="Female"
+            android:layout_marginLeft="10dp"
+            android:textColor="#8FFFFFFF"
+            android:textSize="16sp" />
+
+        <CheckBox
+            android:id="@+id/othercheck"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginLeft="10dp"
+            android:button="@drawable/checkbox"
+            android:gravity="center_vertical"
+            android:text="Others"
+            android:textColor="#8FFFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/dateofbirth"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/edittextselected"
+        android:drawableLeft="@drawable/dateofbirth"
+        android:drawablePadding="10dp"
+        android:drawableTint="#FFFFFF"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:hint="Date Of Birth "
+        android:textColor="#8FFFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColorHint="#8FFFFFFF"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <Button
+        android:id="@+id/savebutton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="40dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:background="@drawable/button2"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="Save Details"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:visibility="visible"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>

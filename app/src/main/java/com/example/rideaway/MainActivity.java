@@ -37,6 +37,7 @@ import com.github.razir.progressbutton.ProgressButtonHolderKt;
 import com.github.razir.progressbutton.ProgressParams;
 import com.google.android.gms.tasks.TaskExecutors;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.valdesekamdem.library.mdtoast.MDToast;
@@ -60,9 +61,16 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null)
+        {
+            startActivity(new Intent(MainActivity.this,Home.class));
+            finish();
+        }
+
         phone = findViewById(R.id.phonenumber);
         imageView = findViewById(R.id.back);
         getverificationcode = findViewById(R.id.getverificationcode);
+
 
         phone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {

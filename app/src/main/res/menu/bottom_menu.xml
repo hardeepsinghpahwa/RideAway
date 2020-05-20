@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:icon="@drawable/rides"
+        android:title="Home"
+        app:cnb_iconColor="#FFFFFF"/>
+
+    <item
+        android:id="@+id/myrides"
+        android:icon="@drawable/history"
+        android:title="My Rides"
+        app:cnb_iconColor="#FFFFFF"/>
+
+    <item
+        android:id="@+id/profile"
+        android:icon="@drawable/whiteperson"
+        android:title="Profile"
+        app:cnb_iconColor="#FFFFFF"/>
+</menu>

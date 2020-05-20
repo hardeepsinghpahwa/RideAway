@@ -21,8 +21,9 @@
 
     <style name="FullScreenDialog" parent="NoBarAppTheme">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowFullscreen">false</item>
         <item name="android:windowIsFloating">false</item>
+
     </style>
 
     <style name="NoBarAppTheme2" parent="Theme.AppCompat.Light.NoActionBar">
@@ -43,6 +44,16 @@
         <item name="DialogSpotColor">#FFFFFF</item>
         <item name="DialogSpotCount">5</item>
         <item name="android:background">@color/buttoncolor</item>
+    </style>
+
+    <style name="AppTheme_Exit">
+        <item name="android:windowExitAnimation">@anim/slidedown</item>
+        <item name="android:windowEnterAnimation">@anim/slideup</item>
+
+    </style>
+
+    <style name="customRatingBar"
+        parent="Widget.AppCompat.RatingBar.Small">
     </style>
 
 </resources>
