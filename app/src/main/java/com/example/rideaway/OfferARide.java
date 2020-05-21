@@ -139,9 +139,16 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                     @Override
                     public void onPositiveButtonClick(Date date) {
 
-                        DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+                        if ((new Date()).compareTo(date) <0)
+                        {
+                            DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
 
-                        timedate.setText(df.format(date));
+                            timedate.setText(df.format(date));
+                        }
+                        else {
+                            MDToast.makeText(OfferARide.this,"Past Time can't be set",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                        }
+
                     }
 
                     @Override

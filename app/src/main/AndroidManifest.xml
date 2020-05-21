@@ -17,21 +17,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SearchResults"
+        <activity android:name=".YourRideIsLive"
             android:theme="@style/NoBarAppTheme">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.ALTERNATIVE" />
             </intent-filter>
-
+        </activity>
+        <activity
+            android:name=".SearchResults"
+            android:theme="@style/NoBarAppTheme">
         </activity>
         <activity
             android:name=".OfferRideDetails"
-            android:theme="@style/NoBarAppTheme">
-
-        </activity>
+            android:theme="@style/NoBarAppTheme"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -43,19 +43,13 @@
 
         <activity
             android:name=".OfferARide"
-            android:theme="@style/NoBarAppTheme">
-
-        </activity>
+            android:theme="@style/NoBarAppTheme"></activity>
         <activity
             android:name=".FindARide"
-            android:theme="@style/NoBarAppTheme">
-
-        </activity>
+            android:theme="@style/NoBarAppTheme"></activity>
         <activity
             android:name=".Home"
-            android:theme="@style/NoBarAppTheme">
-
-        </activity>
+            android:theme="@style/NoBarAppTheme"></activity>
         <activity
             android:name=".SetupProfile"
             android:theme="@style/NoBarAppTheme" />
@@ -67,10 +61,10 @@
             android:theme="@style/NoBarAppTheme"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

@@ -158,6 +158,9 @@ public class OfferRideDetails extends AppCompatActivity {
                     MDToast.makeText(OfferRideDetails.this,"Enter Some More Information", MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
                 }
                 else {
+                    makeoffer.setEnabled(false);
+                    makeoffer.setText("Working On It");
+
                     progressBar.setVisibility(View.VISIBLE);
 
                     String in="no";
@@ -177,14 +180,17 @@ public class OfferRideDetails extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful())
                             {
-                                MDToast.makeText(OfferRideDetails.this,"Done",MDToast.LENGTH_LONG,MDToast.TYPE_SUCCESS).show();
                                 finish();
 
-                                Intent intent=new Intent(OfferRideDetails.this,Home.class);
+                                Intent intent=new Intent(OfferRideDetails.this,YourRideIsLive.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
+                                customType(OfferRideDetails.this,"bottom-to-up");
                             }
                             else {
+                                makeoffer.setEnabled(false);
+                                makeoffer.setText("Make Offer");
+
                                 progressBar.setVisibility(View.GONE);
                                 MDToast.makeText(OfferRideDetails.this,"Some Error Occurred. Please Try Again",MDToast.LENGTH_LONG,MDToast.TYPE_ERROR).show();
                             }

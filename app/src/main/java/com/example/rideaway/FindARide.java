@@ -41,6 +41,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 
+import dmax.dialog.SpotsDialog;
+
 import static maes.tech.intentanim.CustomIntent.customType;
 
 public class FindARide extends AppCompatActivity implements LocationDialog.LocationDialogListener {
@@ -68,7 +70,7 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
         find = findViewById(R.id.findrides);
         back = findViewById(R.id.backfindaride);
         progressBar = findViewById(R.id.findarideprogressbar);
-        constraintLayout=findViewById(R.id.cons6);
+        constraintLayout = findViewById(R.id.cons6);
 
         results = new ArrayList<>();
 
@@ -139,7 +141,6 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
         find.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                find.setEnabled(false);
                 results.clear();
                 Animation shake = AnimationUtils.loadAnimation(FindARide.this, R.anim.shake);
 
@@ -154,8 +155,14 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
                     timedate.startAnimation(shake);
                     MDToast.makeText(FindARide.this, "Select Date And Time", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                 } else {
-                    progressBar.setVisibility(View.VISIBLE);
-                    find.setText("Searching Rides");
+                    find.setEnabled(false);
+                    final AlertDialog alertDialog = new SpotsDialog.Builder()
+                            .setCancelable(false)
+                            .setContext(FindARide.this)
+                            .setTheme(R.style.ProgressDialog)
+                            .setMessage("Searching Rides")
+                            .build();
+                    alertDialog.show();
 
                     FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -188,10 +195,15 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
                                 } catch (ParseException e) {
                                     e.printStackTrace();
                                 }
-                                if (distance(dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), pickuplat, pickuplong) <= 3 && distance(dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class), droplat, droplong) <= 3 && format2.format(date).equals(format2.format(dateobj)) && Integer.valueOf(dataSnapshot1.child("seats").getValue(String.class))>=Integer.valueOf(passengers.getText().toString())) {
-                                    offerdetails offerdetails = new offerdetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
+                                if (distance(dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), pickuplat, pickuplong) <= 3 && distance(dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class), droplat, droplong) <= 3 && format2.format(date).equals(format2.format(dateobj)) && Integer.valueOf(dataSnapshot1.child("seats").getValue(String.class)) >= Integer.valueOf(passengers.getText().toString())) {
 
-                                    results.add(offerdetails);
+                                    if(date.compareTo(dateobj)>0)
+                                    {
+                                        offerdetails offerdetails = new offerdetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
+
+                                        results.add(offerdetails);
+                                    }
+
                                 }
                             }
 
@@ -202,12 +214,11 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
                                 intent.putExtra("to", drop.getText().toString());
                                 startActivity(intent);
                                 customType(FindARide.this, "left-to-right");
-                                finish();
+
                             } else {
-                                find.setText("Find Rides");
+                                alertDialog.dismiss();
                                 find.setEnabled(true);
-                                progressBar.setVisibility(View.GONE);
-                                MDToast.makeText(FindARide.this,"No Rides Found",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR);
+                                MDToast.makeText(FindARide.this, "No Rides Found", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                             }
                         }
 
@@ -245,10 +256,45 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
                     @Override
                     public void onPositiveButtonClick(Date date) {
 
-                        DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+                        DateFormat d = new SimpleDateFormat("dd MMMM yyyy");
 
-                        timedate.setText(df.format(date));
+/*
+                        if(d.format(new Date()).equals(d.format(date)) )
+                        {
+                            if(new Date().getHours()<= date.getHours())
+                            {
+                                if(new Date().getHours()==date.getHours() && new Date().getMinutes()>= date.getMinutes())
+                                {
+                                    MDToast.makeText(FindARide.this,"Past Time can't be set",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                }
+                                else {
+                                    DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+
+                                    timedate.setText(df.format(date));
+                                }
+                            }
+                            else {
+                                MDToast.makeText(FindARide.this,"Past Time can't be set",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                            }
+
+                        }
+                        else {
+                            DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+
+                            timedate.setText(df.format(date));
+                        }*/
+                        if ((new Date()).compareTo(date) <0)
+                        {
+                            DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+
+                            timedate.setText(df.format(date));
+                        }
+                        else {
+                            MDToast.makeText(FindARide.this,"Past Time can't be set",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                        }
+
                     }
+
 
                     @Override
                     public void onNegativeButtonClick(Date date) {
