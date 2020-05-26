@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class offerdetails implements Serializable {
 
-    String pickupname,dropname,timeanddate,seats,price,instant,moreinfo,userid;
+    String pickupname,dropname,timeanddate,seats,price,instant,moreinfo,userid,vehiclename,vehiclenumber;
     double pickuplat, pickuplong, droplat,droplong;
 
     public String getPickupname() {
@@ -71,6 +71,22 @@ public class offerdetails implements Serializable {
         this.userid = userid;
     }
 
+    public String getVehiclename() {
+        return vehiclename;
+    }
+
+    public void setVehiclename(String vehiclename) {
+        this.vehiclename = vehiclename;
+    }
+
+    public String getVehiclenumber() {
+        return vehiclenumber;
+    }
+
+    public void setVehiclenumber(String vehiclenumber) {
+        this.vehiclenumber = vehiclenumber;
+    }
+
     public double getPickuplat() {
         return pickuplat;
     }
@@ -106,7 +122,7 @@ public class offerdetails implements Serializable {
     public offerdetails() {
     }
 
-    public offerdetails(String pickupname, String dropname, String timeanddate, String seats, String price, String instant, String moreinfo, String userid, double pickuplat, double pickuplong, double droplat, double droplong) {
+    public offerdetails(String pickupname, String dropname, String timeanddate, String seats, String price, String instant, String moreinfo, String userid, String vehiclename, String vehiclenumber, double pickuplat, double pickuplong, double droplat, double droplong) {
         this.pickupname = pickupname;
         this.dropname = dropname;
         this.timeanddate = timeanddate;
@@ -115,6 +131,8 @@ public class offerdetails implements Serializable {
         this.instant = instant;
         this.moreinfo = moreinfo;
         this.userid = userid;
+        this.vehiclename = vehiclename;
+        this.vehiclenumber = vehiclenumber;
         this.pickuplat = pickuplat;
         this.pickuplong = pickuplong;
         this.droplat = droplat;

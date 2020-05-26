@@ -48,6 +48,8 @@ import java.util.Calendar;
 
 import dmax.dialog.SpotsDialog;
 
+import static maes.tech.intentanim.CustomIntent.customType;
+
 public class SetupProfile extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
     EditText name, phone;
@@ -75,7 +77,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
         name = findViewById(R.id.name);
         phone = findViewById(R.id.phonenumber);
         dateofbirth = findViewById(R.id.dateofbirth);
-        male = findViewById(R.id.instantbookingyes);
+        male = findViewById(R.id.malecheck);
         female = findViewById(R.id.femalecheck);
         gendertext = findViewById(R.id.gendertext);
         save = findViewById(R.id.savebutton);
@@ -270,6 +272,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
                                                 @Override
                                                 public void onClick(View v) {
                                                     startActivity(new Intent(SetupProfile.this, Home.class));
+                                                    customType(SetupProfile.this,"fadein-to-fadeout");
                                                 }
                                             });
                                         } else {

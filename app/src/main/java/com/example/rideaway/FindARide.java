@@ -24,6 +24,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -52,6 +54,7 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
     ImageView minus, add, back;
     Button find;
     ArrayList<offerdetails> results;
+    ArrayList<String>uids;
     ProgressBar progressBar;
     ConstraintLayout constraintLayout;
 
@@ -71,9 +74,8 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
         back = findViewById(R.id.backfindaride);
         progressBar = findViewById(R.id.findarideprogressbar);
         constraintLayout = findViewById(R.id.cons6);
-
         results = new ArrayList<>();
-
+        uids =new ArrayList<>();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +144,7 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
             @Override
             public void onClick(View v) {
                 results.clear();
+                uids.clear();
                 Animation shake = AnimationUtils.loadAnimation(FindARide.this, R.anim.shake);
 
                 if (pickuplat == 200 || pickuplong == 200) {
@@ -199,19 +202,24 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
 
                                     if(date.compareTo(dateobj)>0)
                                     {
-                                        offerdetails offerdetails = new offerdetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
+                                        offerdetails offerdetails = new offerdetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("vehiclename").getValue(String.class),dataSnapshot1.child("vehiclenumber").getValue(String.class), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
 
                                         results.add(offerdetails);
+                                        uids.add(dataSnapshot1.getKey());
                                     }
 
                                 }
                             }
 
                             if (results.size() > 0) {
+
+                                alertDialog.dismiss();
+                                find.setEnabled(true);
                                 Intent intent = new Intent(FindARide.this, SearchResults.class);
                                 intent.putExtra("results", results);
                                 intent.putExtra("from", pickup.getText().toString());
                                 intent.putExtra("to", drop.getText().toString());
+                                intent.putStringArrayListExtra("uids",uids);
                                 startActivity(intent);
                                 customType(FindARide.this, "left-to-right");
 
@@ -258,31 +266,6 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
 
                         DateFormat d = new SimpleDateFormat("dd MMMM yyyy");
 
-/*
-                        if(d.format(new Date()).equals(d.format(date)) )
-                        {
-                            if(new Date().getHours()<= date.getHours())
-                            {
-                                if(new Date().getHours()==date.getHours() && new Date().getMinutes()>= date.getMinutes())
-                                {
-                                    MDToast.makeText(FindARide.this,"Past Time can't be set",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
-                                }
-                                else {
-                                    DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
-
-                                    timedate.setText(df.format(date));
-                                }
-                            }
-                            else {
-                                MDToast.makeText(FindARide.this,"Past Time can't be set",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
-                            }
-
-                        }
-                        else {
-                            DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
-
-                            timedate.setText(df.format(date));
-                        }*/
                         if ((new Date()).compareTo(date) <0)
                         {
                             DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
@@ -323,7 +306,7 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        customType(FindARide.this, "right-to-left");
+        customType(FindARide.this, "fadein-to-fadeout");
     }
 
     private double distance(double lat1, double lon1, double lat2, double lon2) {

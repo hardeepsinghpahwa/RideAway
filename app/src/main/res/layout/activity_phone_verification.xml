@@ -44,7 +44,7 @@
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/proceed"
+        app:layout_constraintBottom_toTopOf="@+id/card9"
         app:lottie_rawRes="@raw/verified"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/verificationtext"
@@ -176,26 +176,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
-    <Button
-        android:id="@+id/proceed"
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card9"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="30dp"
         android:layout_marginEnd="30dp"
+        app:cardCornerRadius="30dp"
         android:layout_marginBottom="20dp"
-        android:background="@drawable/button2"
-        android:foreground="?attr/selectableItemBackground"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:text="Proceed"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+
+        <Button
+            android:id="@+id/proceed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button2"
+            android:foreground="?attr/selectableItemBackground"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="Proceed"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+    </androidx.cardview.widget.CardView>
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -217,9 +227,9 @@
         android:indeterminateDrawable="@drawable/progressbar"
         android:progressTint="@color/buttoncolor"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/proceed"
-        app:layout_constraintEnd_toStartOf="@+id/proceed"
-        app:layout_constraintTop_toTopOf="@+id/proceed" />
+        app:layout_constraintBottom_toBottomOf="@+id/card9"
+        app:layout_constraintEnd_toStartOf="@+id/card9"
+        app:layout_constraintTop_toTopOf="@+id/card9" />
 
     <ImageView
         android:id="@+id/sentcheck"

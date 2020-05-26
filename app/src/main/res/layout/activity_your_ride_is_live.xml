@@ -24,17 +24,22 @@
             android:text="Your Offer Is Now Live!"
             android:textColor="@color/buttoncolor"
             android:textSize="25sp"
+            android:gravity="center"
             android:textStyle="bold"
              />
 
 
         <com.airbnb.lottie.LottieAnimationView
-            android:id="@+id/lottieAnimationView"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
             app:lottie_rawRes="@raw/car_running" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="30dp">
 
         <Button
             android:id="@+id/okaybutton"
@@ -48,6 +53,9 @@
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold" />
+
+        </androidx.cardview.widget.CardView>
+
 
     </LinearLayout>
 

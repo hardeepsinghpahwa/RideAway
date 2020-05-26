@@ -1,19 +1,46 @@
 package com.example.rideaway;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.kunzisoft.switchdatetime.SwitchDateTimeDialogFragment;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
@@ -22,16 +49,23 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
+
+import dmax.dialog.SpotsDialog;
 
 import static maes.tech.intentanim.CustomIntent.customType;
 
 public class OfferARide extends AppCompatActivity implements LocationDialog.LocationDialogListener {
 
-    TextView pickup, drop, timedate, passengers;
+    TextView pickup, drop, timedate, passengers, select;
     public double pickuplat = 200, pickuplong = 200, droplat = 200, droplong = 200;
     ImageView minus, add, back;
     FloatingActionButton find;
+    FirebaseRecyclerAdapter<vehicledetails, VehicleViewHolder> firebaseRecyclerAdapter;
+    String vname,vnumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +81,7 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
         passengers = findViewById(R.id.passengersofferaride);
         find = findViewById(R.id.nextofferaride);
         back = findViewById(R.id.backofferaride);
+        select = findViewById(R.id.selectvehicle);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,6 +89,10 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                 onBackPressed();
             }
         });
+
+
+
+
 
         add.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -139,14 +178,12 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                     @Override
                     public void onPositiveButtonClick(Date date) {
 
-                        if ((new Date()).compareTo(date) <0)
-                        {
+                        if ((new Date()).compareTo(date) < 0) {
                             DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
 
                             timedate.setText(df.format(date));
-                        }
-                        else {
-                            MDToast.makeText(OfferARide.this,"Past Time can't be set",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                        } else {
+                            MDToast.makeText(OfferARide.this, "Past Time can't be set", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                         }
 
                     }
@@ -177,21 +214,267 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                 } else if (timedate.getText().toString().equals("Select Date And Time")) {
                     timedate.startAnimation(shake);
                     MDToast.makeText(OfferARide.this, "Select Date And Time", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                } else if (select.getText().toString().equals("Select")
+                ) {
+                    select.startAnimation(shake);
+                    MDToast.makeText(OfferARide.this, "Select A Vehicle", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                 } else {
 
-                    Intent intent=new Intent(OfferARide.this,OfferRideDetails.class);
+                    Intent intent = new Intent(OfferARide.this, OfferRideDetails.class);
 
-                    intent.putExtra("pickupname",pickup.getText().toString());
-                    intent.putExtra("dropname",drop.getText().toString());
-                    intent.putExtra("pickuplat",pickuplat);
-                    intent.putExtra("pickuplong",pickuplong);
-                    intent.putExtra("droplat",droplat);
-                    intent.putExtra("droplong",droplong);
-                    intent.putExtra("datetime",timedate.getText().toString());
-                    intent.putExtra("seats",passengers.getText().toString());
+                    intent.putExtra("pickupname", pickup.getText().toString());
+                    intent.putExtra("dropname", drop.getText().toString());
+                    intent.putExtra("pickuplat", pickuplat);
+                    intent.putExtra("pickuplong", pickuplong);
+                    intent.putExtra("droplat", droplat);
+                    intent.putExtra("droplong", droplong);
+                    intent.putExtra("datetime", timedate.getText().toString());
+                    intent.putExtra("seats", passengers.getText().toString());
+                    intent.putExtra("vname",vname);
+                    intent.putExtra("vnumber",vnumber);
 
                     startActivity(intent);
+
+                    customType(OfferARide.this,"left-to-right");
                 }
+            }
+        });
+
+
+        select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText name, num;
+                final Button add;
+                final TextView no;
+                final ProgressBar progressBar;
+                final Dialog dialog = new Dialog(OfferARide.this);
+                dialog.setContentView(R.layout.vehicledialog);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                name = dialog.findViewById(R.id.addvehiname);
+                num = dialog.findViewById(R.id.addvehinumber);
+                add=dialog.findViewById(R.id.addvehicle);
+                no=dialog.findViewById(R.id.novehicles);
+                progressBar=dialog.findViewById(R.id.recyclerprogress);
+
+                progressBar.bringToFront();
+
+                final RecyclerView recyclerView = dialog.findViewById(R.id.vehichlerecyview);
+
+
+                FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if(!dataSnapshot.child("Vehicles").exists())
+                        {
+                                no.setVisibility(View.VISIBLE);
+                                no.bringToFront();
+                                progressBar.setVisibility(View.GONE);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                Query query = FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Vehicles");
+
+                FirebaseRecyclerOptions<vehicledetails> options = new FirebaseRecyclerOptions.Builder<vehicledetails>()
+                        .setQuery(query, new SnapshotParser<vehicledetails>() {
+                            @NonNull
+                            @Override
+                            public vehicledetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                return new vehicledetails(snapshot.child("vehiclename").getValue(String.class), snapshot.child("vehiclenumber").getValue(String.class));
+                            }
+                        }).build();
+
+                firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<vehicledetails, VehicleViewHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull final VehicleViewHolder holder, final int position, @NonNull vehicledetails model) {
+                        holder.vehiclenumber.setText(model.getVehiclenumber());
+                        holder.vehiclename.setText(model.getVehiclename());
+
+                        holder.vehiclename.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                holder.select.setText("Save");
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+
+                            }
+                        });
+
+                        holder.vehiclenumber.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                holder.select.setText("Save");
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+
+                            }
+                        });
+
+                        holder.select.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if(holder.select.getText().equals("Select"))
+                                {
+                                dialog.dismiss();
+
+
+                                    select.setText(firebaseRecyclerAdapter.getItem(position).getVehiclename());
+                                vname=firebaseRecyclerAdapter.getItem(position).getVehiclename();
+                                vnumber=firebaseRecyclerAdapter.getItem(position).getVehiclenumber();
+                            }
+                            else if(holder.select.getText().equals("Save"))
+                                {
+                                    vehicledetails vehicledetails=new vehicledetails(holder.vehiclename.getText().toString(),holder.vehiclenumber.getText().toString());
+                                    firebaseRecyclerAdapter.getRef(position).setValue(vehicledetails).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            holder.vehiclenumber.clearFocus();
+                                            holder.vehiclename.clearFocus();
+                                            if(task.isSuccessful())
+                                            {
+                                                MDToast.makeText(OfferARide.this, "Changes Saved", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+                                            }
+                                            else {
+                                                MDToast.makeText(OfferARide.this, "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                        });
+
+                        holder.delete.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                firebaseRecyclerAdapter.getRef(position).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if(task.isSuccessful())
+                                        {
+                                            firebaseRecyclerAdapter.notifyDataSetChanged();
+                                            MDToast.makeText(OfferARide.this, "Vehicle Removed", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+                                            if(firebaseRecyclerAdapter.getItemCount()==0)
+                                            {
+                                                no.setVisibility(View.VISIBLE);
+                                                no.bringToFront();
+                                            }
+
+                                        }
+                                        else {
+                                            MDToast.makeText(OfferARide.this, "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+
+                    @NonNull
+                    @Override
+                    public VehicleViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicleitem, parent, false);
+                        return new VehicleViewHolder(v);
+                    }
+
+                    @Override
+                    public void onViewAttachedToWindow(@NonNull VehicleViewHolder holder) {
+                        super.onViewAttachedToWindow(holder);
+
+
+                        progressBar.setVisibility(View.GONE);
+
+
+                    }
+                };
+
+
+                firebaseRecyclerAdapter.startListening();
+
+
+                recyclerView.setLayoutManager(new LinearLayoutManager(OfferARide.this));
+                recyclerView.setAdapter(firebaseRecyclerAdapter);
+                recyclerView.scheduleLayoutAnimation();
+
+
+                add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        add.setEnabled(false);
+                        if (!name.getText().toString().equals("") && !num.getText().toString().equals("")) {
+
+                            final AlertDialog alertDialog=new SpotsDialog.Builder()
+                                    .setCancelable(false)
+                                    .setContext(OfferARide.this)
+                                    .setTheme(R.style.ProgressDialog)
+                                    .setMessage("Adding Vehicle")
+                                    .build();
+                            alertDialog.show();
+
+                            Map<String, String> vehicle = new HashMap<>();
+                            vehicle.put("vehiclename", name.getText().toString());
+                            vehicle.put("vehiclenumber",num.getText().toString());
+
+
+                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Vehicles").child(UUID.randomUUID().toString()).setValue(vehicle).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    add.setEnabled(true);
+                                    alertDialog.dismiss();
+
+                                    recyclerView.smoothScrollToPosition(0);
+
+                                    InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+                                    inputMethodManager.hideSoftInputFromWindow(add.getWindowToken(), 0);
+
+                                    if(task.isSuccessful())
+                                    {
+                                        no.setVisibility(View.GONE);
+
+                                        MDToast.makeText(OfferARide.this,"Vehicle Added",MDToast.LENGTH_SHORT,MDToast.TYPE_SUCCESS).show();
+                                        name.setText("");
+                                        num.setText("");
+                                        name.clearFocus();
+                                        num.clearFocus();
+                                    }
+                                    else {
+                                        MDToast.makeText(OfferARide.this,"Some Error Occured",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            add.setEnabled(true);
+                            MDToast.makeText(OfferARide.this,"Enter Details First",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                        }
+                    }
+                });
+
+
+
+                dialog.show();
             }
         });
     }
@@ -210,7 +493,23 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        customType(OfferARide.this,"right-to-left");
+        customType(OfferARide.this, "fadein-to-fadeout");
 
     }
+
+    private class VehicleViewHolder extends RecyclerView.ViewHolder {
+
+        TextView vehiclename, vehiclenumber;
+        Button select,delete;
+
+        public VehicleViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            vehiclename = itemView.findViewById(R.id.vehiname);
+            vehiclenumber = itemView.findViewById(R.id.vehinumber);
+            select = itemView.findViewById(R.id.selectvehicle);
+            delete=itemView.findViewById(R.id.deletevehicle);
+        }
+    }
+
 }

@@ -18,22 +18,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:cardCornerRadius="30dp"
+        android:id="@+id/card6"
+        android:layout_marginBottom="20dp">
+
     <Button
         android:id="@+id/getverificationcode"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="20dp"
         android:background="@drawable/button2"
         android:text="Get Verification Code"
         android:textColor="#FFFFFF"
         android:textStyle="bold"
+        android:textSize="20sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
         android:foreground="?attr/selectableItemBackground"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+       />
 
+    </androidx.cardview.widget.CardView>
 
     <EditText
         android:id="@+id/phonenumber"
@@ -55,12 +65,11 @@
         android:textSize="20sp"
         android:text="+91 1234567890"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/getverificationcode"
+        app:layout_constraintBottom_toTopOf="@+id/card6"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Going Somewhere? Find Yourself A Ride"

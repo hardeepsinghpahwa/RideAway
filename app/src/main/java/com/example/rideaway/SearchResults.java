@@ -2,32 +2,26 @@ package com.example.rideaway;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-
-import dmax.dialog.SpotsDialog;
 
 import static maes.tech.intentanim.CustomIntent.customType;
 
@@ -36,6 +30,7 @@ public class SearchResults extends AppCompatActivity {
     RecyclerView recyclerView;
     TextView from, to, results;
     ArrayList<offerdetails> items;
+    ArrayList<String> uids;
     ImageView back;
 
     @Override
@@ -44,6 +39,7 @@ public class SearchResults extends AppCompatActivity {
         setContentView(R.layout.activity_search_results);
 
         items = (ArrayList<offerdetails>) getIntent().getSerializableExtra("results");
+        uids=getIntent().getStringArrayListExtra("uids");
 
         recyclerView = findViewById(R.id.searchrecyclerview);
 
@@ -87,11 +83,17 @@ public class SearchResults extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull final SearchViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull final SearchViewHolder holder, final int position) {
 
-            offerdetails offerdetails = items.get(0);
+            offerdetails offerdetails = items.get(position);
 
-            holder.seats.setText(offerdetails.getSeats() + " seats");
+            if(offerdetails.getSeats().equals("1"))
+            {
+                holder.seats.setText(offerdetails.getSeats() + " seat");
+            }
+            else {
+                holder.seats.setText(offerdetails.getSeats() + " seats");
+            }
             holder.time.setText(offerdetails.getTimeanddate());
             holder.price.setText("₹ " + offerdetails.getPrice());
             holder.from.setText(offerdetails.getPickupname());
@@ -109,6 +111,20 @@ public class SearchResults extends AppCompatActivity {
 
                 }
             });
+
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    holder.imageView.setTransitionName("thumbnailTransition");
+                    Pair<View, String> pair1 = Pair.create((View) holder.imageView, holder.imageView.getTransitionName());
+
+                    ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(SearchResults.this, pair1);
+                    Intent intent=new Intent(SearchResults.this,SearchResultDetails.class);
+                    intent.putExtra("uid",uids.get(position));
+                    startActivity(intent,optionsCompat.toBundle());
+                }
+            });
         }
 
         @Override
@@ -120,7 +136,7 @@ public class SearchResults extends AppCompatActivity {
     private class SearchViewHolder extends RecyclerView.ViewHolder {
 
         TextView from, to, price, name, time, seats;
-        ImageView pro;
+        ImageView pro, imageView;
 
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -132,6 +148,7 @@ public class SearchResults extends AppCompatActivity {
             time = itemView.findViewById(R.id.itemtime);
             seats = itemView.findViewById(R.id.itemseats);
             pro = itemView.findViewById(R.id.personofferedpro);
+            imageView=itemView.findViewById(R.id.imageView4);
         }
     }
 

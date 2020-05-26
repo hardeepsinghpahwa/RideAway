@@ -16,6 +16,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowLightStatusBar">true</item>
          <item name="fontFamily">@font/bitter</item>
+        <item name="android:windowContentTransitions">true</item>
 
     </style>
 
@@ -52,8 +53,15 @@
 
     </style>
 
-    <style name="customRatingBar"
-        parent="Widget.AppCompat.RatingBar.Small">
+    <style name="MyTabLayout" parent="Base.Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/MyTabTextAppearance</item>
+    </style>
+
+    <style name="MyTabTextAppearance" parent="TextAppearance.AppCompat.Button">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="textAllCaps">true</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

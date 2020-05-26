@@ -42,7 +42,7 @@ public class OfferRideDetails extends AppCompatActivity {
     ImageView back;
     ProgressBar progressBar;
     Animation shake;
-    String pickupname,dropname,timedate,seats;
+    String pickupname,dropname,timedate,seats,vname,vnumber;
     double pickuplat,pickuplong,droplat,droplong;
 
 
@@ -60,6 +60,8 @@ public class OfferRideDetails extends AppCompatActivity {
         pickupname=getIntent().getStringExtra("pickupname");
         dropname=getIntent().getStringExtra("dropname");
         timedate=getIntent().getStringExtra("datetime");
+        vname=getIntent().getStringExtra("vname");
+        vnumber=getIntent().getStringExtra("vnumber");
 
         progressBar=findViewById(R.id.makeofferprogressbar);
         price = findViewById(R.id.priceperseat);
@@ -173,7 +175,7 @@ public class OfferRideDetails extends AppCompatActivity {
                         in="no";
                     }
 
-                    offerdetails offerdetails=new offerdetails(pickupname,dropname,timedate,seats,price.getText().toString(),in,moreinfo.getText().toString(),FirebaseAuth.getInstance().getCurrentUser().getUid(),pickuplat,pickuplong,droplat,droplong);
+                    offerdetails offerdetails=new offerdetails(pickupname,dropname,timedate,seats,price.getText().toString(),in,moreinfo.getText().toString(),FirebaseAuth.getInstance().getCurrentUser().getUid(),vname,vnumber,pickuplat,pickuplong,droplat,droplong);
 
                     FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(UUID.randomUUID().toString()).setValue(offerdetails).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
@@ -184,6 +186,8 @@ public class OfferRideDetails extends AppCompatActivity {
 
                                 Intent intent=new Intent(OfferRideDetails.this,YourRideIsLive.class);
                                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                                 customType(OfferRideDetails.this,"bottom-to-up");
                             }

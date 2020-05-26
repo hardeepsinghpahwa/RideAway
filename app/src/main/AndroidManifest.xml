@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
         android:allowBackup="true"
@@ -17,21 +18,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".YourRideIsLive"
-            android:theme="@style/NoBarAppTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <activity android:name=".SearchResultDetails"
+            android:theme="@style/NoBarAppTheme">   <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.ALTERNATIVE" />
-            </intent-filter>
+            <category android:name="android.intent.category.ALTERNATIVE" />
+        </intent-filter></activity>
+        <activity
+            android:name=".YourRideIsLive"
+            android:theme="@style/NoBarAppTheme">
+
         </activity>
         <activity
             android:name=".SearchResults"
-            android:theme="@style/NoBarAppTheme">
-        </activity>
+            android:theme="@style/NoBarAppTheme"></activity>
         <activity
             android:name=".OfferRideDetails"
-            android:theme="@style/NoBarAppTheme"></activity>
+            android:theme="@style/NoBarAppTheme" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -43,13 +46,13 @@
 
         <activity
             android:name=".OfferARide"
-            android:theme="@style/NoBarAppTheme"></activity>
+            android:theme="@style/NoBarAppTheme" />
         <activity
             android:name=".FindARide"
-            android:theme="@style/NoBarAppTheme"></activity>
+            android:theme="@style/NoBarAppTheme" />
         <activity
             android:name=".Home"
-            android:theme="@style/NoBarAppTheme"></activity>
+            android:theme="@style/NoBarAppTheme" />
         <activity
             android:name=".SetupProfile"
             android:theme="@style/NoBarAppTheme" />
