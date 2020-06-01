@@ -37,14 +37,20 @@ import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import dmax.dialog.SpotsDialog;
 
@@ -52,8 +58,8 @@ import static maes.tech.intentanim.CustomIntent.customType;
 
 public class SetupProfile extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
 
-    EditText name, phone;
-    TextView dateofbirth,gotdetails;
+    EditText name, phone, occupation;
+    TextView dateofbirth, gotdetails, editdetailstext;
     CheckBox male, female, other;
     TextView gendertext, filldetailstext;
     Button save;
@@ -63,13 +69,17 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
     Uri image;
     String number = "";
     CardView cardView;
+    ImageView back;
     LottieAnimationView lottieAnimationView;
     ConstraintLayout constraintLayout;
+    String ac;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setup_profile);
+
+        ac = getIntent().getStringExtra("ac");
 
         shake = AnimationUtils.loadAnimation(SetupProfile.this, R.anim.shake);
 
@@ -83,12 +93,22 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
         save = findViewById(R.id.savebutton);
         other = findViewById(R.id.othercheck);
         cardView = findViewById(R.id.cardView);
-        filldetailstext = findViewById(R.id.textView2);
+        filldetailstext = findViewById(R.id.editdetailstext);
         genderlayout = findViewById(R.id.linearLayout);
         profilepicture = findViewById(R.id.profilepicture);
         constraintLayout = findViewById(R.id.cons3);
         lottieAnimationView = findViewById(R.id.completelottie);
-        gotdetails=findViewById(R.id.gotdetailstext);
+        gotdetails = findViewById(R.id.gotdetailstext);
+        occupation = findViewById(R.id.occupation);
+        back = findViewById(R.id.setupprofileback);
+        editdetailstext = findViewById(R.id.editdetailstext);
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
 
 
         constraintLayout.setOnTouchListener(new View.OnTouchListener() {
@@ -103,6 +123,43 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
         phone.setInputType(InputType.TYPE_NULL);
         phone.setText(number);
         dateofbirth.setInputType(InputType.TYPE_NULL);
+
+        if (ac != null) {
+            if (ac.equals("edit")) {
+
+                save.setText("Save");
+                back.setVisibility(View.VISIBLE);
+                editdetailstext.setText("Edit Your Profile");
+
+                FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                        profiledetails profiledetails = dataSnapshot.getValue(profiledetails.class);
+                        Picasso.get().load(profiledetails.getImage()).resize(500, 500).into(profilepicture);
+
+                        dateofbirth.setText(profiledetails.getBirthday());
+                        name.setText(profiledetails.getName());
+                        occupation.setText(profiledetails.getOccupation());
+                        phone.setText(profiledetails.getPhone());
+
+                        if (profiledetails.getGender().equals("Male")) {
+                            male.setChecked(true);
+                        } else if (profiledetails.getGender().equals("Female")) {
+                            female.setChecked(true);
+                        } else {
+                            other.setChecked(true);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }
+        }
+
 
         profilepicture.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,7 +246,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
             @Override
             public void onClick(View v) {
 
-                if (image == null) {
+                if (ac == null && image == null) {
                     profilepicture.startAnimation(shake);
                     MDToast.makeText(SetupProfile.this, "Select Profile Picture", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                 } else if (name.getText().toString().equals("")) {
@@ -200,93 +257,228 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
                     MDToast.makeText(SetupProfile.this, "Select Gender", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                 } else if (dateofbirth.getText().toString().equals("")) {
                     dateofbirth.startAnimation(shake);
-                    MDToast.makeText(SetupProfile.this, "Select Date Of Birth", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                } else if (occupation.getText().toString().equals("")) {
+                    occupation.startAnimation(shake);
+                    MDToast.makeText(SetupProfile.this, "Enter Your Occupation", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+
                 } else {
-                    final AlertDialog alertDialog = new SpotsDialog.Builder()
-                            .setCancelable(false)
-                            .setContext(SetupProfile.this)
-                            .setTheme(R.style.ProgressDialog)
-                            .setMessage("Saving Your Details")
-                            .build();
+                    if (ac!=null ) {
 
-                    alertDialog.show();
+                        if (image == null) {
 
-                    final StorageReference ref = FirebaseStorage.getInstance().getReference().child("Profile Pictures").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                    UploadTask uploadTask;
-                    uploadTask = ref.putFile(image);
+                            final AlertDialog alertDialog = new SpotsDialog.Builder()
+                                    .setCancelable(false)
+                                    .setContext(SetupProfile.this)
+                                    .setTheme(R.style.ProgressDialog)
+                                    .setMessage("Saving Your Details")
+                                    .build();
 
-                    Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                        @Override
-                        public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                            if (!task.isSuccessful()) {
-                                throw task.getException();
+                            alertDialog.show();
+
+                            String gender = "";
+                            if (male.isChecked()) {
+                                gender = "Male";
+                            } else if (female.isChecked()) {
+                                gender = "Female";
+                            } else if (other.isChecked()) {
+                                gender = "Others";
                             }
-                            // Continue with the task to get the download URL
-                            return ref.getDownloadUrl();
-                        }
-                    }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Uri> task) {
-                            if (task.isSuccessful()) {
-                                Uri downloadUri = task.getResult();
 
-                                String gender = "";
-                                if (male.isChecked()) {
-                                    gender = "Male";
-                                } else if (female.isChecked()) {
-                                    gender = "Female";
-                                } else if (other.isChecked()) {
-                                    gender = "Others";
-                                }
+                            String n, occ, t;
 
-                                profiledetails profiledetails = new profiledetails(name.getText().toString(), number, gender, dateofbirth.getText().toString(), downloadUri.toString());
+                            n = name.getText().toString();
+                            occ = occupation.getText().toString();
+                            t = dateofbirth.getText().toString();
 
-                                FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(profiledetails).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                        alertDialog.dismiss();
-                                        if (task.isSuccessful()) {
-                                            name.setVisibility(View.GONE);
-                                            phone.setVisibility(View.GONE);
-                                            dateofbirth.setVisibility(View.GONE);
-                                            genderlayout.setVisibility(View.GONE);
-                                            cardView.setVisibility(View.GONE);
+                            Map<String, Object> values = new HashMap<>();
+                            values.put("gender", gender);
+                            values.put("name", n);
+                            values.put("occupation", occ);
+                            values.put("birthday", t);
 
-                                            filldetailstext.setVisibility(View.GONE);
+                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).updateChildren(values).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    alertDialog.dismiss();
+                                    if (task.isSuccessful()) {
 
-                                            gotdetails.setVisibility(View.VISIBLE);
+                                        MDToast.makeText(SetupProfile.this, "Details Saved", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
-                                            YoYo.with(Techniques.FlipInX)
-                                                    .duration(1000)
-                                                    .playOn(save);
+                                        finish();
+                                        customType(SetupProfile.this, "fadein-to-fadeout");
 
-                                            save.setText("Proceed");
-
-                                            lottieAnimationView.setVisibility(View.VISIBLE);
-                                            lottieAnimationView.playAnimation();
-                                            constraintLayout.setBackgroundColor(Color.WHITE);
-
-
-
-                                            save.setOnClickListener(new View.OnClickListener() {
-                                                @Override
-                                                public void onClick(View v) {
-                                                    startActivity(new Intent(SetupProfile.this, Home.class));
-                                                    customType(SetupProfile.this,"fadein-to-fadeout");
-                                                }
-                                            });
-                                        } else {
-                                            MDToast.makeText(SetupProfile.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
-                                        }
+                                    } else {
+                                        MDToast.makeText(SetupProfile.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                     }
-                                });
+                                }
+                            });
 
-                            } else {
-                                alertDialog.dismiss();
-                                MDToast.makeText(SetupProfile.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
-                            }
+
+                        } else {
+                            final AlertDialog alertDialog = new SpotsDialog.Builder()
+                                    .setCancelable(false)
+                                    .setContext(SetupProfile.this)
+                                    .setTheme(R.style.ProgressDialog)
+                                    .setMessage("Saving Your Details")
+                                    .build();
+
+                            alertDialog.show();
+
+                            final StorageReference ref = FirebaseStorage.getInstance().getReference().child("Profile Pictures").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                            UploadTask uploadTask;
+                            uploadTask = ref.putFile(image);
+
+                            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                                @Override
+                                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                    if (!task.isSuccessful()) {
+                                        throw task.getException();
+                                    }
+                                    // Continue with the task to get the download URL
+                                    return ref.getDownloadUrl();
+                                }
+                            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Uri> task) {
+                                    if (task.isSuccessful()) {
+                                        Uri downloadUri = task.getResult();
+
+                                        String gender = "";
+                                        if (male.isChecked()) {
+                                            gender = "Male";
+                                        } else if (female.isChecked()) {
+                                            gender = "Female";
+                                        } else if (other.isChecked()) {
+                                            gender = "Others";
+                                        }
+
+                                        String n, occ, t, img;
+
+                                        n = name.getText().toString();
+                                        occ = occupation.getText().toString();
+                                        t = dateofbirth.getText().toString();
+                                        img = downloadUri.toString();
+
+                                        Map<String, Object> values = new HashMap<>();
+                                        values.put("gender", gender);
+                                        values.put("name", n);
+                                        values.put("occupation", occ);
+                                        values.put("birthday", t);
+                                        values.put("image", img);
+
+                                        FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).updateChildren(values).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                alertDialog.dismiss();
+                                                if (task.isSuccessful()) {
+
+                                                    MDToast.makeText(SetupProfile.this, "Details Saved", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+
+                                                    finish();
+                                                    customType(SetupProfile.this, "fadein-to-fadeout");
+
+                                                } else {
+                                                    MDToast.makeText(SetupProfile.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                }
+                                            }
+                                        });
+
+                                    } else {
+                                        alertDialog.dismiss();
+                                        MDToast.makeText(SetupProfile.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                    }
+                                }
+                            });
                         }
-                    });
+
+                    } else {
+                        final AlertDialog alertDialog = new SpotsDialog.Builder()
+                                .setCancelable(false)
+                                .setContext(SetupProfile.this)
+                                .setTheme(R.style.ProgressDialog)
+                                .setMessage("Saving Your Details")
+                                .build();
+
+                        alertDialog.show();
+
+                        final StorageReference ref = FirebaseStorage.getInstance().getReference().child("Profile Pictures").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        UploadTask uploadTask;
+                        uploadTask = ref.putFile(image);
+
+                        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+                            @Override
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    throw task.getException();
+                                }
+                                // Continue with the task to get the download URL
+                                return ref.getDownloadUrl();
+                            }
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    Uri downloadUri = task.getResult();
+
+                                    String gender = "";
+                                    if (male.isChecked()) {
+                                        gender = "Male";
+                                    } else if (female.isChecked()) {
+                                        gender = "Female";
+                                    } else if (other.isChecked()) {
+                                        gender = "Others";
+                                    }
+
+                                    profiledetails profiledetails = new profiledetails(name.getText().toString(), number, gender, dateofbirth.getText().toString(), downloadUri.toString(), occupation.getText().toString());
+
+                                    FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(profiledetails).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            alertDialog.dismiss();
+                                            if (task.isSuccessful()) {
+                                                name.setVisibility(View.GONE);
+                                                phone.setVisibility(View.GONE);
+                                                dateofbirth.setVisibility(View.GONE);
+                                                genderlayout.setVisibility(View.GONE);
+                                                cardView.setVisibility(View.GONE);
+                                                occupation.setVisibility(View.GONE);
+
+                                                filldetailstext.setVisibility(View.GONE);
+
+                                                gotdetails.setVisibility(View.VISIBLE);
+
+                                                YoYo.with(Techniques.FlipInX)
+                                                        .duration(1000)
+                                                        .playOn(save);
+
+                                                save.setText("Proceed");
+
+                                                lottieAnimationView.setVisibility(View.VISIBLE);
+                                                lottieAnimationView.playAnimation();
+                                                constraintLayout.setBackgroundColor(Color.WHITE);
+
+
+                                                save.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        startActivity(new Intent(SetupProfile.this, Home.class));
+                                                        finish();
+                                                        customType(SetupProfile.this, "fadein-to-fadeout");
+                                                    }
+                                                });
+                                            } else {
+                                                MDToast.makeText(SetupProfile.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                            }
+                                        }
+                                    });
+
+                                } else {
+                                    alertDialog.dismiss();
+                                    MDToast.makeText(SetupProfile.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                }
+                            }
+                        });
+                    }
 
                 }
             }
@@ -322,5 +514,12 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
     private void hidekeyboard() {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(constraintLayout.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+        customType(SetupProfile.this, "fadein-to-fadeout");
     }
 }

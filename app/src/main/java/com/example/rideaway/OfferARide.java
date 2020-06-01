@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.database.SnapshotParser;
@@ -119,6 +120,7 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
         pickup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                pickup.setEnabled(false);
                 pickuplong = 200;
                 pickuplat = 200;
                 LocationDialog dialog = new LocationDialog();
@@ -137,7 +139,7 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
         drop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                drop.setEnabled(false);
                 droplong = 200;
                 droplat = 200;
                 LocationDialog dialog = new LocationDialog();
@@ -247,9 +249,11 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                 final EditText name, num;
                 final Button add;
                 final TextView no;
-                final ProgressBar progressBar;
+                final LottieAnimationView progressBar;
+                ImageView back;
                 final Dialog dialog = new Dialog(OfferARide.this);
                 dialog.setContentView(R.layout.vehicledialog);
+                dialog.setCanceledOnTouchOutside(false);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
@@ -258,11 +262,18 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                 add=dialog.findViewById(R.id.addvehicle);
                 no=dialog.findViewById(R.id.novehicles);
                 progressBar=dialog.findViewById(R.id.recyclerprogress);
+                back=dialog.findViewById(R.id.vehicleback);
 
                 progressBar.bringToFront();
 
                 final RecyclerView recyclerView = dialog.findViewById(R.id.vehichlerecyview);
 
+                back.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
 
                 FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

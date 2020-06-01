@@ -1,14 +1,31 @@
 package com.example.rideaway;
 
 public class profiledetails {
-    String name,phone,gender,birthday,image;
+    String name,phone,gender,birthday,image,occupation;
 
-    public profiledetails(String name, String phone, String gender, String birthday, String image) {
+    public profiledetails(String name, String phone, String gender, String birthday, String occupation) {
+        this.name = name;
+        this.phone = phone;
+        this.gender = gender;
+        this.birthday = birthday;
+        this.occupation = occupation;
+    }
+
+    public String getOccupation() {
+        return occupation;
+    }
+
+    public void setOccupation(String occupation) {
+        this.occupation = occupation;
+    }
+
+    public profiledetails(String name, String phone, String gender, String birthday, String image, String occupation) {
         this.name = name;
         this.phone = phone;
         this.gender = gender;
         this.birthday = birthday;
         this.image = image;
+        this.occupation = occupation;
     }
 
     public String getName() {

@@ -2,7 +2,7 @@ package com.example.rideaway;
 
 public class ridedetails {
 
-    String from,to,time,seats,type,status;
+    String from,to,time,seats,type,status,uid;
 
     public String getFrom() {
         return from;
@@ -52,13 +52,22 @@ public class ridedetails {
         this.status = status;
     }
 
-    public ridedetails(String from, String to, String time, String seats, String type, String status) {
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public ridedetails(String from, String to, String time, String seats, String type, String status, String uid) {
         this.from = from;
         this.to = to;
         this.time = time;
         this.seats = seats;
         this.type = type;
         this.status = status;
+        this.uid = uid;
     }
 
     public ridedetails() {

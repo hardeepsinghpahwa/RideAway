@@ -9,8 +9,12 @@
     tools:context=".PhoneVerification">
 
     <ImageView
+        android:id="@+id/phoneverifyback"
         android:layout_width="30dp"
         android:layout_height="30dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="40dp"
+        android:foreground="?attr/selectableItemBackground"
         android:background="@drawable/backbutton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,19 +28,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/verificationtext"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center"
-        android:text="Sending Verification Code"
-        android:textColor="@color/buttoncolor"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/lottie"
@@ -47,7 +39,7 @@
         app:layout_constraintBottom_toTopOf="@+id/card9"
         app:lottie_rawRes="@raw/verified"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/verificationtext"
+        app:layout_constraintTop_toBottomOf="@+id/linear1"
         app:lottie_autoPlay="true" />
 
 
@@ -59,7 +51,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:weightSum="6"
-        app:layout_constraintTop_toBottomOf="@+id/verificationtext"
+        app:layout_constraintTop_toBottomOf="@+id/linear1"
         tools:layout_editor_absoluteX="10dp">
 
         <EditText
@@ -73,6 +65,7 @@
             android:inputType="number"
             android:maxLength="1"
             android:textColor="#FFFFFF"
+            android:enabled="false"
             android:textSize="25sp"
             android:textStyle="bold" />
 
@@ -83,6 +76,7 @@
             android:layout_margin="5dp"
             android:layout_weight="1"
             android:background="@drawable/codeedittext"
+            android:enabled="false"
             android:gravity="center"
             android:inputType="number"
             android:maxLength="1"
@@ -99,6 +93,7 @@
             android:background="@drawable/codeedittext"
             android:gravity="center"
             android:inputType="number"
+            android:enabled="false"
             android:maxLength="1"
             android:textColor="#FFFFFF"
             android:textSize="25sp"
@@ -113,6 +108,7 @@
             android:background="@drawable/codeedittext"
             android:gravity="center"
             android:inputType="number"
+            android:enabled="false"
             android:maxLength="1"
             android:textColor="#FFFFFF"
             android:textSize="25sp"
@@ -127,6 +123,7 @@
             android:background="@drawable/codeedittext"
             android:gravity="center"
             android:inputType="number"
+            android:enabled="false"
             android:maxLength="1"
             android:textColor="#FFFFFF"
             android:textSize="25sp"
@@ -138,6 +135,7 @@
             android:layout_height="50dp"
             android:layout_margin="5dp"
             android:layout_weight="1"
+            android:enabled="false"
             android:background="@drawable/codeedittext"
             android:gravity="center"
             android:inputType="number"
@@ -215,9 +213,9 @@
         android:indeterminateDrawable="@drawable/progressbar"
         android:progressTint="@color/buttoncolor"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@+id/verificationtext"
-        app:layout_constraintEnd_toStartOf="@+id/verificationtext"
-        app:layout_constraintTop_toTopOf="@+id/verificationtext" />
+        app:layout_constraintBottom_toBottomOf="@+id/linear1"
+        app:layout_constraintEnd_toStartOf="@+id/linear1"
+        app:layout_constraintTop_toTopOf="@+id/linear1" />
 
     <ProgressBar
         android:id="@+id/progressBar2"
@@ -231,15 +229,37 @@
         app:layout_constraintEnd_toStartOf="@+id/card9"
         app:layout_constraintTop_toTopOf="@+id/card9" />
 
-    <ImageView
-        android:id="@+id/sentcheck"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_marginEnd="5dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/verificationtext"
-        app:layout_constraintEnd_toStartOf="@+id/verificationtext"
-        app:layout_constraintTop_toTopOf="@+id/verificationtext"
-        app:srcCompat="@drawable/ok" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/linear1"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" >
+
+        <ImageView
+            android:id="@+id/sentcheck"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginEnd="5dp"
+            android:visibility="gone"
+             app:srcCompat="@drawable/ok" />
+
+        <TextView
+            android:id="@+id/verificationtext"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="Sending Verification Code"
+            android:textColor="@color/buttoncolor"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            />
+
+    </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

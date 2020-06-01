@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layoutAnimation="@anim/layout_lefttoright"
     android:layout_height="match_parent"
     android:background="@drawable/setupbackground"
+    android:layoutAnimation="@anim/layout_lefttoright"
     tools:context=".FindARide">
 
     <ImageView
@@ -262,7 +262,7 @@
         android:textColor="#8C8989"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:drawableLeft="@drawable/vehicle"
+        android:drawableLeft="@drawable/car"
         android:drawablePadding="10dp"
         app:layout_constraintStart_toStartOf="@+id/minuspassengerofferaride"
         app:layout_constraintTop_toBottomOf="@+id/card4" />

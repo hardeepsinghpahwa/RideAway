@@ -8,5 +8,8 @@
     <color name="greycolor">#B1ACAC</color>
     <color name="whitelite">#8FFFFFFF</color>
     <color name="bluelite">#852196F3</color>
+    <color name="green">#00DC58</color>
+    <color name="yellow">#F3C921</color>
+    <color name="red">#F55C5C</color>
 
 </resources>

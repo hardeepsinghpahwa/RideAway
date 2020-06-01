@@ -77,7 +77,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class LocationDialog extends DialogFragment implements OnMapReadyCallback {
+public class LocationDialog extends DialogFragment implements OnMapReadyCallback,DialogInterface.OnDismissListener {
 
     public static final String TAG = "FullScreenDialog";
     ImageView back;
@@ -122,6 +122,32 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
 
     public interface LocationDialogListener {
         void onFinishEditDialog(double l1, double l2, String n);
+    }
+
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (getArguments().getString("ac").equals("findaride")) {
+            if (getArguments().getString("msg").equals("pickup")) {
+                TextView textView = getActivity().findViewById(R.id.pickuplocation);
+                textView.setText(search.getText().toString());
+                textView.setEnabled(true);
+            } else {
+                TextView textView = getActivity().findViewById(R.id.droplocation);
+                textView.setText(search.getText().toString());
+                textView.setEnabled(true);
+            }
+        } else {
+            if (getArguments().getString("msg").equals("pickup")) {
+                TextView textView = getActivity().findViewById(R.id.pickuplocationofferaride);
+                textView.setText(search.getText().toString());
+                textView.setEnabled(true);
+            } else {
+                TextView textView = getActivity().findViewById(R.id.droplocationofferaride);
+                textView.setText(search.getText().toString());
+                textView.setEnabled(true);
+            }
+        }
     }
 
     // Call this method to send the data back to the parent fragment
@@ -185,20 +211,24 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                         TextView textView = getActivity().findViewById(R.id.pickuplocation);
                         textView.setText(search.getText().toString());
                         sendBackResult();
+                        textView.setEnabled(true);
                     } else {
                         TextView textView = getActivity().findViewById(R.id.droplocation);
                         textView.setText(search.getText().toString());
                         sendBackResult();
+                        textView.setEnabled(true);
                     }
                 } else {
                     if (getArguments().getString("msg").equals("pickup")) {
                         TextView textView = getActivity().findViewById(R.id.pickuplocationofferaride);
                         textView.setText(search.getText().toString());
                         sendBackResult();
+                        textView.setEnabled(true);
                     } else {
                         TextView textView = getActivity().findViewById(R.id.droplocationofferaride);
                         textView.setText(search.getText().toString());
                         sendBackResult();
+                        textView.setEnabled(true);
                     }
                 }
             }
@@ -242,6 +272,7 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
             public void onClick(View v) {
                 no = 0;
 
+
                 if (!search.getText().toString().equals("")) {
                     progressBar.setVisibility(View.VISIBLE);
 
@@ -264,6 +295,7 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                         @Override
                         public void onSuccess(FindAutocompletePredictionsResponse response) {
 
+                            progressBar2.setVisibility(View.GONE);
                             no = 0;
                             places.clear();
                             placeids.clear();
@@ -289,6 +321,8 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                     }).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception exception) {
+                            progressBar2.setVisibility(View.GONE);
+
                             no = no + 1;
                             if (no <= 2) {
                                 searchbutton.performClick();
@@ -297,7 +331,10 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                                 ApiException apiException = (ApiException) exception;
                                 Log.e(TAG, "Place not found: " + apiException.getStatusCode());
 
-                                MDToast.makeText(getActivity(), "No Places Found", MDToast.LENGTH_SHORT, MDToast.TYPE_WARNING).show();
+                                if(no==2)
+                                {
+                                    MDToast.makeText(getActivity(), "No Places Found", MDToast.LENGTH_SHORT, MDToast.TYPE_WARNING).show();
+                                }
                                 mylocation.setVisibility(View.VISIBLE);
                                 progressBar.setVisibility(View.GONE);
                                 searchbutton.setVisibility(View.VISIBLE);
@@ -307,6 +344,7 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                         }
                     });
                 } else {
+                    progressBar2.setVisibility(View.GONE);
                     MDToast.makeText(getActivity(), "Enter Some Text First", MDToast.LENGTH_SHORT, MDToast.TYPE_INFO).show();
                 }
             }
@@ -346,20 +384,19 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                 inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
 
 
-                if (ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getActivity(),
-                        Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+                    ActivityCompat.requestPermissions(getActivity(),
 
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            Manifest.permission.ACCESS_FINE_LOCATION) && ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION)) {
-                        ActivityCompat.requestPermissions(getActivity(),
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    } else {
-                        ActivityCompat.requestPermissions(getActivity(),
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
-                    }
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,
+
+                            }, 123);
+
+                    progressBar2.setVisibility(View.GONE);
+                    mylocation.setVisibility(View.VISIBLE);
+
                 } else {
 
                     fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
@@ -389,21 +426,32 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                        String cityName = addresses.get(0).getFeatureName();
-                                        String stateName = addresses.get(0).getLocality();
+                                        String cityName = null;
+                                        String stateName = null;
+                                        if (addresses != null) {
+                                            cityName = addresses.get(0).getFeatureName();
+                                            stateName = addresses.get(0).getLocality();
+                                        }
 
-                                        if (cityName.equals("null") || cityName.equals(stateName)) {
-                                            search.setText(stateName);
-                                        } else if (stateName.equals("null") || cityName.equals(stateName)) {
-                                            search.setText(cityName);
-                                        } else {
-                                            search.setText(cityName + ", " + stateName);
+                                        if (cityName != null && stateName != null) {
+                                            if (cityName.equals("null") || cityName.equals(stateName)) {
+                                                search.setText(stateName);
+                                            } else if (stateName.equals("null") || cityName.equals(stateName)) {
+                                                search.setText(cityName);
+                                            } else {
+                                                search.setText(cityName + ", " + stateName);
+                                            }
                                         }
                                         mylocation.setVisibility(View.VISIBLE);
                                         progressBar2.setVisibility(View.GONE);
 
-                                        search.setInputType(InputType.TYPE_NULL);
-                                        select.setVisibility(View.VISIBLE);
+                                        if (!search.getText().toString().equals("")) {
+                                            select.setVisibility(View.VISIBLE);
+                                            search.setInputType(InputType.TYPE_NULL);
+
+                                        } else {
+                                            MDToast.makeText(getActivity(), "Can't Get Location Name", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                        }
                                     }
                                 }
                             }).addOnFailureListener(new OnFailureListener() {
@@ -426,50 +474,49 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions,
                                            int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (ContextCompat.checkSelfPermission(getActivity(),
-                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getActivity(),
-                            Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        MDToast.makeText(getActivity(), "Permission Granted", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+        if (requestCode == 123) {
 
-                        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+            MDToast.makeText(getActivity(), "ok Granted", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
-                        fusedLocationClient.getLastLocation()
-                                .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
-                                    @Override
-                                    public void onSuccess(Location location) {
-                                        if (location != null && map != null) {
-                                            latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                                            CameraUpdate loc = CameraUpdateFactory.newLatLngZoom(
-                                                    latLng, 15);
-                                            map.animateCamera(loc);
-                                            mapFragment.getView().setVisibility(View.VISIBLE);
-                                            mylocation.setVisibility(View.VISIBLE);
-                                            progressBar2.setVisibility(View.GONE);
-                                        }
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                MDToast.makeText(getActivity(), "Permission Granted", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+
+                fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                             @Override
-                            public void onFailure(@NonNull Exception e) {
-                                mylocation.setVisibility(View.VISIBLE);
-                                progressBar2.setVisibility(View.GONE);
-                                MDToast.makeText(getActivity(), "Cant Find Your Location", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                            public void onSuccess(Location location) {
+                                if (location != null && map != null) {
+                                    latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+                                    CameraUpdate loc = CameraUpdateFactory.newLatLngZoom(
+                                            latLng, 15);
+                                    map.animateCamera(loc);
+                                    mapFragment.getView().setVisibility(View.VISIBLE);
+                                    mylocation.setVisibility(View.VISIBLE);
+                                    progressBar2.setVisibility(View.GONE);
+                                }
                             }
-                        });
-
-
+                        }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        mylocation.setVisibility(View.VISIBLE);
+                        progressBar2.setVisibility(View.GONE);
+                        MDToast.makeText(getActivity(), "Cant Find Your Location", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                     }
-                } else {
-                    MDToast.makeText(getActivity(), "Permission Denied", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
-                    searchbutton.setVisibility(View.VISIBLE);
-                    mylocation.setVisibility(View.VISIBLE);
-                }
-                return;
+                });
+
+
+            } else {
+                MDToast.makeText(getActivity(), "Permission Denied", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                searchbutton.setVisibility(View.VISIBLE);
+                mylocation.setVisibility(View.VISIBLE);
             }
+            return;
         }
+
     }
 
     @Override
@@ -507,17 +554,27 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                         e.printStackTrace();
                     }
 
-                    if (addresses.size() > 0) {
-                        String cityName = addresses.get(0).getFeatureName();
-                        String stateName = addresses.get(0).getLocality();
+                    if (addresses != null) {
+                        if (addresses.size() > 0) {
 
-                        if (cityName.equals("null") || cityName.equals(stateName)) {
-                            search.setText(stateName);
-                        } else {
-                            search.setText(cityName + ", " + stateName);
+                            String cityName = null;
+                            String stateName = null;
+                            if (addresses != null) {
+                                cityName = addresses.get(0).getFeatureName();
+                                stateName = addresses.get(0).getLocality();
+                            }
+
+                            if (cityName != null && stateName != null) {
+                                if (cityName.equals("null") || cityName.equals(stateName)) {
+                                    search.setText(stateName);
+                                } else if (stateName.equals("null") || cityName.equals(stateName)) {
+                                    search.setText(cityName);
+                                } else {
+                                    search.setText(cityName + ", " + stateName);
+                                }
+                            }
+
                         }
-
-                        Log.i("location", String.valueOf(latLng.latitude));
                     }
                 }
             }
@@ -579,8 +636,13 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                     InputMethodManager inputMethodManager = (InputMethodManager) getActivity().getSystemService(Activity.INPUT_METHOD_SERVICE);
                     inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     search.clearFocus();
-                    search.setInputType(InputType.TYPE_NULL);
-                    select.setVisibility(View.VISIBLE);
+
+                    if (!search.getText().toString().equals("")) {
+                        select.setVisibility(View.VISIBLE);
+                        search.setInputType(InputType.TYPE_NULL);
+                    } else {
+                        MDToast.makeText(getActivity(), "Can't Get Location Name", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                    }
 
                     PlacesClient placesClient = com.google.android.libraries.places.api.Places.createClient(getActivity());
 

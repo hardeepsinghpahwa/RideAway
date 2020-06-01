@@ -20,10 +20,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -39,7 +42,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import dmax.dialog.SpotsDialog;
@@ -57,6 +59,8 @@ public class PhoneVerification extends AppCompatActivity {
     int counter = 30,a=0;
     String v_id;
     Button proceed;
+    ImageView back;
+    LinearLayout linearLayout;
     LottieAnimationView animationView;
     ConstraintLayout constraintLayout;
     PhoneAuthProvider.ForceResendingToken resend;
@@ -70,6 +74,7 @@ public class PhoneVerification extends AppCompatActivity {
         phone = getIntent().getStringExtra("phone");
         p = phone.replaceAll("\\s", "");
         verificationtext = findViewById(R.id.verificationtext);
+        linearLayout=findViewById(R.id.linear1);
         sentcheck = findViewById(R.id.sentcheck);
         sendagain = findViewById(R.id.sendagain);
         code1 = findViewById(R.id.code1);
@@ -84,6 +89,9 @@ public class PhoneVerification extends AppCompatActivity {
         notrecieved=findViewById(R.id.textView3);
         constraintLayout=findViewById(R.id.cons2);
         animationView=findViewById(R.id.lottie);
+        back=findViewById(R.id.phoneverifyback);
+
+        back.bringToFront();
 
         constraintLayout.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -93,6 +101,13 @@ public class PhoneVerification extends AppCompatActivity {
 
                 return false;
 
+            }
+        });
+
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
             }
         });
 
@@ -166,8 +181,21 @@ public class PhoneVerification extends AppCompatActivity {
                 resend=forceResendingToken;
 
                 progressBar.setVisibility(View.GONE);
+
+                YoYo.with(Techniques.Pulse)
+                        .playOn(linearLayout);
+
+
                 verificationtext.setText("Verification Code Sent");
                 sentcheck.setVisibility(View.VISIBLE);
+
+                code1.setEnabled(true);
+                code2.setEnabled(true);
+                code3.setEnabled(true);
+                code4.setEnabled(true);
+                code5.setEnabled(true);
+                code6.setEnabled(true);
+
 
                 if(a==0) {
                     new CountDownTimer(30000, 1000) {
@@ -497,5 +525,7 @@ public class PhoneVerification extends AppCompatActivity {
                     }
                 });
     }
+
+
 
 }

@@ -18,8 +18,9 @@
         android:padding="15dp"
         android:singleLine="true"
         android:textColor="@color/buttoncolor"
+        android:textColorHint="#C6C6C6"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/card12"
+        app:layout_constraintEnd_toStartOf="@+id/cardView11"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,15 +29,17 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="15dp"
         android:background="@drawable/button1"
         android:hint="Vehicle Numer"
         android:padding="15dp"
         android:singleLine="true"
         android:textColor="@color/buttoncolor"
+        android:textColorHint="#C6C6C6"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/vehiname"
+        app:layout_constraintEnd_toStartOf="@+id/cardView11"
         app:layout_constraintStart_toStartOf="@+id/vehiname"
         app:layout_constraintTop_toBottomOf="@+id/vehiname" />
 
@@ -46,6 +49,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         app:cardCornerRadius="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/vehiname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/vehiname">
 
@@ -55,8 +59,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/button2"
-            android:text="Select"
             android:foreground="?attr/selectableItemBackground"
+            android:text="Select"
             android:textColor="#FFFFFF"
             android:textStyle="bold" />
 
@@ -64,12 +68,14 @@
 
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView11"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
         app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="@+id/vehinumber"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/vehinumber">
 
 
         <Button
@@ -77,9 +83,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/deletebutton"
+            android:foreground="?attr/selectableItemBackground"
             android:text="Delete"
             android:textColor="#FFFFFF"
-            android:foreground="?attr/selectableItemBackground"
             android:textStyle="bold" />
 
     </androidx.cardview.widget.CardView>
@@ -88,7 +94,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/greycolor"
+        android:background="#EFEFEF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

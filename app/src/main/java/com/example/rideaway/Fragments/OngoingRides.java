@@ -1,5 +1,6 @@
 package com.example.rideaway.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,9 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.rideaway.R;
+import com.example.rideaway.RideDetailss;
 import com.example.rideaway.ridedetails;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -24,6 +29,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Objects;
+
+import static maes.tech.intentanim.CustomIntent.customType;
 
 public class OngoingRides extends Fragment {
 
@@ -31,6 +39,8 @@ public class OngoingRides extends Fragment {
     RecyclerView recyclerView;
 
     ArrayList<ridedetails> rides;
+    LottieAnimationView progressBar,nodata;
+    TextView nodatatext;
 
     public OngoingRides() {
         // Required empty public constructor
@@ -47,7 +57,13 @@ public class OngoingRides extends Fragment {
 
         recyclerView = v.findViewById(R.id.ongoingridesrecyclerview);
 
+        progressBar = v.findViewById(R.id.ongoingprogressbar);
+        nodata = v.findViewById(R.id.nodata);
+        nodatatext = v.findViewById(R.id.nodatatext);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setAdapter(new RideAdapter());
+
 
         FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").addValueEventListener(new ValueEventListener() {
             @Override
@@ -68,34 +84,32 @@ public class OngoingRides extends Fragment {
 
                         } else if (dataSnapshot1.child("Booking Confirmed").exists()) {
 
-                            if (dataSnapshot1.child("Booking Confirmed").getChildrenCount() == 1) {
+                            if (dataSnapshot1.child("seats").getValue(String.class).equals("0")) {
+                                status = "All Booked";
+                            } else if (dataSnapshot1.child("Booking Confirmed").getChildrenCount() == 1) {
                                 status = dataSnapshot1.child("Booking Confirmed").getChildrenCount() + " Booking Confirmed";
                             } else {
                                 status = dataSnapshot1.child("Booking Confirmed").getChildrenCount() + " Bookings Confirmed";
                             }
                         }
 
-                        ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status);
+                        ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey());
 
                         rides.add(ridedetails);
 
-                    }
-
-                    if (dataSnapshot1.child("Booking Requests").exists()) {
+                    } else if (dataSnapshot1.child("Booking Requests").exists()) {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Requests").getChildren()) {
-                            Log.i("req",dataSnapshot2.getKey());
+                            Log.i("req", dataSnapshot2.getKey());
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Requested");
+                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Requested", dataSnapshot1.getKey());
 
                                 rides.add(ridedetails);
                             }
                         }
-                    }
-
-                    if (dataSnapshot1.child("Booking Confirmed").exists()) {
+                    } else if (dataSnapshot1.child("Booking Confirmed").exists()) {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Confirmed").getChildren()) {
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Confirmed");
+                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Confirmed", dataSnapshot1.getKey());
 
                                 rides.add(ridedetails);
                             }
@@ -104,9 +118,14 @@ public class OngoingRides extends Fragment {
 
                 }
 
-                recyclerView.getAdapter().notifyDataSetChanged();
+                Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
                 recyclerView.scheduleLayoutAnimation();
 
+                if (recyclerView.getAdapter().getItemCount() == 0) {
+                    progressBar.setVisibility(View.GONE);
+                    nodata.setVisibility(View.VISIBLE);
+                    nodatatext.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -115,7 +134,6 @@ public class OngoingRides extends Fragment {
             }
         });
 
-        recyclerView.setAdapter(new RideAdapter());
 
 
         return v;
@@ -130,10 +148,11 @@ public class OngoingRides extends Fragment {
             return new RideViewHolder(v);
         }
 
+
         @Override
         public void onBindViewHolder(@NonNull RideViewHolder holder, int position) {
 
-            ridedetails det = rides.get(position);
+            final ridedetails det = rides.get(position);
 
             holder.status.setText(det.getStatus());
             holder.from.setText(det.getFrom());
@@ -154,7 +173,29 @@ public class OngoingRides extends Fragment {
             } else {
                 holder.constraintLayout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.yellowlayer));
             }
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), RideDetailss.class);
+
+                    intent.putExtra("uid", det.getUid());
+                    intent.putExtra("type", det.getType());
+                    intent.putExtra("class","ongoing");
+                    startActivity(intent);
+                    customType(getActivity(), "left-to-right");
+                }
+            });
         }
+
+        @Override
+        public void onViewAttachedToWindow(@NonNull RideViewHolder holder) {
+            super.onViewAttachedToWindow(holder);
+            progressBar.setVisibility(View.GONE);
+            nodata.setVisibility(View.GONE);
+            nodatatext.setVisibility(View.GONE);
+        }
+
 
         @Override
         public int getItemCount() {
@@ -180,4 +221,5 @@ public class OngoingRides extends Fragment {
 
         }
     }
+
 }

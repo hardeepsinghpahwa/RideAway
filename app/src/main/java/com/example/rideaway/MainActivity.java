@@ -40,9 +40,15 @@ import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.io.Serializable;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import kotlin.Unit;
@@ -61,10 +67,25 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(FirebaseAuth.getInstance().getCurrentUser()!=null)
+        if(FirebaseAuth.getInstance().getCurrentUser()!=null )
         {
-            startActivity(new Intent(MainActivity.this,Home.class));
-            finish();
+            final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
+            databaseReference.child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if(dataSnapshot.exists())
+                    {
+                        startActivity(new Intent(MainActivity.this,Home.class));
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
         }
 
         phone = findViewById(R.id.phonenumber);

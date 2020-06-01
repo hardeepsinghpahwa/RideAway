@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.rideaway.CalculateDistance.CalculateDistanceTime;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,6 +45,7 @@ public class OfferRideDetails extends AppCompatActivity {
     ImageView back;
     ProgressBar progressBar;
     Animation shake;
+    String distance;
     String pickupname,dropname,timedate,seats,vname,vnumber;
     double pickuplat,pickuplong,droplat,droplong;
 
@@ -133,9 +137,24 @@ public class OfferRideDetails extends AppCompatActivity {
             }
         });
 
+        final CalculateDistanceTime distance_task = new CalculateDistanceTime(OfferRideDetails.this);
+
+        distance_task.getDirectionsUrl(new LatLng(pickuplat,pickuplong), new LatLng(droplat,droplong));
+
+        distance_task.setLoadListener(new CalculateDistanceTime.taskCompleteListener() {
+            @Override
+            public void taskCompleted(String[] time_distance) {
+                distance=time_distance[0];
+                Log.i("dist",distance);
+            }
+
+        });
+
         recommendedprice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
 
             }
         });

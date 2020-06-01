@@ -54,7 +54,7 @@ public class SearchResultDetails extends AppCompatActivity {
     TextView name;
     TextView rating;
     TextView vehicle;
-    TextView book;
+    TextView book, moreinfo;
     ImageView propic, call, back;
     ProgressBar progressBar;
     String cost, in;
@@ -82,88 +82,89 @@ public class SearchResultDetails extends AppCompatActivity {
         call = findViewById(R.id.searchcall);
         progressBar = findViewById(R.id.searchprogressbar);
         back = findViewById(R.id.searchbackbutton);
-        imageView=findViewById(R.id.imageView5);
+        imageView = findViewById(R.id.imageView5);
+        moreinfo = findViewById(R.id.searchmoreinfo);
 
         getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transation));
         imageView.setTransitionName("thumbnailTransition");
 
-        FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+        FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 progressBar.setVisibility(View.GONE);
                 final offerdetails offerdetails = dataSnapshot.getValue(com.example.rideaway.offerdetails.class);
                 book.setEnabled(true);
 
-                if(!FirebaseAuth.getInstance().getCurrentUser().getUid().equals(offerdetails.getUserid()))
-                {
-                    book.setVisibility(View.VISIBLE);
-                }
+                if (offerdetails != null) {
+                    if (!FirebaseAuth.getInstance().getCurrentUser().getUid().equals(offerdetails.getUserid())) {
+                        book.setVisibility(View.VISIBLE);
+                    }
+                    moreinfo.setText(offerdetails.getMoreinfo());
 
-                book.setText("Book ( ₹ "+ offerdetails.getPrice()+" per seat )");
+                    book.setText("Book ( ₹ " + offerdetails.getPrice() + " per seat )");
 
-                from.setText(offerdetails.getPickupname());
-                to.setText(offerdetails.getDropname());
-                time.setText(offerdetails.getTimeanddate());
+                    from.setText(offerdetails.getPickupname());
+                    to.setText(offerdetails.getDropname());
+                    time.setText(offerdetails.getTimeanddate());
 
-                seat=Integer.parseInt(offerdetails.getSeats());
+                    seat = Integer.parseInt(offerdetails.getSeats());
 
-                if(offerdetails.getSeats().equals("1"))
-                {
-                    seats.setText(offerdetails.getSeats() + " seat available");
-                }
-                else {
-                    seats.setText(offerdetails.getSeats() + " seats available");
-                }
-                cost = offerdetails.getPrice();
+                    if (offerdetails.getSeats().equals("1")) {
+                        seats.setText(offerdetails.getSeats() + " seat available");
+                    } else {
+                        seats.setText(offerdetails.getSeats() + " seats available");
+                    }
+                    cost = offerdetails.getPrice();
 
-                if (offerdetails.getInstant().equals("no")) {
-                    instant.setText("Request First");
-                    in = "no";
-                } else {
-                    instant.setText("Instant Booking");
-                    in = "yes";
-                }
+                    if (offerdetails.getInstant().equals("no")) {
+                        instant.setText("Request First");
+                        in = "no";
+                    } else {
+                        instant.setText("Instant Booking");
+                        in = "yes";
+                    }
 
-                FirebaseDatabase.getInstance().getReference().child("Profiles").child(offerdetails.getUserid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        vehicle.setText(offerdetails.getVehiclename());
+                    FirebaseDatabase.getInstance().getReference().child("Profiles").child(offerdetails.getUserid()).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            vehicle.setText(offerdetails.getVehiclename());
 
-                        final profiledetails profiledetails = dataSnapshot.getValue(com.example.rideaway.profiledetails.class);
+                            final profiledetails profiledetails = dataSnapshot.getValue(com.example.rideaway.profiledetails.class);
 
-                        name.setText(profiledetails.getName());
-                        Picasso.get().load(profiledetails.getImage()).resize(100, 100).into(propic);
-                        call.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (ActivityCompat.checkSelfPermission(SearchResultDetails.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-                                    // TODO: Consider calling
-                                    //    ActivityCompat#requestPermissions
-                                    // here to request the missing permissions, and then overriding
-                                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                    //                                          int[] grantResults)
-                                    // to handle the case where the user grants the permission. See the documentation
-                                    // for ActivityCompat#requestPermissions for more details.
-                                    ActivityCompat.requestPermissions(SearchResultDetails.this, new String[]{Manifest.permission.CALL_PHONE}, 1);
+                            name.setText(profiledetails.getName());
+                            Picasso.get().load(profiledetails.getImage()).resize(100, 100).into(propic);
+                            call.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (ActivityCompat.checkSelfPermission(SearchResultDetails.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                                        // TODO: Consider calling
+                                        //    ActivityCompat#requestPermissions
+                                        // here to request the missing permissions, and then overriding
+                                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                                        //                                          int[] grantResults)
+                                        // to handle the case where the user grants the permission. See the documentation
+                                        // for ActivityCompat#requestPermissions for more details.
+                                        ActivityCompat.requestPermissions(SearchResultDetails.this, new String[]{Manifest.permission.CALL_PHONE}, 1);
 
-                                    return;
-                                } else {
-                                    Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + profiledetails.getPhone()));
-                                    startActivity(intent);
+                                        return;
+                                    } else {
+                                        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + profiledetails.getPhone()));
+                                        startActivity(intent);
+                                    }
                                 }
-                            }
-                        });
+                            });
 
 
-                    }
+                        }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
-                });
+                        }
+                    });
+                }
+
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -185,7 +186,7 @@ public class SearchResultDetails extends AppCompatActivity {
                 Button book;
                 ImageView cancel;
                 final NumberPicker numberPicker;
-                final String booking ;
+                final String booking;
                 final ProgressBar progressBar;
 
 
@@ -200,7 +201,7 @@ public class SearchResultDetails extends AppCompatActivity {
                 cancel = dialog.findViewById(R.id.bookcancel);
                 book = dialog.findViewById(R.id.bookbutton);
                 numberPicker = dialog.findViewById(R.id.bookseats);
-                progressBar=dialog.findViewById(R.id.bookprogressbar);
+                progressBar = dialog.findViewById(R.id.bookprogressbar);
 
                 numberPicker.setMaxValue(seat);
 
@@ -216,28 +217,27 @@ public class SearchResultDetails extends AppCompatActivity {
 
                 amount.setText("₹ " + cost);
 
-               numberPicker.setNumberPickerChangeListener(new NumberPicker.OnNumberPickerChangeListener() {
-                   @Override
-                   public void onProgressChanged(@NotNull NumberPicker numberPicker, int i, boolean b) {
-                       final Animation myAnim = AnimationUtils.loadAnimation(SearchResultDetails.this, R.anim.bounce2);
-                       numberPicker.startAnimation(myAnim);
+                numberPicker.setNumberPickerChangeListener(new NumberPicker.OnNumberPickerChangeListener() {
+                    @Override
+                    public void onProgressChanged(@NotNull NumberPicker numberPicker, int i, boolean b) {
+                        final Animation myAnim = AnimationUtils.loadAnimation(SearchResultDetails.this, R.anim.bounce2);
+                        numberPicker.startAnimation(myAnim);
 
-                       seatnumber= String.valueOf(i);
+                        seatnumber = String.valueOf(i);
 
-                       amount.setText("₹ " + Integer.parseInt(cost) * i);
-                   }
+                        amount.setText("₹ " + Integer.parseInt(cost) * i);
+                    }
 
-                   @Override
-                   public void onStartTrackingTouch(@NotNull NumberPicker numberPicker) {
+                    @Override
+                    public void onStartTrackingTouch(@NotNull NumberPicker numberPicker) {
 
-                   }
+                    }
 
-                   @Override
-                   public void onStopTrackingTouch(@NotNull NumberPicker numberPicker) {
+                    @Override
+                    public void onStopTrackingTouch(@NotNull NumberPicker numberPicker) {
 
-                   }
-               });
-
+                    }
+                });
 
 
                 cancel.setOnClickListener(new View.OnClickListener() {
@@ -251,46 +251,64 @@ public class SearchResultDetails extends AppCompatActivity {
                 book.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        progressBar.setVisibility(View.VISIBLE);
-
-                        Map<String,String> bookin=new HashMap<>();
-
-                        bookin.put("seats",seatnumber);
-
-                        FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).child(booking).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(bookin).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if(task.isSuccessful())
-                                {
-                                    if(in.equals("yes"))
-                                    {
-                                        Intent intent=new Intent(SearchResultDetails.this,YourRideIsLive.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        intent.putExtra("class","inbook");
-                                        startActivity(intent);
-                                        finish();
-                                        customType(SearchResultDetails.this,"bottom-to-up");
-                                    }
-                                    else {
-                                        Intent intent=new Intent(SearchResultDetails.this,YourRideIsLive.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        intent.putExtra("class","reqbook");
-                                        startActivity(intent);
-                                        finish();
-                                        customType(SearchResultDetails.this,"bottom-to-up");
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.child("seats").getValue(String.class).equals("0")) {
+                                    MDToast.makeText(SearchResultDetails.this, "No Seats Available For This Ride Now", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                } else if (seatnumber == null) {
+                                    MDToast.makeText(SearchResultDetails.this, "Choose the number of seats", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
 
-                                    }
+                                } else if (Integer.parseInt(dataSnapshot.child("seats").getValue(String.class)) < Integer.parseInt(seatnumber)) {
+                                    MDToast.makeText(SearchResultDetails.this, "Only " + dataSnapshot.child("seats").getValue(String.class) + " Available Now", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                } else {
+                                    progressBar.setVisibility(View.VISIBLE);
 
-                                }else {
-                                    progressBar.setVisibility(View.GONE);
-                                    MDToast.makeText(SearchResultDetails.this,"Some Error Occured. Please Try Again",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                    Map<String, String> bookin = new HashMap<>();
+
+                                    bookin.put("seats", seatnumber);
+
+                                    FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).child(booking).child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(bookin).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if (task.isSuccessful()) {
+                                                if (in.equals("yes")) {
+                                                    Intent intent = new Intent(SearchResultDetails.this, YourRideIsLive.class);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    intent.putExtra("class", "inbook");
+                                                    startActivity(intent);
+                                                    finish();
+                                                    customType(SearchResultDetails.this, "bottom-to-up");
+                                                } else {
+                                                    Intent intent = new Intent(SearchResultDetails.this, YourRideIsLive.class);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                                    intent.putExtra("class", "reqbook");
+                                                    startActivity(intent);
+                                                    finish();
+                                                    customType(SearchResultDetails.this, "bottom-to-up");
+
+                                                }
+
+                                            } else {
+                                                progressBar.setVisibility(View.GONE);
+                                                MDToast.makeText(SearchResultDetails.this, "Some Error Occured. Please Try Again", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                            }
+                                        }
+                                    });
                                 }
                             }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
                         });
+
+
                     }
                 });
 

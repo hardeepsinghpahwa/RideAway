@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -108,6 +109,7 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
         pickup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                pickup.setEnabled(false);
                 pickuplong = 200;
                 pickuplat = 200;
                 LocationDialog dialog = new LocationDialog();
@@ -125,6 +127,7 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
         drop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                drop.setEnabled(false);
 
                 droplong = 200;
                 droplat = 200;
@@ -167,74 +170,80 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
                             .build();
                     alertDialog.show();
 
-                    FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").addListenerForSingleValueEvent(new ValueEventListener() {
+                    new Handler().postDelayed(new Runnable() {
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        public void run() {
+                            FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
-                            Date dateobj = null;
-
-
-                            try {
-                                dateobj = df.parse(timedate.getText().toString());
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
-
-                            SimpleDateFormat format1 = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
-                            SimpleDateFormat format2 = new SimpleDateFormat("dd MMMM yyyy");
+                                    DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+                                    Date dateobj = null;
 
 
-                            Log.i("date", String.valueOf(dateobj.getTime()));
-
-                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                Date date = null;
-                                try {
-                                    date = format1.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
-
-                                    Log.i("date1", format2.format(date));
-                                    Log.i("date2", df.format(dateobj));
-
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
-                                if (distance(dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), pickuplat, pickuplong) <= 3 && distance(dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class), droplat, droplong) <= 3 && format2.format(date).equals(format2.format(dateobj)) && Integer.valueOf(dataSnapshot1.child("seats").getValue(String.class)) >= Integer.valueOf(passengers.getText().toString())) {
-
-                                    if(date.compareTo(dateobj)>0)
-                                    {
-                                        offerdetails offerdetails = new offerdetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("vehiclename").getValue(String.class),dataSnapshot1.child("vehiclenumber").getValue(String.class), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
-
-                                        results.add(offerdetails);
-                                        uids.add(dataSnapshot1.getKey());
+                                    try {
+                                        dateobj = df.parse(timedate.getText().toString());
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
                                     }
 
+                                    SimpleDateFormat format1 = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+                                    SimpleDateFormat format2 = new SimpleDateFormat("dd MMMM yyyy");
+
+
+                                    Log.i("date", String.valueOf(dateobj.getTime()));
+
+                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                        Date date = null;
+                                        try {
+                                            date = format1.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+
+                                            Log.i("date1", format2.format(date));
+                                            Log.i("date2", df.format(dateobj));
+
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
+                                        if (distance(dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), pickuplat, pickuplong) <= 3 && distance(dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class), droplat, droplong) <= 3 && format2.format(date).equals(format2.format(dateobj)) && Integer.valueOf(dataSnapshot1.child("seats").getValue(String.class)) >= Integer.valueOf(passengers.getText().toString())) {
+
+                                            if(date.compareTo(dateobj)>0)
+                                            {
+                                                offerdetails offerdetails = new offerdetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("vehiclename").getValue(String.class),dataSnapshot1.child("vehiclenumber").getValue(String.class), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
+
+                                                results.add(offerdetails);
+                                                uids.add(dataSnapshot1.getKey());
+                                            }
+
+                                        }
+                                    }
+
+                                    if (results.size() > 0) {
+
+                                        alertDialog.dismiss();
+                                        find.setEnabled(true);
+                                        Intent intent = new Intent(FindARide.this, SearchResults.class);
+                                        intent.putExtra("results", results);
+                                        intent.putExtra("from", pickup.getText().toString());
+                                        intent.putExtra("to", drop.getText().toString());
+                                        intent.putStringArrayListExtra("uids",uids);
+                                        startActivity(intent);
+                                        customType(FindARide.this, "left-to-right");
+
+                                    } else {
+                                        alertDialog.dismiss();
+                                        find.setEnabled(true);
+                                        MDToast.makeText(FindARide.this, "No Rides Found", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                    }
                                 }
-                            }
 
-                            if (results.size() > 0) {
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                alertDialog.dismiss();
-                                find.setEnabled(true);
-                                Intent intent = new Intent(FindARide.this, SearchResults.class);
-                                intent.putExtra("results", results);
-                                intent.putExtra("from", pickup.getText().toString());
-                                intent.putExtra("to", drop.getText().toString());
-                                intent.putStringArrayListExtra("uids",uids);
-                                startActivity(intent);
-                                customType(FindARide.this, "left-to-right");
-
-                            } else {
-                                alertDialog.dismiss();
-                                find.setEnabled(true);
-                                MDToast.makeText(FindARide.this, "No Rides Found", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
-                            }
+                                }
+                            });
                         }
+                    },1000);
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
                 }
             }
         });

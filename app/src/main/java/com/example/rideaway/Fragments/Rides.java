@@ -2,6 +2,7 @@ package com.example.rideaway.Fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
@@ -9,6 +10,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,31 +36,31 @@ public class Rides extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v= inflater.inflate(R.layout.fragment_rides, container, false);
+        View v = inflater.inflate(R.layout.fragment_rides, container, false);
 
-        tabLayout=v.findViewById(R.id.tablayout);
-        viewPager=v.findViewById(R.id.viewpager);
+        tabLayout = v.findViewById(R.id.tablayout);
+        viewPager = v.findViewById(R.id.viewpager);
 
         tabLayout.addTab(tabLayout.newTab().setText("On Going"));
         tabLayout.addTab(tabLayout.newTab().setText("History"));
         tabLayout.setTabGravity(Gravity.NO_GRAVITY);
 
-        setTabBG(R.drawable.leftselect,R.drawable.rightunselect);
+        setTabBG(R.drawable.leftselect, R.drawable.rightunselect);
 
-        final FragmentPagerAdapter adapter=new ViewPagerAdapter(getFragmentManager(),tabLayout.getTabCount());
+        final FragmentPagerAdapter adapter = new ViewPagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(adapter);
 
         viewPager.setOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
+        viewPager.setOffscreenPageLimit(2);
         tabLayout.setOnTabSelectedListener(new TabLayout.BaseOnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
-                if(tabLayout.getSelectedTabPosition()==0) {
-                    setTabBG(R.drawable.leftselect,R.drawable.rightunselect);
-                }
-                else {
-                    setTabBG(R.drawable.leftunselect,R.drawable.rightselect);
+                if (tabLayout.getSelectedTabPosition() == 0) {
+                    setTabBG(R.drawable.leftselect, R.drawable.rightunselect);
+                } else {
+                    setTabBG(R.drawable.leftunselect, R.drawable.rightselect);
                 }
             }
 
@@ -76,7 +78,7 @@ public class Rides extends Fragment {
         return v;
     }
 
-    private void setTabBG(int tab1, int tab2){
+    private void setTabBG(int tab1, int tab2) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
             ViewGroup tabStrip = (ViewGroup) tabLayout.getChildAt(0);
             View tabView1 = tabStrip.getChildAt(0);
@@ -105,10 +107,22 @@ public class Rides extends Fragment {
 
         int tabs;
 
-
         public ViewPagerAdapter(FragmentManager fm, int tabs) {
             super(fm);
-            this.tabs=tabs;
+            this.tabs = tabs;
+        }
+
+        @Override
+        public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            super.setPrimaryItem(container, position, object);
+
+            if(position==0)
+            {
+                viewPager.setCurrentItem(0);
+
+            }else {
+                viewPager.setCurrentItem(1);
+            }
         }
 
         @Override
@@ -120,7 +134,7 @@ public class Rides extends Fragment {
                     return ongoingRides;
 
                 case 1:
-                    PastRides pastRides=new PastRides();
+                    PastRides pastRides = new PastRides();
                     return pastRides;
 
 
@@ -135,5 +149,4 @@ public class Rides extends Fragment {
             return tabs;
         }
     }
-
 }
