@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="@+id/searchlocation"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.example.rideaway.CustomEditText
+    <com.pahwa.rideaway.CustomEditText
         android:id="@+id/searchlocation"
         android:layout_width="0dp"
         android:layout_height="60dp"

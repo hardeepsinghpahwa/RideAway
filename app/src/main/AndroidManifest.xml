@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rideaway">
+    package="com.pahwa.rideaway">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -18,7 +18,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".CancelBooking"
+        <activity android:name="com.pahwa.rideaway.CancelBooking"
             android:theme="@style/NoBarAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,21 +27,21 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".RideDetailss"
+            android:name="com.pahwa.rideaway.RideDetailss"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name=".SearchResultDetails"
+            android:name="com.pahwa.rideaway.SearchResultDetails"
             android:theme="@style/NoBarAppTheme">
 
         </activity>
         <activity
-            android:name=".YourRideIsLive"
+            android:name="com.pahwa.rideaway.YourRideIsLive"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name=".SearchResults"
+            android:name="com.pahwa.rideaway.SearchResults"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name=".OfferRideDetails"
+            android:name="com.pahwa.rideaway.OfferRideDetails"
             android:theme="@style/NoBarAppTheme" />
 
         <meta-data
@@ -53,24 +53,24 @@
             android:required="false" />
 
         <activity
-            android:name=".OfferARide"
+            android:name="com.pahwa.rideaway.OfferARide"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name=".FindARide"
+            android:name="com.pahwa.rideaway.FindARide"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name=".Home"
+            android:name="com.pahwa.rideaway.Home"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name=".SetupProfile"
+            android:name="com.pahwa.rideaway.SetupProfile"
             android:theme="@style/NoBarAppTheme"
             android:windowSoftInputMode="stateVisible|adjustPan"
             />
         <activity
-            android:name=".PhoneVerification"
+            android:name="com.pahwa.rideaway.PhoneVerification"
             android:theme="@style/NoBarAppTheme2" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.pahwa.rideaway.MainActivity"
             android:theme="@style/NoBarAppTheme"
             android:windowSoftInputMode="stateVisible|adjustResize">
             <intent-filter>

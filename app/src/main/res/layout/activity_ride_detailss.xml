@@ -151,7 +151,7 @@
                 android:layout_height="1dp"
                 android:layout_marginBottom="5dp"
                 android:background="#D1CECE"
-                app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+                app:layout_constraintBottom_toTopOf="@+id/cons10"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
@@ -162,14 +162,15 @@
                 android:background="#D1CECE"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/cons10" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
+                android:id="@+id/cons10"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:padding="8dp"
+                android:foreground="?attr/selectableItemBackground"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ridedetbooking">
@@ -267,7 +268,7 @@
                 android:textColor="#8E8B8B"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/cons10" />
 
             <TextView
                 android:id="@+id/ridedetmoreinfo"
