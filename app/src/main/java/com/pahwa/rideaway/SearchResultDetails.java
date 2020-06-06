@@ -2,7 +2,11 @@ package com.pahwa.rideaway;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Dialog;
@@ -13,27 +17,38 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.transition.TransitionInflater;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.firebase.ui.database.SnapshotParser;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,6 +75,9 @@ public class SearchResultDetails extends AppCompatActivity {
     ImageView imageView;
     int seat;
 
+    FirebaseRecyclerAdapter<vehicledetails, VehicleHolder> firebaseRecyclerAdapter2;
+    ConstraintLayout constraintLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,13 +100,15 @@ public class SearchResultDetails extends AppCompatActivity {
         back = findViewById(R.id.searchbackbutton);
         imageView = findViewById(R.id.imageView5);
         moreinfo = findViewById(R.id.searchmoreinfo);
+        constraintLayout = findViewById(R.id.cons11);
 
         getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transation));
         imageView.setTransitionName("thumbnailTransition");
 
+
         FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 progressBar.setVisibility(View.GONE);
                 final offerdetails offerdetails = dataSnapshot.getValue(com.pahwa.rideaway.offerdetails.class);
                 book.setEnabled(true);
@@ -97,6 +117,157 @@ public class SearchResultDetails extends AppCompatActivity {
                     if (!FirebaseAuth.getInstance().getCurrentUser().getUid().equals(offerdetails.getUserid())) {
                         book.setVisibility(View.VISIBLE);
                     }
+
+                    constraintLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
+                            final ImageView cross, propic;
+                            final RatingBar ratingBar;
+                            final RecyclerView recyclerView;
+
+
+                            final Dialog dialog = new Dialog(SearchResultDetails.this);
+                            dialog.setContentView(R.layout.profiledialog);
+                            dialog.setCanceledOnTouchOutside(false);
+                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                            name = dialog.findViewById(R.id.profiledialogname);
+                            phone = dialog.findViewById(R.id.profiledialogphone);
+                            occupation = dialog.findViewById(R.id.profiledialogocuupation);
+                            vehicletext = dialog.findViewById(R.id.profilevehicletext);
+                            offered = dialog.findViewById(R.id.profiledialogoffered);
+                            found = dialog.findViewById(R.id.profiledialogfound);
+                            gender = dialog.findViewById(R.id.profiledialoggender);
+                            age = dialog.findViewById(R.id.profiledialogage);
+                            cross = dialog.findViewById(R.id.profiledialogcross);
+                            propic = dialog.findViewById(R.id.profiledialogpic);
+                            ratingBar = dialog.findViewById(R.id.profiledialograting);
+                            recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
+                            ratingnum=dialog.findViewById(R.id.profiledialogratingnum);
+
+                            cross.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    firebaseRecyclerAdapter2.stopListening();
+                                }
+                            });
+
+                            Query query = FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).child("Vehicles");
+                            FirebaseRecyclerOptions<vehicledetails> options = new FirebaseRecyclerOptions.Builder<vehicledetails>()
+                                    .setQuery(query, new SnapshotParser<vehicledetails>() {
+                                        @NonNull
+                                        @Override
+                                        public vehicledetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                            return new vehicledetails(snapshot.child("vehiclename").getValue(String.class), snapshot.child("vehiclenumber").getValue(String.class));
+                                        }
+                                    }).build();
+
+                            firebaseRecyclerAdapter2 = new FirebaseRecyclerAdapter<vehicledetails, VehicleHolder>(options) {
+                                @Override
+                                protected void onBindViewHolder(@NonNull VehicleHolder holder, int position, @NonNull vehicledetails model) {
+                                    holder.textView.setText(model.getVehiclename());
+                                    Log.i("name", model.getVehiclename());
+                                }
+
+                                @NonNull
+                                @Override
+                                public VehicleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                                    View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle, parent, false);
+                                    return new VehicleHolder(v);
+                                }
+                            };
+
+                            firebaseRecyclerAdapter2.startListening();
+
+
+                            recyclerView.setLayoutManager(new LinearLayoutManager(SearchResultDetails.this));
+                            recyclerView.setAdapter(firebaseRecyclerAdapter2);
+                            firebaseRecyclerAdapter2.notifyDataSetChanged();
+
+
+                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+
+                                    if (!dataSnapshot.child("Vehicles").exists()) {
+                                        vehicletext.setText("No Vehicles Added");
+                                    }
+
+                                    if(dataSnapshot.child("Ratings").exists())
+                                    {
+                                        if(dataSnapshot.child("Ratings").getChildrenCount()==1)
+                                        {
+                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" rating )");
+                                        }else {
+                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" ratings )");
+                                        }
+                                        ratingBar.setRating(Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
+                                    }
+                                    else {
+                                        ratingnum.setText("( No ratings )");
+                                    }
+
+                                    if(dataSnapshot.child("verified").exists())
+                                    {
+                                        if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
+                                        {
+                                            name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(SearchResultDetails.this,R.drawable.verify),null);
+                                            name.setCompoundDrawablePadding(5);
+                                        }
+                                    }
+
+
+                                    name.setText(profiledetails.getName());
+                                    phone.setText(profiledetails.getPhone());
+                                    occupation.setText(profiledetails.getOccupation());
+                                    gender.setText(profiledetails.getGender());
+                                    if (dataSnapshot.child("offered").exists()) {
+                                        offered.setText(dataSnapshot.child("offered").getValue(String.class));
+                                    } else {
+                                        offered.setText("0");
+                                    }
+
+                                    if (dataSnapshot.child("found").exists()) {
+                                        found.setText(dataSnapshot.child("found").getValue(String.class));
+                                    } else {
+                                        found.setText("0");
+                                    }
+
+                                    Picasso.get().load(profiledetails.getImage()).resize(300, 300).into(propic);
+
+                                    DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+
+                                    progressBar.setVisibility(View.GONE);
+                                    try {
+
+                                        Calendar cal = Calendar.getInstance();
+                                        cal.setTime(df.parse(dataSnapshot.child("birthday").getValue(String.class)));
+
+                                        String a = getAge(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+
+                                        age.setText(a + " years");
+
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            dialog.show();
+                        }
+                    });
+
+
                     moreinfo.setText(offerdetails.getMoreinfo());
 
                     book.setText("Book ( ₹ " + offerdetails.getPrice() + " per seat )");
@@ -128,6 +299,25 @@ public class SearchResultDetails extends AppCompatActivity {
                             vehicle.setText(offerdetails.getVehiclename());
 
                             final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+
+                            if(dataSnapshot.child("Ratings").exists())
+                            {
+                                String s = String.format("%.1f", Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
+
+                                rating.setText(s);
+                            }
+                            else {
+                                rating.setText("0");
+                            }
+
+                            if(dataSnapshot.child("verified").exists())
+                            {
+                                if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
+                                {
+                                    name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(SearchResultDetails.this,R.drawable.verify),null);
+                                    name.setCompoundDrawablePadding(5);
+                                }
+                            }
 
                             name.setText(profiledetails.getName());
                             Picasso.get().load(profiledetails.getImage()).resize(200, 200).into(propic);
@@ -163,6 +353,7 @@ public class SearchResultDetails extends AppCompatActivity {
                 }
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -201,7 +392,10 @@ public class SearchResultDetails extends AppCompatActivity {
 
                 numberPicker.setMaxValue(seat);
 
-                dialog.show();
+                if(dialog!=null)
+                {
+                    dialog.show();
+                }
 
                 if (in.equals("no")) {
                     book.setText("Request Booking");
@@ -334,5 +528,34 @@ public class SearchResultDetails extends AppCompatActivity {
             }
 
         }
+    }
+
+    private class VehicleHolder extends RecyclerView.ViewHolder {
+
+        TextView textView;
+
+        public VehicleHolder(@NonNull View itemView) {
+            super(itemView);
+
+            textView = itemView.findViewById(R.id.vehiclee);
+        }
+    }
+
+    private String getAge(int year, int month, int day) {
+        Calendar dob = Calendar.getInstance();
+        Calendar today = Calendar.getInstance();
+
+        dob.set(year, month, day);
+
+        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
+            age--;
+        }
+
+        Integer ageInt = new Integer(age);
+        String ageS = ageInt.toString();
+
+        return ageS;
     }
 }

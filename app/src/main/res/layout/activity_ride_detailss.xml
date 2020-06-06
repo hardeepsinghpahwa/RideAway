@@ -180,9 +180,8 @@
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:layout_margin="5dp"
-                    android:layout_marginStart="10dp"
-                    app:cardCornerRadius="50dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="40dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -197,7 +196,7 @@
 
                 <TextView
                     android:id="@+id/ridedetname"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
                     android:layout_marginEnd="10dp"
@@ -205,7 +204,9 @@
                     android:textColor="#8E8B8B"
                     android:textSize="18sp"
                     android:textStyle="bold"
+                    android:maxLines="1"
                     app:layout_constraintEnd_toStartOf="@+id/ridedetcall"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/cardView5"
                     app:layout_constraintTop_toTopOf="@+id/cardView5" />
 
@@ -234,6 +235,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/ridedetname" />
 
                 <ImageView
+                    android:id="@+id/imageView8"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="2dp"
@@ -251,9 +253,22 @@
                     android:singleLine="true"
                     android:textColor="#8E8B8B"
                     android:textStyle="bold"
+                    android:text="Maruti Suzuki Wagon R"
                     app:layout_constraintEnd_toStartOf="@+id/ridedetcall"
                     app:layout_constraintStart_toStartOf="@+id/ridedetrating"
                     app:layout_constraintTop_toBottomOf="@+id/ridedetrating" />
+
+                <TextView
+                    android:id="@+id/ridedetvehiclenumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:singleLine="true"
+                    android:textColor="#8E8B8B"
+                    android:visibility="gone"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/ridedetvehicle"
+                    app:layout_constraintTop_toBottomOf="@+id/ridedetvehicle" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

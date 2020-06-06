@@ -127,6 +127,27 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/ridetime" />
 
+        <Button
+            android:id="@+id/ratebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginEnd="15dp"
+            android:background="@color/yellow"
+            android:text="Rate"
+            android:drawableLeft="@drawable/star"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:enabled="false"
+            android:foreground="?attr/selectableItemBackground"
+            android:paddingLeft="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/cons8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rideto" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

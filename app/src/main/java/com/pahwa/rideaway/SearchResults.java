@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -99,11 +100,27 @@ public class SearchResults extends AppCompatActivity {
             holder.from.setText(offerdetails.getPickupname());
             holder.to.setText(offerdetails.getDropname());
 
+
+
             FirebaseDatabase.getInstance().getReference().child("Profiles").child(offerdetails.getUserid()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     holder.name.setText(dataSnapshot.child("name").getValue(String.class));
                     Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).resize(100, 100).into(holder.pro);
+
+                    if(dataSnapshot.child("Ratings").exists())
+                    {
+                        if(dataSnapshot.child("Ratings").getChildrenCount()==1)
+                        {
+                            holder.ratingsnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" rating )");
+                        }else {
+                            holder.ratingsnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" ratings )");
+                        }
+                        holder.ratingBar.setRating(Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
+                    }
+                    else {
+                        holder.ratingsnum.setText("( No ratings )");
+                    }
                 }
 
                 @Override
@@ -135,8 +152,9 @@ public class SearchResults extends AppCompatActivity {
 
     private class SearchViewHolder extends RecyclerView.ViewHolder {
 
-        TextView from, to, price, name, time, seats;
+        TextView from, to, price, name, time, seats,ratingsnum;
         ImageView pro, imageView;
+        RatingBar ratingBar;
 
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -149,6 +167,8 @@ public class SearchResults extends AppCompatActivity {
             seats = itemView.findViewById(R.id.itemseats);
             pro = itemView.findViewById(R.id.personofferedpro);
             imageView=itemView.findViewById(R.id.imageView4);
+            ratingBar=itemView.findViewById(R.id.searchratingbar);
+            ratingsnum=itemView.findViewById(R.id.searchratingnumber);
         }
     }
 

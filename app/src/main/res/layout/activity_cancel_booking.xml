@@ -13,6 +13,7 @@
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginStart="10dp"
+        android:foreground="?attr/selectableItemBackground"
         android:layout_marginTop="20dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

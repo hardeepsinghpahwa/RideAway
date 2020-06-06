@@ -2,7 +2,7 @@ package com.pahwa.rideaway;
 
 public class ridedetails {
 
-    String from,to,time,seats,type,status,uid;
+    String from,to,time,seats,type,status,uid,userid;
 
     public String getFrom() {
         return from;
@@ -68,6 +68,25 @@ public class ridedetails {
         this.type = type;
         this.status = status;
         this.uid = uid;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public ridedetails(String from, String to, String time, String seats, String type, String status, String uid, String userid) {
+        this.from = from;
+        this.to = to;
+        this.time = time;
+        this.seats = seats;
+        this.type = type;
+        this.status = status;
+        this.uid = uid;
+        this.userid = userid;
     }
 
     public ridedetails() {

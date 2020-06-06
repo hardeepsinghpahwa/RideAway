@@ -1,24 +1,35 @@
 package com.pahwa.rideaway.Fragments;
 
+import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.pahwa.rideaway.R;
 import com.pahwa.rideaway.RideDetailss;
 import com.pahwa.rideaway.ridedetails;
@@ -27,6 +38,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.valdesekamdem.library.mdtoast.MDToast;
 
 import java.util.ArrayList;
 
@@ -39,7 +51,7 @@ public class PastRides extends Fragment {
     RecyclerView recyclerView;
 
     ArrayList<ridedetails> rides;
-    LottieAnimationView progressBar,nodata;
+    LottieAnimationView progressBar, nodata;
     TextView nodatatext;
 
     public PastRides() {
@@ -74,49 +86,41 @@ public class PastRides extends Fragment {
                         String status = "Cancelled";
 
                         if (dataSnapshot1.child("reason").exists()) {
-                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey());
+                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                             rides.add(ridedetails);
                         } else {
                             status = "Completed";
-                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey());
+                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                             rides.add(ridedetails);
                         }
 
-                    }
-
-                    else if (dataSnapshot1.child("Booking Requests").exists()) {
+                    } else if (dataSnapshot1.child("Booking Requests").exists()) {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Requests").getChildren()) {
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
 
-                                if(dataSnapshot1.child("reason").exists())
-                                {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey());
+                                if (dataSnapshot1.child("reason").exists()) {
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
-                                }
-                                else {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey());
+                                } else {
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 }
 
                             }
                         }
-                    }
-
-                    else if (dataSnapshot1.child("Booking Confirmed").exists()) {
+                    } else if (dataSnapshot1.child("Booking Confirmed").exists()) {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Confirmed").getChildren()) {
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                if(dataSnapshot1.child("reason").exists())
-                                {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey());
+                                if (dataSnapshot1.child("reason").exists()) {
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
-                                }
-                                else {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey());
+                                } else {
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 }
@@ -141,7 +145,6 @@ public class PastRides extends Fragment {
 
             }
         });
-
 
 
         return v;
@@ -175,6 +178,120 @@ public class PastRides extends Fragment {
                 holder.constraintLayout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.greenlayer));
             }
 
+            if (det.getStatus().equals("Completed") && det.getType().equals("Found Ride")) {
+                holder.rate.setVisibility(View.VISIBLE);
+            }
+
+            FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(det.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.child("rating").exists()) {
+                        holder.rate.setEnabled(false);
+                        holder.rate.setText(dataSnapshot.child("rating").getValue(String.class));
+                        holder.rate.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(getResources(), R.drawable.check, null),null, null, null);
+                    }
+                    else {
+                        holder.rate.setEnabled(true);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+            holder.rate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.setContentView(R.layout.ratedialog);
+                    dialog.setCanceledOnTouchOutside(false);
+                    dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                    final RatingBar ratingBar;
+                    final Button rate;
+                    ImageView cross;
+                    final ProgressBar progressBar;
+
+                    ratingBar = dialog.findViewById(R.id.ratingBarrate);
+                    rate = dialog.findViewById(R.id.ratebuttonrate);
+                    cross = dialog.findViewById(R.id.ratecross);
+                    progressBar = dialog.findViewById(R.id.rateprogressbar);
+
+                    rate.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+
+                            if (ratingBar.getRating() == 0) {
+                                MDToast.makeText(getActivity(), "Give Some Rating First", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                            } else {
+                                rate.setEnabled(false);
+                                progressBar.setVisibility(View.VISIBLE);
+                                Log.i("uid", det.getUserid());
+                                FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(det.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(det.getUid()).child("rating").setValue(String.valueOf(ratingBar.getRating()));
+
+                                        FirebaseDatabase.getInstance().getReference().child("Profiles").child(det.getUserid()).child("Ratings").child(det.getUid()).setValue(String.valueOf(ratingBar.getRating())).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+
+                                                    FirebaseDatabase.getInstance().getReference().child("Profiles").child(det.getUserid()).child("Ratings").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                            float rat=0;
+
+                                                            for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
+                                                                rat=rat+Float.valueOf(dataSnapshot.child(dataSnapshot1.getKey()).getValue(String.class));
+                                                            }
+
+                                                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(det.getUserid()).child("rating").setValue(String.valueOf(rat/dataSnapshot.getChildrenCount()));
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                        }
+                                                    });
+                                                    progressBar.setVisibility(View.GONE);
+                                                    rate.setEnabled(true);
+                                                    MDToast.makeText(getActivity(), "Rating Submitted!", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+                                                    dialog.dismiss();
+                                                } else {
+                                                    progressBar.setVisibility(View.GONE);
+                                                    rate.setEnabled(true);
+                                                    MDToast.makeText(getActivity(), "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                }
+                                            }
+                                        });
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    cross.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.show();
+                }
+            });
+
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -189,7 +306,7 @@ public class PastRides extends Fragment {
 
                     intent.putExtra("uid", det.getUid());
                     intent.putExtra("type", det.getType());
-                    intent.putExtra("class","history");
+                    intent.putExtra("class", "history");
 
                     startActivity(intent, optionsCompat.toBundle());
                     //customType(getActivity(), "left-to-right");
@@ -217,6 +334,7 @@ public class PastRides extends Fragment {
         TextView from, to, time, seats, type, status;
         ConstraintLayout constraintLayout;
         ImageView imageView;
+        Button rate;
 
         public RideViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -228,7 +346,8 @@ public class PastRides extends Fragment {
             type = itemView.findViewById(R.id.ridetype);
             status = itemView.findViewById(R.id.ridestatus);
             constraintLayout = itemView.findViewById(R.id.cons8);
-            imageView=itemView.findViewById(R.id.imageView6);
+            imageView = itemView.findViewById(R.id.imageView6);
+            rate = itemView.findViewById(R.id.ratebutton);
 
         }
     }

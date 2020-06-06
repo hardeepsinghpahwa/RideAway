@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,6 +20,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.transition.TransitionInflater;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +54,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -68,7 +71,7 @@ public class RideDetailss extends AppCompatActivity {
     TextView seats;
     TextView name;
     TextView rating, statusupdatetext;
-    TextView vehicle, seatdetailstext, bookingtext;
+    TextView vehicle, seatdetailstext, bookingtext,vehiclenum;
     TextView moreinfo, cancel;
     ImageView propic, call, back;
     ProgressBar progressBar;
@@ -83,6 +86,7 @@ public class RideDetailss extends AppCompatActivity {
     String st;
 
     FirebaseRecyclerAdapter<bookingdetails, BookingViewHolder> firebaseRecyclerAdapter;
+    FirebaseRecyclerAdapter<vehicledetails, VehicleHolder> firebaseRecyclerAdapter2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +120,8 @@ public class RideDetailss extends AppCompatActivity {
         updatestatus = findViewById(R.id.updatestatus);
         ridestatus = findViewById(R.id.ridestatus);
         statusupdatetext = findViewById(R.id.statusupdatetext);
-        constraintLayout=findViewById(R.id.cons10);
+        constraintLayout = findViewById(R.id.cons10);
+        vehiclenum=findViewById(R.id.ridedetvehiclenumber);
 
         getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transation));
         imageView.setTransitionName("thumbnailTransition");
@@ -147,39 +152,135 @@ public class RideDetailss extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
 
-                                    final TextView name,phone,occupation,offered,found,gender,age;
-                                    final ImageView cross,propic;
-                                    RatingBar ratingBar;
-                                    RecyclerView recyclerView;
+                                    final TextView name, phone, occupation, offered, found, gender, age, vehicletext,ratingnum;
+                                    final ImageView cross, propic;
+                                    final RatingBar ratingBar;
+                                    final RecyclerView recyclerView;
 
-                                    Dialog dialog=new Dialog(RideDetailss.this);
+                                    final Dialog dialog = new Dialog(RideDetailss.this);
                                     dialog.setContentView(R.layout.profiledialog);
                                     dialog.setCanceledOnTouchOutside(false);
+                                    dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                    dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-                                    name=dialog.findViewById(R.id.profiledialogname);
-                                    phone=dialog.findViewById(R.id.profiledialogphone);
-                                    occupation=dialog.findViewById(R.id.profiledialogocuupation);
-                                    offered=dialog.findViewById(R.id.profiledialogoffered);
-                                    found=dialog.findViewById(R.id.profiledialogfound);
-                                    gender=dialog.findViewById(R.id.profiledialoggender);
-                                    age=dialog.findViewById(R.id.profiledialogage);
-                                    cross=dialog.findViewById(R.id.profiledialogcross);
-                                    propic=dialog.findViewById(R.id.profiledialogpic);
-                                    ratingBar=dialog.findViewById(R.id.profiledialograting);
-                                    recyclerView=dialog.findViewById(R.id.profiledialogrecyclerview);
+                                    name = dialog.findViewById(R.id.profiledialogname);
+                                    phone = dialog.findViewById(R.id.profiledialogphone);
+                                    occupation = dialog.findViewById(R.id.profiledialogocuupation);
+                                    vehicletext = dialog.findViewById(R.id.profilevehicletext);
+                                    offered = dialog.findViewById(R.id.profiledialogoffered);
+                                    found = dialog.findViewById(R.id.profiledialogfound);
+                                    gender = dialog.findViewById(R.id.profiledialoggender);
+                                    age = dialog.findViewById(R.id.profiledialogage);
+                                    cross = dialog.findViewById(R.id.profiledialogcross);
+                                    propic = dialog.findViewById(R.id.profiledialogpic);
+                                    ratingBar = dialog.findViewById(R.id.profiledialograting);
+                                    recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
+                                    ratingnum=dialog.findViewById(R.id.profiledialogratingnum);
+
+                                    cross.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            dialog.dismiss();
+                                            firebaseRecyclerAdapter2.stopListening();
+                                        }
+                                    });
+
+                                    Query query = FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).child("Vehicles");
+                                    FirebaseRecyclerOptions<vehicledetails> options = new FirebaseRecyclerOptions.Builder<vehicledetails>()
+                                            .setQuery(query, new SnapshotParser<vehicledetails>() {
+                                                @NonNull
+                                                @Override
+                                                public vehicledetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                                    return new vehicledetails(snapshot.child("vehiclename").getValue(String.class), snapshot.child("vehiclenumber").getValue(String.class));
+                                                }
+                                            }).build();
+
+                                    firebaseRecyclerAdapter2 = new FirebaseRecyclerAdapter<vehicledetails, VehicleHolder>(options) {
+                                        @Override
+                                        protected void onBindViewHolder(@NonNull VehicleHolder holder, int position, @NonNull vehicledetails model) {
+                                            holder.textView.setText(model.getVehiclename());
+                                            Log.i("name", model.getVehiclename());
+                                        }
+
+                                        @NonNull
+                                        @Override
+                                        public VehicleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                                            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle, parent, false);
+                                            return new VehicleHolder(v);
+                                        }
+                                    };
+
+                                    firebaseRecyclerAdapter2.startListening();
+
+
+                                    recyclerView.setLayoutManager(new LinearLayoutManager(RideDetailss.this));
+                                    recyclerView.setAdapter(firebaseRecyclerAdapter2);
+                                    firebaseRecyclerAdapter2.notifyDataSetChanged();
 
 
                                     FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            profiledetails profiledetails=dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+                                            profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+
+                                            if (!dataSnapshot.child("Vehicles").exists()) {
+                                                vehicletext.setText("No Vehicles Added");
+                                            }
+
+                                            if(dataSnapshot.child("Ratings").exists())
+                                            {
+                                                if(dataSnapshot.child("Ratings").getChildrenCount()==1)
+                                                {
+                                                    ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" rating )");
+                                                }else {
+                                                    ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" ratings )");
+                                                }
+                                                ratingBar.setRating(Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
+                                            }
+                                            else {
+                                                ratingnum.setText("( No ratings )");
+                                            }
+                                            if(dataSnapshot.child("verified").exists())
+                                            {
+                                                if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
+                                                {
+                                                    name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                                }
+                                            }
 
                                             name.setText(profiledetails.getName());
                                             phone.setText(profiledetails.getPhone());
                                             occupation.setText(profiledetails.getOccupation());
                                             gender.setText(profiledetails.getGender());
-                                            Picasso.get().load(profiledetails.getImage()).resize(300,300).into(propic);
+                                            if (dataSnapshot.child("offered").exists()) {
+                                                offered.setText(dataSnapshot.child("offered").getValue(String.class));
+                                            } else {
+                                                offered.setText("0");
+                                            }
 
+                                            if (dataSnapshot.child("found").exists()) {
+                                                found.setText(dataSnapshot.child("found").getValue(String.class));
+                                            } else {
+                                                found.setText("0");
+                                            }
+
+                                            Picasso.get().load(profiledetails.getImage()).resize(300, 300).into(propic);
+
+                                            DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+
+                                            progressBar.setVisibility(View.GONE);
+                                            try {
+
+                                                Calendar cal = Calendar.getInstance();
+                                                cal.setTime(df.parse(dataSnapshot.child("birthday").getValue(String.class)));
+
+                                                String a = getAge(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+
+                                                age.setText(a + " years");
+
+                                            } catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
                                         }
 
                                         @Override
@@ -188,10 +289,9 @@ public class RideDetailss extends AppCompatActivity {
                                         }
                                     });
 
+                                    dialog.show();
                                 }
                             });
-
-
 
 
                             if (FirebaseAuth.getInstance().getCurrentUser().getUid().equals(offerdetails.getUserid())) {
@@ -324,11 +424,9 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                             FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot2.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                                 @Override
                                                                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
-                                                                                                                    if(dataSnapshot3.child("offered").exists())
-                                                                                                                    {
-                                                                                                                        dataSnapshot3.child("offered").getRef().setValue(""+Integer.parseInt(dataSnapshot3.child("offered").getValue(String.class))+1);
-                                                                                                                    }
-                                                                                                                    else {
+                                                                                                                    if (dataSnapshot3.child("offered").exists()) {
+                                                                                                                        dataSnapshot3.child("offered").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("offered").getValue(String.class)) + 1));
+                                                                                                                    } else {
                                                                                                                         dataSnapshot3.child("offered").getRef().setValue("1");
                                                                                                                     }
                                                                                                                 }
@@ -343,16 +441,13 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                                 @Override
                                                                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
 
-                                                                                                                    for(DataSnapshot dataSnapshot5:dataSnapshot4.getChildren())
-                                                                                                                    {
+                                                                                                                    for (DataSnapshot dataSnapshot5 : dataSnapshot4.getChildren()) {
                                                                                                                         FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot5.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                                             @Override
                                                                                                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
-                                                                                                                                if(dataSnapshot3.child("found").exists())
-                                                                                                                                {
-                                                                                                                                    dataSnapshot3.child("found").getRef().setValue(""+Integer.parseInt(dataSnapshot3.child("offered").getValue(String.class))+1);
-                                                                                                                                }
-                                                                                                                                else {
+                                                                                                                                if (dataSnapshot3.child("found").exists()) {
+                                                                                                                                    dataSnapshot3.child("found").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("found").getValue(String.class)) + 1));
+                                                                                                                                } else {
                                                                                                                                     dataSnapshot3.child("found").getRef().setValue("1");
                                                                                                                                 }
                                                                                                                             }
@@ -752,6 +847,10 @@ public class RideDetailss extends AppCompatActivity {
                                                 bookingrequests.setText("Booking Confirmed");
                                                 bookingrequests.setTextColor(getColor(R.color.green));
                                                 cancel.setText("Cancel Booking");
+                                                cancel.setVisibility(View.VISIBLE);
+
+                                                vehiclenum.setText(offerdetails.getVehiclenumber());
+                                                vehiclenum.setVisibility(View.VISIBLE);
 
 
                                                 cancel.setOnClickListener(new View.OnClickListener() {
@@ -804,6 +903,25 @@ public class RideDetailss extends AppCompatActivity {
 
                                     final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
+                                    if(dataSnapshot.child("Ratings").exists())
+                                    {
+                                        String s = String.format("%.1f", Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
+
+                                        rating.setText(s);
+                                    }
+                                    else {
+                                        rating.setText("0");
+                                    }
+
+                                    if(dataSnapshot.child("verified").exists())
+                                    {
+                                        if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
+                                        {
+                                            name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                            name.setCompoundDrawablePadding(5);
+                                        }
+                                    }
+
                                     name.setText(profiledetails.getName());
                                     Picasso.get().load(profiledetails.getImage()).resize(200, 200).into(propic);
                                     call.setOnClickListener(new View.OnClickListener() {
@@ -852,7 +970,155 @@ public class RideDetailss extends AppCompatActivity {
 
             FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(uid).addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+
+
+                    constraintLayout.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext,ratingnum;
+                            final ImageView cross, propic;
+                            final RatingBar ratingBar;
+                            final RecyclerView recyclerView;
+
+                            final Dialog dialog = new Dialog(RideDetailss.this);
+                            dialog.setContentView(R.layout.profiledialog);
+                            dialog.setCanceledOnTouchOutside(false);
+                            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                            dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                            name = dialog.findViewById(R.id.profiledialogname);
+                            phone = dialog.findViewById(R.id.profiledialogphone);
+                            occupation = dialog.findViewById(R.id.profiledialogocuupation);
+                            vehicletext = dialog.findViewById(R.id.profilevehicletext);
+                            offered = dialog.findViewById(R.id.profiledialogoffered);
+                            found = dialog.findViewById(R.id.profiledialogfound);
+                            gender = dialog.findViewById(R.id.profiledialoggender);
+                            age = dialog.findViewById(R.id.profiledialogage);
+                            cross = dialog.findViewById(R.id.profiledialogcross);
+                            propic = dialog.findViewById(R.id.profiledialogpic);
+                            ratingBar = dialog.findViewById(R.id.profiledialograting);
+                            recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
+                            ratingnum=dialog.findViewById(R.id.profiledialogratingnum);
+
+                            cross.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    dialog.dismiss();
+                                    firebaseRecyclerAdapter2.stopListening();
+                                }
+                            });
+
+                            Query query = FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).child("Vehicles");
+                            FirebaseRecyclerOptions<vehicledetails> options = new FirebaseRecyclerOptions.Builder<vehicledetails>()
+                                    .setQuery(query, new SnapshotParser<vehicledetails>() {
+                                        @NonNull
+                                        @Override
+                                        public vehicledetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                            return new vehicledetails(snapshot.child("vehiclename").getValue(String.class), snapshot.child("vehiclenumber").getValue(String.class));
+                                        }
+                                    }).build();
+
+                            firebaseRecyclerAdapter2 = new FirebaseRecyclerAdapter<vehicledetails, VehicleHolder>(options) {
+                                @Override
+                                protected void onBindViewHolder(@NonNull VehicleHolder holder, int position, @NonNull vehicledetails model) {
+                                    holder.textView.setText(model.getVehiclename());
+                                    Log.i("name", model.getVehiclename());
+                                }
+
+                                @NonNull
+                                @Override
+                                public VehicleHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                                    View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.vehicle, parent, false);
+                                    return new VehicleHolder(v);
+                                }
+                            };
+
+                            firebaseRecyclerAdapter2.startListening();
+
+
+                            recyclerView.setLayoutManager(new LinearLayoutManager(RideDetailss.this));
+                            recyclerView.setAdapter(firebaseRecyclerAdapter2);
+                            firebaseRecyclerAdapter2.notifyDataSetChanged();
+
+
+                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+
+                                    if (!dataSnapshot.child("Vehicles").exists()) {
+                                        vehicletext.setText("No Vehicles Added");
+                                    }
+
+                                    if(dataSnapshot.child("Ratings").exists())
+                                    {
+                                        if(dataSnapshot.child("Ratings").getChildrenCount()==1)
+                                        {
+                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" rating )");
+                                        }else {
+                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" ratings )");
+                                        }
+                                        ratingBar.setRating(Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
+                                    }
+                                    else {
+                                        ratingnum.setText("( No ratings )");
+                                    }
+
+                                    if(dataSnapshot.child("verified").exists())
+                                    {
+                                        if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
+                                        {
+                                            name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                            name.setCompoundDrawablePadding(5);
+                                        }
+                                    }
+
+                                    name.setText(profiledetails.getName());
+                                    phone.setText(profiledetails.getPhone());
+                                    occupation.setText(profiledetails.getOccupation());
+                                    gender.setText(profiledetails.getGender());
+                                    if (dataSnapshot.child("offered").exists()) {
+                                        offered.setText(dataSnapshot.child("offered").getValue(String.class));
+                                    } else {
+                                        offered.setText("0");
+                                    }
+
+                                    if (dataSnapshot.child("found").exists()) {
+                                        found.setText(dataSnapshot.child("found").getValue(String.class));
+                                    } else {
+                                        found.setText("0");
+                                    }
+
+                                    Picasso.get().load(profiledetails.getImage()).resize(300, 300).into(propic);
+
+                                    DateFormat df = DateFormat.getDateInstance(DateFormat.FULL);
+
+                                    progressBar.setVisibility(View.GONE);
+                                    try {
+
+                                        Calendar cal = Calendar.getInstance();
+                                        cal.setTime(df.parse(dataSnapshot.child("birthday").getValue(String.class)));
+
+                                        String a = getAge(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+
+                                        age.setText(a + " years");
+
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                            dialog.show();
+                        }
+                    });
 
 
                     progressBar.setVisibility(View.GONE);
@@ -885,6 +1151,25 @@ public class RideDetailss extends AppCompatActivity {
                                 vehicle.setText(offerdetails.getVehiclename());
 
                                 final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+
+                                if(dataSnapshot.child("Ratings").exists())
+                                {
+                                    String s = String.format("%.1f", Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
+
+                                    rating.setText(s);
+                                }
+                                else {
+                                    rating.setText("0");
+                                }
+
+                                if(dataSnapshot.child("verified").exists())
+                                {
+                                    if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
+                                    {
+                                        name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                        name.setCompoundDrawablePadding(5);
+                                    }
+                                }
 
                                 name.setText(profiledetails.getName());
                                 Picasso.get().load(profiledetails.getImage()).resize(200, 200).into(propic);
@@ -951,6 +1236,36 @@ public class RideDetailss extends AppCompatActivity {
             accept = itemView.findViewById(R.id.bookingaccept);
             reject = itemView.findViewById(R.id.bookingreject);
 
+        }
+    }
+
+    private String getAge(int year, int month, int day) {
+        Calendar dob = Calendar.getInstance();
+        Calendar today = Calendar.getInstance();
+
+        dob.set(year, month, day);
+
+        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)) {
+            age--;
+        }
+
+        Integer ageInt = new Integer(age);
+        String ageS = ageInt.toString();
+
+        return ageS;
+    }
+
+
+    private class VehicleHolder extends RecyclerView.ViewHolder {
+
+        TextView textView;
+
+        public VehicleHolder(@NonNull View itemView) {
+            super(itemView);
+
+            textView = itemView.findViewById(R.id.vehiclee);
         }
     }
 }
