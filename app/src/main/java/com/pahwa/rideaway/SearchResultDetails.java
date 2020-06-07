@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -118,9 +119,65 @@ public class SearchResultDetails extends AppCompatActivity {
                         book.setVisibility(View.VISIBLE);
                     }
 
+                    if(dataSnapshot.child("Booking Requests").exists())
+                    {
+                        dataSnapshot.child("Booking Requests").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
+                                {
+                                    if(dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                                    {
+                                        book.setText("Booking Request Sent");
+                                        book.setBackgroundColor(getColor(R.color.yellow));
+                                        book.setEnabled(false);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    if(dataSnapshot.child("Booking Confirmed").exists())
+                    {
+                        dataSnapshot.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
+                                {
+                                    if(dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                                    {
+                                        book.setBackgroundColor(getColor(R.color.green));
+                                        book.setText("Booking Already Done");
+                                        book.setEnabled(false);
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+
                     constraintLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+
+                            constraintLayout.setEnabled(false);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    constraintLayout.setEnabled(true);
+                                }
+                            },1000);
 
                             final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
                             final ImageView cross, propic;
@@ -133,6 +190,7 @@ public class SearchResultDetails extends AppCompatActivity {
                             dialog.setCanceledOnTouchOutside(false);
                             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                             dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            dialog.getWindow().setWindowAnimations(R.style.AppTheme_Exit);
 
                             name = dialog.findViewById(R.id.profiledialogname);
                             phone = dialog.findViewById(R.id.profiledialogphone);
@@ -383,6 +441,7 @@ public class SearchResultDetails extends AppCompatActivity {
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
 
                 amount = dialog.findViewById(R.id.bookamount);
                 cancel = dialog.findViewById(R.id.bookcancel);

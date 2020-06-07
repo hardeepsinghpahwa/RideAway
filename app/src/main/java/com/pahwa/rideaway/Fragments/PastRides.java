@@ -210,6 +210,7 @@ public class PastRides extends Fragment {
                     dialog.setCanceledOnTouchOutside(false);
                     dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                    dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
 
                     final RatingBar ratingBar;
                     final Button rate;

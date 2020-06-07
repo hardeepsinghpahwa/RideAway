@@ -53,6 +53,13 @@
 
     </style>
 
+    <style name="AppTheme_rightleft">
+        <item name="android:windowExitAnimation">@anim/right_to_left</item>
+        <item name="android:windowEnterAnimation">@anim/left_to_right</item>
+
+    </style>
+
+
     <style name="MyTabLayout" parent="Base.Widget.Design.TabLayout">
         <item name="tabTextAppearance">@style/MyTabTextAppearance</item>
     </style>

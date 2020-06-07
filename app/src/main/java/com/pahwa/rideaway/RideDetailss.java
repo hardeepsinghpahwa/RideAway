@@ -19,6 +19,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -152,6 +153,14 @@ public class RideDetailss extends AppCompatActivity {
                                 @Override
                                 public void onClick(View v) {
 
+                                    constraintLayout.setEnabled(false);
+
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            constraintLayout.setEnabled(true);
+                                        }
+                                    },1000);
                                     final TextView name, phone, occupation, offered, found, gender, age, vehicletext,ratingnum;
                                     final ImageView cross, propic;
                                     final RatingBar ratingBar;
@@ -162,6 +171,7 @@ public class RideDetailss extends AppCompatActivity {
                                     dialog.setCanceledOnTouchOutside(false);
                                     dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                                     dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                                    dialog.getWindow().setWindowAnimations(R.style.AppTheme_Exit);
 
                                     name = dialog.findViewById(R.id.profiledialogname);
                                     phone = dialog.findViewById(R.id.profiledialogphone);
@@ -977,6 +987,14 @@ public class RideDetailss extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
 
+                            constraintLayout.setEnabled(false);
+
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    constraintLayout.setEnabled(true);
+                                }
+                            },1000);
                             final TextView name, phone, occupation, offered, found, gender, age, vehicletext,ratingnum;
                             final ImageView cross, propic;
                             final RatingBar ratingBar;
@@ -987,6 +1005,7 @@ public class RideDetailss extends AppCompatActivity {
                             dialog.setCanceledOnTouchOutside(false);
                             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                             dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                            dialog.getWindow().setWindowAnimations(R.style.AppTheme_Exit);
 
                             name = dialog.findViewById(R.id.profiledialogname);
                             phone = dialog.findViewById(R.id.profiledialogphone);

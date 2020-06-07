@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -244,6 +245,14 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
         select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                select.setEnabled(false);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        select.setEnabled(true);
+                    }
+                },1000);
                 final EditText name, num;
                 final Button add;
                 final TextView no;
@@ -254,6 +263,7 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
 
                 name = dialog.findViewById(R.id.addvehiname);
                 num = dialog.findViewById(R.id.addvehinumber);

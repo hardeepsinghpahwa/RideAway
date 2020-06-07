@@ -14,10 +14,12 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -86,6 +88,7 @@ public class Profile extends Fragment {
     CardView cardView;
     Uri file;
     Dialog dialog;
+    NestedScrollView nestedScrollView;
 
     public Profile() {
         // Required empty public constructor
@@ -115,6 +118,11 @@ public class Profile extends Fragment {
         verifytext = v.findViewById(R.id.verifytext);
         verify = v.findViewById(R.id.verifyprofile);
         ratingnum=v.findViewById(R.id.profileratingnum);
+        nestedScrollView=v.findViewById(R.id.nestedScrollViewprofile);
+
+
+
+        nestedScrollView.setSmoothScrollingEnabled(true);
 
         progressBar.bringToFront();
 
@@ -206,6 +214,14 @@ public class Profile extends Fragment {
                 vehicles.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        vehicles.setEnabled(false);
+
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                vehicles.setEnabled(true);
+                            }
+                        },1000);
                         final EditText name, num;
                         final Button add;
                         final TextView no;
@@ -216,6 +232,7 @@ public class Profile extends Fragment {
                         dialog.setCanceledOnTouchOutside(false);
                         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                         dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
 
                         name = dialog.findViewById(R.id.addvehiname);
                         num = dialog.findViewById(R.id.addvehinumber);
@@ -446,6 +463,7 @@ public class Profile extends Fragment {
                 dialog.setCanceledOnTouchOutside(false);
                 dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
 
                 submit = dialog.findViewById(R.id.verifysend);
                 select = dialog.findViewById(R.id.verifychoose);

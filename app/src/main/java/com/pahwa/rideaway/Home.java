@@ -15,6 +15,8 @@ public class Home extends AppCompatActivity {
 
     ChipNavigationBar chipNavigationBar;
     ConstraintLayout constraintLayout;
+    int startingPosition=0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,9 +45,12 @@ public class Home extends AppCompatActivity {
                         fragment = new Profile();
                         break;
                 }
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.cons3, fragment)
-                        .commit();
+
+                    getSupportFragmentManager().beginTransaction()
+                            .setCustomAnimations(R.anim.left_to_right,R.anim.right_to_left)
+                            .replace(R.id.cons3, fragment)
+                            .commit();
+
             }
         });
     }
