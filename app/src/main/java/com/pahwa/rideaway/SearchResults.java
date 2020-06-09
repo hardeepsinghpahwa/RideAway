@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,10 +130,18 @@ public class SearchResults extends AppCompatActivity {
                 }
             });
 
-
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    holder.imageView.setEnabled(false);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            holder.imageView.setEnabled(true);
+                        }
+                    },500);
+
                     holder.imageView.setTransitionName("thumbnailTransition");
                     Pair<View, String> pair1 = Pair.create((View) holder.imageView, holder.imageView.getTransitionName());
 

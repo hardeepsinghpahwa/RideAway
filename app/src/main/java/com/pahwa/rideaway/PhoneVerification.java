@@ -124,10 +124,16 @@ public class PhoneVerification extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         if(dataSnapshot.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).exists())
                         {
-                            Intent intent=new Intent(PhoneVerification.this, Home.class);
-                            startActivity(intent);
-                            customType(PhoneVerification.this,"left-to-right");
-                            finish();
+                            FirebaseDatabase.getInstance().getReference().child("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("token").setValue(MyFirebaseMessagingService.getToken(getApplicationContext())).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    Intent intent=new Intent(PhoneVerification.this, Home.class);
+                                    startActivity(intent);
+                                    customType(PhoneVerification.this,"left-to-right");
+                                    finish();
+                                }
+                            });
+
                         }
                         else {
                             Intent intent=new Intent(PhoneVerification.this, SetupProfile.class);

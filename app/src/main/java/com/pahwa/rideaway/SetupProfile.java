@@ -35,12 +35,16 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -262,7 +266,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
                     MDToast.makeText(SetupProfile.this, "Enter Your Occupation", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
 
                 } else {
-                    if (ac!=null ) {
+                    if (ac != null) {
 
                         if (image == null) {
 
@@ -453,6 +457,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
 
                                                 save.setText("Proceed");
 
+
                                                 lottieAnimationView.setVisibility(View.VISIBLE);
                                                 lottieAnimationView.playAnimation();
                                                 constraintLayout.setBackgroundColor(Color.WHITE);
@@ -461,9 +466,16 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
                                                 save.setOnClickListener(new View.OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
-                                                        startActivity(new Intent(SetupProfile.this, Home.class));
-                                                        finish();
-                                                        customType(SetupProfile.this, "fadein-to-fadeout");
+
+                                                        FirebaseDatabase.getInstance().getReference().child("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("token").setValue(MyFirebaseMessagingService.getToken(getApplicationContext())).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                startActivity(new Intent(SetupProfile.this, Home.class));
+                                                                finish();
+                                                                customType(SetupProfile.this, "fadein-to-fadeout");
+
+                                                            }
+                                                        });
                                                     }
                                                 });
                                             } else {

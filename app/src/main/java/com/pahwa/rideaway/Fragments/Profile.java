@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,13 +36,28 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.Continuation;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pahwa.rideaway.MainActivity;
+import com.pahwa.rideaway.Notification.ApiService;
+import com.pahwa.rideaway.Notification.Client;
+import com.pahwa.rideaway.Notification.Data;
+import com.pahwa.rideaway.Notification.MyResponse;
+import com.pahwa.rideaway.Notification.NotificationSender;
+import com.pahwa.rideaway.Notification.SendNoti;
 import com.pahwa.rideaway.R;
 import com.pahwa.rideaway.SetupProfile;
 import com.pahwa.rideaway.profiledetails;
@@ -60,6 +76,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.text.DateFormat;
@@ -70,6 +88,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import dmax.dialog.SpotsDialog;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import static maes.tech.intentanim.CustomIntent.customType;
 
@@ -80,14 +100,17 @@ public class Profile extends Fragment {
 
 
     Button logout;
-    TextView offered, found, age, gender, rating, phone, name, occupation, verifytext,ratingnum;
-    ImageView vehicles, profilepic, edit, notifications;
+    TextView offered, found, age, gender, rating, phone, name, occupation, verifytext, ratingnum;
+    ImageView vehicles, profilepic, edit;
     ProgressBar progressBar;
     FirebaseRecyclerAdapter<vehicledetails, VehicleViewHolder> firebaseRecyclerAdapter;
     Button verify;
     CardView cardView;
     Uri file;
+    ImageView notifications;
     Dialog dialog;
+    private RequestQueue mRequestQue;
+    private String URL = "https://fcm.googleapis.com/fcm/send";
     NestedScrollView nestedScrollView;
 
     public Profile() {
@@ -117,10 +140,18 @@ public class Profile extends Fragment {
         cardView = v.findViewById(R.id.card20);
         verifytext = v.findViewById(R.id.verifytext);
         verify = v.findViewById(R.id.verifyprofile);
-        ratingnum=v.findViewById(R.id.profileratingnum);
-        nestedScrollView=v.findViewById(R.id.nestedScrollViewprofile);
+        ratingnum = v.findViewById(R.id.profileratingnum);
+        nestedScrollView = v.findViewById(R.id.nestedScrollViewprofile);
+        notifications = v.findViewById(R.id.notifications);
 
 
+        notifications.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SendNoti sendNoti=new SendNoti();
+                sendNoti.sendNotification(getActivity(),FirebaseAuth.getInstance().getCurrentUser().getUid(),"Sample","Noti");
+            }
+        });
 
         nestedScrollView.setSmoothScrollingEnabled(true);
 
@@ -157,8 +188,7 @@ public class Profile extends Fragment {
                         verifytext.setVisibility(View.VISIBLE);
 
                     }
-                }
-                else {
+                } else {
                     verifytext.setVisibility(View.VISIBLE);
                     verify.setVisibility(View.VISIBLE);
                 }
@@ -221,7 +251,7 @@ public class Profile extends Fragment {
                             public void run() {
                                 vehicles.setEnabled(true);
                             }
-                        },1000);
+                        }, 1000);
                         final EditText name, num;
                         final Button add;
                         final TextView no;
@@ -467,7 +497,7 @@ public class Profile extends Fragment {
 
                 submit = dialog.findViewById(R.id.verifysend);
                 select = dialog.findViewById(R.id.verifychoose);
-                cross=dialog.findViewById(R.id.verifiycross);
+                cross = dialog.findViewById(R.id.verifiycross);
 
                 select.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -506,7 +536,7 @@ public class Profile extends Fragment {
                                 public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
                                     if (!task.isSuccessful()) {
                                         alertDialog.dismiss();
-                                        MDToast.makeText(getActivity(),"Some Error Occured",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                        MDToast.makeText(getActivity(), "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                         throw task.getException();
                                     }
                                     // Continue with the task to get the download URL
@@ -516,8 +546,7 @@ public class Profile extends Fragment {
                                 @Override
                                 public void onComplete(@NonNull final Task<Uri> task) {
 
-                                    if(task.isSuccessful())
-                                    {
+                                    if (task.isSuccessful()) {
 
                                         FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
@@ -525,7 +554,7 @@ public class Profile extends Fragment {
                                                 dataSnapshot.child("verified").getRef().setValue("requested");
                                                 dataSnapshot.child("file").getRef().setValue(task.getResult().toString());
                                                 alertDialog.dismiss();
-                                                MDToast.makeText(getActivity(),"Verification Request Sent",MDToast.LENGTH_SHORT,MDToast.TYPE_SUCCESS).show();
+                                                MDToast.makeText(getActivity(), "Verification Request Sent", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
                                                 dialog.dismiss();
                                             }
 
@@ -534,15 +563,13 @@ public class Profile extends Fragment {
 
                                             }
                                         });
-                                    }
-                                    else {
-                                        MDToast.makeText(getActivity(),"Some Error Occured",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                    } else {
+                                        MDToast.makeText(getActivity(), "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                     }
                                 }
                             });
-                        }
-                        else {
-                            MDToast.makeText(getActivity(),"Choose A File First",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                        } else {
+                            MDToast.makeText(getActivity(), "Choose A File First", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                         }
 
 
@@ -556,6 +583,9 @@ public class Profile extends Fragment {
 
         return v;
     }
+
+
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -590,20 +620,21 @@ public class Profile extends Fragment {
         return ageS;
     }
 
-    private class VehicleViewHolder extends RecyclerView.ViewHolder {
+private class VehicleViewHolder extends RecyclerView.ViewHolder {
 
-        TextView vehiclename, vehiclenumber;
-        Button select, delete;
+    TextView vehiclename, vehiclenumber;
+    Button select, delete;
 
-        public VehicleViewHolder(@NonNull View itemView) {
-            super(itemView);
+    public VehicleViewHolder(@NonNull View itemView) {
+        super(itemView);
 
-            vehiclename = itemView.findViewById(R.id.vehiname);
-            vehiclenumber = itemView.findViewById(R.id.vehinumber);
-            select = itemView.findViewById(R.id.selectvehicle);
-            delete = itemView.findViewById(R.id.deletevehicle);
-        }
+        vehiclename = itemView.findViewById(R.id.vehiname);
+        vehiclenumber = itemView.findViewById(R.id.vehinumber);
+        select = itemView.findViewById(R.id.selectvehicle);
+        delete = itemView.findViewById(R.id.deletevehicle);
     }
+
+}
 
     private Intent getFileChooserIntent() {
         String[] mimeTypes = {"image/*", "application/pdf"};

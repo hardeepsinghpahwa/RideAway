@@ -5,7 +5,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import com.google.firebase.database.FirebaseDatabase;
 import com.pahwa.rideaway.Fragments.HomeFragment;
 import com.pahwa.rideaway.Fragments.Profile;
 import com.pahwa.rideaway.Fragments.Rides;
@@ -21,6 +23,7 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
 
         chipNavigationBar=findViewById(R.id.bottomnav);
         constraintLayout=findViewById(R.id.cons3);

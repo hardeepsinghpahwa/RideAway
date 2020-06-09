@@ -45,6 +45,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.pahwa.rideaway.Notification.SendNoti;
 import com.squareup.picasso.Picasso;
 import com.tiper.MaterialSpinner;
 import com.valdesekamdem.library.mdtoast.MDToast;
@@ -137,7 +138,6 @@ public class RideDetailss extends AppCompatActivity {
 
 
         if (getIntent().getStringExtra("class").equals("ongoing")) {
-
 
             try {
 
@@ -431,6 +431,20 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                     toPath.addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                         @Override
                                                                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
+
+                                                                                                            dataSnapshot2.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                @Override
+                                                                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
+                                                                                                                    SendNoti sendNoti=new SendNoti();
+                                                                                                                    sendNoti.sendNotification(getApplicationContext(),dataSnapshot4.getKey(),"Ride Completed!","Status Update. The Offerer has marked the ride as Completed. Don't Forget to rate the ride.");
+                                                                                                                }
+
+                                                                                                                @Override
+                                                                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                                }
+                                                                                                            });
+
                                                                                                             FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot2.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                                 @Override
                                                                                                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
@@ -540,6 +554,22 @@ public class RideDetailss extends AppCompatActivity {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
 
+                                                                    dataSnapshot.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                        @Override
+                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                            for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
+                                                                            {
+                                                                                SendNoti sendNoti=new SendNoti();
+                                                                                sendNoti.sendNotification(getApplicationContext(),dataSnapshot1.getKey(),"Happy Journey!","Status Update. The Offerer has marked the ride as Started. Have a great ride.");
+                                                                            }
+                                                                        }
+
+                                                                        @Override
+                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                        }
+                                                                    });
+
                                                                     if (task.isSuccessful()) {
                                                                         MDToast.makeText(RideDetailss.this, "Status Updated", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
                                                                     } else {
@@ -567,12 +597,10 @@ public class RideDetailss extends AppCompatActivity {
                                     bookingrequests.setTextColor(getColor(R.color.green));
                                     bookingconfirm.setVisibility(View.GONE);
                                 }
-
-                                if (!dataSnapshot.child("Booking Requests").exists() && !dataSnapshot.child("Booking Requests").exists()) {
+                                else if (!dataSnapshot.child("Booking Requests").exists() && !dataSnapshot.child("Booking Requests").exists()) {
                                     bookingrequests.setText("No Bookings");
                                     bookingrequests.setTextColor(getColor(R.color.red));
                                 }
-
 
                                 if (dataSnapshot.child("Booking Requests").exists()) {
                                     if (dataSnapshot.child("Booking Requests").getChildrenCount() == 1) {

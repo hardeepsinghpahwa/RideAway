@@ -4,6 +4,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -16,15 +17,20 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.pahwa.rideaway.Notification.Token;
 
 import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
+    String body,title;
     @Override
     public void onNewToken(@NonNull String s) {
         FirebaseInstanceId.getInstance().getInstanceId()
@@ -39,18 +45,38 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         // Get new Instance ID token
                         String token = task.getResult().getToken();
                         Log.e("My Token", token);
+                        getSharedPreferences("_", MODE_PRIVATE).edit().putString("token", token).apply();
+
+                        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                        Token token1 = new Token(token);
+
+                        if(FirebaseAuth.getInstance().getCurrentUser()!=null)
+                        {
+                            FirebaseDatabase.getInstance().getReference("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).setValue(token1);
+                        }
                     }
                 });
 
+    }
+
+    public static String getToken(Context context) {
+        return context.getSharedPreferences("_", MODE_PRIVATE).getString("token", "empty");
     }
 
     @Override
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
-
-        String body = remoteMessage.getNotification().getBody();
-        String title = remoteMessage.getNotification().getTitle();
+        if(!remoteMessage.getData().isEmpty())
+        {
+            body = remoteMessage.getData().get("Message");
+            title = remoteMessage.getData().get("Title");
+        }
+        else if(remoteMessage.getNotification()!=null)
+        {
+            body=remoteMessage.getNotification().getBody();
+            title=remoteMessage.getNotification().getTitle();
+        }
 
         Intent intent = new Intent(getApplicationContext(), Home.class);
 

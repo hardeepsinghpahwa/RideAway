@@ -42,6 +42,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.pahwa.rideaway.Notification.SendNoti;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
@@ -68,13 +69,14 @@ public class SearchResultDetails extends AppCompatActivity {
     TextView name;
     TextView rating;
     TextView vehicle;
-    TextView book, moreinfo;
+    TextView bookbutton, moreinfo;
     ImageView propic, call, back;
     ProgressBar progressBar;
     String cost, in;
     String seatnumber;
     ImageView imageView;
     int seat;
+    String useruid;
 
     FirebaseRecyclerAdapter<vehicledetails, VehicleHolder> firebaseRecyclerAdapter2;
     ConstraintLayout constraintLayout;
@@ -94,7 +96,7 @@ public class SearchResultDetails extends AppCompatActivity {
         name = findViewById(R.id.searchname);
         rating = findViewById(R.id.searchrating);
         vehicle = findViewById(R.id.searchvehicle);
-        book = findViewById(R.id.searchbook);
+        bookbutton = findViewById(R.id.searchbook);
         propic = findViewById(R.id.searchpropic);
         call = findViewById(R.id.searchcall);
         progressBar = findViewById(R.id.searchprogressbar);
@@ -107,62 +109,68 @@ public class SearchResultDetails extends AppCompatActivity {
         imageView.setTransitionName("thumbnailTransition");
 
 
+        FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.child("Booking Requests").exists()) {
+                    dataSnapshot.child("Booking Requests").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                if (dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                    bookbutton.setText("Booking Request Sent");
+                                    bookbutton.setBackgroundColor(getColor(R.color.yellow));
+                                    bookbutton.setEnabled(false);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+
+                if (dataSnapshot.child("Booking Confirmed").exists()) {
+                    dataSnapshot.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                if (dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                    bookbutton.setBackgroundColor(getColor(R.color.green));
+                                    bookbutton.setText("Booking Already Done");
+                                    bookbutton.setEnabled(false);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 progressBar.setVisibility(View.GONE);
                 final offerdetails offerdetails = dataSnapshot.getValue(com.pahwa.rideaway.offerdetails.class);
-                book.setEnabled(true);
+                bookbutton.setEnabled(true);
+
+                useruid = dataSnapshot.child("userid").getValue(String.class);
 
                 if (offerdetails != null) {
                     if (!FirebaseAuth.getInstance().getCurrentUser().getUid().equals(offerdetails.getUserid())) {
-                        book.setVisibility(View.VISIBLE);
-                    }
-
-                    if(dataSnapshot.child("Booking Requests").exists())
-                    {
-                        dataSnapshot.child("Booking Requests").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
-                                {
-                                    if(dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
-                                    {
-                                        book.setText("Booking Request Sent");
-                                        book.setBackgroundColor(getColor(R.color.yellow));
-                                        book.setEnabled(false);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-
-                    if(dataSnapshot.child("Booking Confirmed").exists())
-                    {
-                        dataSnapshot.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
-                                {
-                                    if(dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
-                                    {
-                                        book.setBackgroundColor(getColor(R.color.green));
-                                        book.setText("Booking Already Done");
-                                        book.setEnabled(false);
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
+                        bookbutton.setVisibility(View.VISIBLE);
                     }
 
 
@@ -177,7 +185,7 @@ public class SearchResultDetails extends AppCompatActivity {
                                 public void run() {
                                     constraintLayout.setEnabled(true);
                                 }
-                            },1000);
+                            }, 1000);
 
                             final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
                             final ImageView cross, propic;
@@ -204,7 +212,7 @@ public class SearchResultDetails extends AppCompatActivity {
                             propic = dialog.findViewById(R.id.profiledialogpic);
                             ratingBar = dialog.findViewById(R.id.profiledialograting);
                             recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
-                            ratingnum=dialog.findViewById(R.id.profiledialogratingnum);
+                            ratingnum = dialog.findViewById(R.id.profiledialogratingnum);
 
                             cross.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -256,25 +264,20 @@ public class SearchResultDetails extends AppCompatActivity {
                                         vehicletext.setText("No Vehicles Added");
                                     }
 
-                                    if(dataSnapshot.child("Ratings").exists())
-                                    {
-                                        if(dataSnapshot.child("Ratings").getChildrenCount()==1)
-                                        {
-                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" rating )");
-                                        }else {
-                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" ratings )");
+                                    if (dataSnapshot.child("Ratings").exists()) {
+                                        if (dataSnapshot.child("Ratings").getChildrenCount() == 1) {
+                                            ratingnum.setText("( " + dataSnapshot.child("Ratings").getChildrenCount() + " rating )");
+                                        } else {
+                                            ratingnum.setText("( " + dataSnapshot.child("Ratings").getChildrenCount() + " ratings )");
                                         }
                                         ratingBar.setRating(Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
-                                    }
-                                    else {
+                                    } else {
                                         ratingnum.setText("( No ratings )");
                                     }
 
-                                    if(dataSnapshot.child("verified").exists())
-                                    {
-                                        if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
-                                        {
-                                            name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(SearchResultDetails.this,R.drawable.verify),null);
+                                    if (dataSnapshot.child("verified").exists()) {
+                                        if (dataSnapshot.child("verified").getValue(String.class).equals("verified")) {
+                                            name.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(SearchResultDetails.this, R.drawable.verify), null);
                                             name.setCompoundDrawablePadding(5);
                                         }
                                     }
@@ -328,7 +331,7 @@ public class SearchResultDetails extends AppCompatActivity {
 
                     moreinfo.setText(offerdetails.getMoreinfo());
 
-                    book.setText("Book ( ₹ " + offerdetails.getPrice() + " per seat )");
+                    bookbutton.setText("Book ( ₹ " + offerdetails.getPrice() + " per seat )");
 
                     from.setText(offerdetails.getPickupname());
                     to.setText(offerdetails.getDropname());
@@ -358,21 +361,17 @@ public class SearchResultDetails extends AppCompatActivity {
 
                             final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
-                            if(dataSnapshot.child("Ratings").exists())
-                            {
+                            if (dataSnapshot.child("Ratings").exists()) {
                                 String s = String.format("%.1f", Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
 
                                 rating.setText(s);
-                            }
-                            else {
+                            } else {
                                 rating.setText("0");
                             }
 
-                            if(dataSnapshot.child("verified").exists())
-                            {
-                                if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
-                                {
-                                    name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(SearchResultDetails.this,R.drawable.verify),null);
+                            if (dataSnapshot.child("verified").exists()) {
+                                if (dataSnapshot.child("verified").getValue(String.class).equals("verified")) {
+                                    name.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(SearchResultDetails.this, R.drawable.verify), null);
                                     name.setCompoundDrawablePadding(5);
                                 }
                             }
@@ -425,7 +424,7 @@ public class SearchResultDetails extends AppCompatActivity {
             }
         });
 
-        book.setOnClickListener(new View.OnClickListener() {
+        bookbutton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -451,8 +450,7 @@ public class SearchResultDetails extends AppCompatActivity {
 
                 numberPicker.setMaxValue(seat);
 
-                if(dialog!=null)
-                {
+                if (dialog != null) {
                     dialog.show();
                 }
 
@@ -500,6 +498,7 @@ public class SearchResultDetails extends AppCompatActivity {
                 book.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
@@ -523,6 +522,15 @@ public class SearchResultDetails extends AppCompatActivity {
                                             if (task.isSuccessful()) {
                                                 if (in.equals("yes")) {
 
+                                                    if (dataSnapshot.child("seats").getValue(String.class).equals(seatnumber)) {
+                                                        SendNoti sendNoti = new SendNoti();
+                                                        sendNoti.sendNotification(getApplicationContext(), useruid, "You have a Booking", "Whao! All seats of this ride are booked now. Get yourself ready for the ride.");
+
+                                                    } else {
+                                                        SendNoti sendNoti = new SendNoti();
+                                                        sendNoti.sendNotification(getApplicationContext(), useruid, "You have a Booking", seatnumber + " seats for this ride are booked.");
+                                                    }
+
                                                     FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).child("seats").setValue(String.valueOf(Integer.parseInt(dataSnapshot.child("seats").getValue(String.class)) - Integer.parseInt(seatnumber)));
 
                                                     Intent intent = new Intent(SearchResultDetails.this, YourRideIsLive.class);
@@ -533,6 +541,7 @@ public class SearchResultDetails extends AppCompatActivity {
                                                     startActivity(intent);
                                                     finish();
                                                     customType(SearchResultDetails.this, "bottom-to-up");
+                                                    dialog.dismiss();
                                                 } else {
                                                     Intent intent = new Intent(SearchResultDetails.this, YourRideIsLive.class);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -542,7 +551,7 @@ public class SearchResultDetails extends AppCompatActivity {
                                                     startActivity(intent);
                                                     finish();
                                                     customType(SearchResultDetails.this, "bottom-to-up");
-
+                                                    dialog.dismiss();
                                                 }
 
                                             } else {
