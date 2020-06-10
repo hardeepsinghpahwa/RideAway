@@ -12,36 +12,38 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/rideawayicon"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/rideawayiconround"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.pahwa.rideaway.CancelBooking"
+        <activity android:name=".SplashScreen"
             android:theme="@style/NoBarAppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.ALTERNATIVE" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
-            android:name="com.pahwa.rideaway.RideDetailss"
-            android:theme="@style/NoBarAppTheme" />
-        <activity
-            android:name="com.pahwa.rideaway.SearchResultDetails"
+            android:name=".CancelBooking"
             android:theme="@style/NoBarAppTheme">
-
         </activity>
         <activity
-            android:name="com.pahwa.rideaway.YourRideIsLive"
+            android:name=".RideDetailss"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name="com.pahwa.rideaway.SearchResults"
+            android:name=".SearchResultDetails"
+            android:theme="@style/NoBarAppTheme"></activity>
+        <activity
+            android:name=".YourRideIsLive"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name="com.pahwa.rideaway.OfferRideDetails"
+            android:name=".SearchResults"
+            android:theme="@style/NoBarAppTheme" />
+        <activity
+            android:name=".OfferRideDetails"
             android:theme="@style/NoBarAppTheme" />
 
         <meta-data
@@ -53,31 +55,26 @@
             android:required="false" />
 
         <activity
-            android:name="com.pahwa.rideaway.OfferARide"
+            android:name=".OfferARide"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name="com.pahwa.rideaway.FindARide"
+            android:name=".FindARide"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name="com.pahwa.rideaway.Home"
+            android:name=".Home"
             android:theme="@style/NoBarAppTheme" />
         <activity
-            android:name="com.pahwa.rideaway.SetupProfile"
+            android:name=".SetupProfile"
             android:theme="@style/NoBarAppTheme"
-            android:windowSoftInputMode="stateVisible|adjustPan"
-            />
+            android:windowSoftInputMode="stateVisible|adjustPan" />
         <activity
-            android:name="com.pahwa.rideaway.PhoneVerification"
+            android:name=".PhoneVerification"
             android:theme="@style/NoBarAppTheme2" />
         <activity
-            android:name="com.pahwa.rideaway.MainActivity"
+            android:name=".MainActivity"
             android:theme="@style/NoBarAppTheme"
             android:windowSoftInputMode="stateVisible|adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <service

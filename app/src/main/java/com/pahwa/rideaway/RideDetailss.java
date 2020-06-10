@@ -597,12 +597,17 @@ public class RideDetailss extends AppCompatActivity {
                                     bookingrequests.setTextColor(getColor(R.color.green));
                                     bookingconfirm.setVisibility(View.GONE);
                                 }
-                                else if (!dataSnapshot.child("Booking Requests").exists() && !dataSnapshot.child("Booking Requests").exists()) {
+                                else if (!dataSnapshot.child("Booking Requests").exists() && !dataSnapshot.child("Booking Confirmed").exists()) {
                                     bookingrequests.setText("No Bookings");
                                     bookingrequests.setTextColor(getColor(R.color.red));
                                 }
+                                else {
+                                    bookingrequests.setVisibility(View.GONE);
+                                    bookingconfirm.setVisibility(View.GONE);
+                                }
 
                                 if (dataSnapshot.child("Booking Requests").exists()) {
+                                    bookingrequests.setVisibility(View.VISIBLE);
                                     if (dataSnapshot.child("Booking Requests").getChildrenCount() == 1) {
                                         bookingrequests.setText(dataSnapshot.child("Booking Requests").getChildrenCount() + " booking request");
                                     } else {
@@ -678,6 +683,10 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                                         FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).child("seats").setValue(String.valueOf(Integer.parseInt(dataSnapshot.child("seats").getValue(String.class)) - Integer.parseInt(model.getSeats()))).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                                             @Override
                                                                                                                             public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                                                                SendNoti sendNoti=new SendNoti();
+                                                                                                                                sendNoti.sendNotification(getApplicationContext(),model.getUid(),"Yay! Booking Request Accepted","Your ride booking request is accepted by the offerer. Get ready for the ride.");
+
                                                                                                                                 MDToast.makeText(RideDetailss.this, "Booking Done", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
                                                                                                                                 FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -749,7 +758,10 @@ public class RideDetailss extends AppCompatActivity {
                                                                                 @Override
                                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                                     if (task.isSuccessful()) {
-                                                                                        dialog.dismiss();
+
+                                                                                        SendNoti sendNoti=new SendNoti();
+                                                                                        sendNoti.sendNotification(getApplicationContext(),model.getUid(),"Oh! Booking Request Rejected","Your ride booking request is rejected by the offerer. Try again or find some other ride.");
+
                                                                                         MDToast.makeText(RideDetailss.this, "Request Rejected", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
                                                                                     } else {
                                                                                         MDToast.makeText(RideDetailss.this, "Some Error Occurred", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
@@ -817,6 +829,7 @@ public class RideDetailss extends AppCompatActivity {
                                 }
 
                                 if (dataSnapshot.child("Booking Confirmed").exists()) {
+                                    bookingconfirm.setVisibility(View.VISIBLE);
 
                                     if (dataSnapshot.child("seats").getValue(String.class).equals("0")) {
                                         bookingrequests.setText("All Seats Booked");
@@ -829,13 +842,6 @@ public class RideDetailss extends AppCompatActivity {
                                         bookingconfirm.setText(dataSnapshot.child("Booking Confirmed").getChildrenCount() + " bookings confirmed");
                                     }
                                     bookingconfirm.setTextColor(getColor(R.color.green));
-
-                                    bookingconfirm.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-
-                                        }
-                                    });
 
 
                                 }

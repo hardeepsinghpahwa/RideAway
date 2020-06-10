@@ -76,7 +76,7 @@ public class OngoingRides extends Fragment {
                     if (dataSnapshot1.child("userid").getValue(String.class).equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                         String status = "No Bookings";
 
-                        if (String.valueOf(dataSnapshot1.child("Booking Confirmed").getChildrenCount()).equals(dataSnapshot1.child("seats").getValue(String.class))) {
+                        if (dataSnapshot1.child("seats").getValue(String.class).equals("0")) {
                             status = "All Booked";
                         } else if (dataSnapshot1.child("Booking Requests").exists()) {
                             if (dataSnapshot1.child("Booking Requests").getChildrenCount() == 1) {

@@ -44,27 +44,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if(FirebaseAuth.getInstance().getCurrentUser()!=null )
-        {
-            final DatabaseReference databaseReference=FirebaseDatabase.getInstance().getReference();
-            databaseReference.child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if(dataSnapshot.exists())
-                    {
-                        startActivity(new Intent(MainActivity.this,Home.class));
-                        finish();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
-
-        }
-
         phone = findViewById(R.id.phonenumber);
         imageView = findViewById(R.id.back);
         getverificationcode = findViewById(R.id.getverificationcode);

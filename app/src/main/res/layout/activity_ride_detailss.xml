@@ -110,27 +110,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="50dp"
                 android:drawablePadding="20dp"
                 android:drawableTint="#8E8B8B"
                 android:textColor="@color/buttoncolor"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/textView18" />
 
             <TextView
                 android:id="@+id/ridedetseats"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
                 android:drawablePadding="20dp"
                 android:drawableTint="#8E8B8B"
                 android:textColor="@color/buttoncolor"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="@+id/ridedettime"
-                app:layout_constraintTop_toBottomOf="@+id/ridedettime" />
+                app:layout_constraintTop_toBottomOf="@+id/seatdetailstext" />
 
 
             <TextView
@@ -142,7 +140,7 @@
                 android:textColor="@color/buttoncolor"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="@+id/ridedettime"
                 app:layout_constraintTop_toBottomOf="@+id/ridedetbookingreq" />
 
@@ -301,34 +299,37 @@
                 app:layout_constraintTop_toBottomOf="@+id/textView24" />
 
             <TextView
+                android:id="@+id/textView18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
                 android:text="Departure Time"
                 android:textColor="#8E8B8B"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/ridedettime"
-                app:layout_constraintStart_toStartOf="@+id/ridedettime" />
+                app:layout_constraintStart_toStartOf="@+id/ridedettime"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/seatdetailstext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
                 android:text="Seats Available"
                 android:textColor="#8E8B8B"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/ridedetseats"
-                app:layout_constraintStart_toStartOf="@+id/ridedetseats" />
+                app:layout_constraintStart_toStartOf="@+id/ridedetseats"
+                app:layout_constraintTop_toBottomOf="@+id/ridedettime" />
 
             <TextView
                 android:id="@+id/bookingtext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp"
+                android:layout_marginTop="30dp"
                 android:text="Booking"
                 android:textColor="#8E8B8B"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toTopOf="@+id/ridedetbookingreq"
-                app:layout_constraintStart_toStartOf="@+id/ridedetbooking" />
+                app:layout_constraintStart_toStartOf="@+id/ridedetseats"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetseats" />
 
             <ProgressBar
                 android:id="@+id/ridedetprogreebar"
@@ -345,13 +346,13 @@
                 android:id="@+id/ridedetbookingreq"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
                 android:foreground="?attr/selectableItemBackground"
                 android:textColor="@color/buttoncolor"
                 android:textSize="22sp"
                 android:textStyle="bold"
+                android:visibility="visible"
                 app:layout_constraintStart_toStartOf="@+id/bookingtext"
-                app:layout_constraintTop_toBottomOf="@+id/ridedetseats" />
+                app:layout_constraintTop_toBottomOf="@+id/bookingtext" />
 
             <TextView
                 android:id="@+id/statusupdatetext"
