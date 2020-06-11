@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:foreground="?attr/selectableItemBackground"
+    android:background="@drawable/setupbackground"
+    tools:context=".SearchResultDetails">
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="Ride Details"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/searchbackbutton"
+        app:layout_constraintStart_toEndOf="@+id/searchbackbutton"
+        app:layout_constraintTop_toTopOf="@+id/searchbackbutton" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card13"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="25dp"
+        android:layout_marginEnd="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView11">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+
+            <ImageView
+                android:id="@+id/imageView5"
+                android:layout_width="40dp"
+                android:layout_height="80dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/fromtolocationlarge" />
+
+            <TextView
+                android:id="@+id/searchfrom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:includeFontPadding="false"
+                android:maxLines="2"
+                android:textColor="#8E8B8B"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView5"
+                app:layout_constraintTop_toTopOf="@+id/imageView5" />
+
+            <TextView
+                android:id="@+id/searchto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:includeFontPadding="false"
+                android:maxLines="2"
+                android:textColor="#8E8B8B"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView5" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginEnd="10dp"
+                android:background="#D1CECE"
+                app:layout_constraintBottom_toTopOf="@+id/searchto"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView5"
+                app:layout_constraintTop_toBottomOf="@+id/searchfrom" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/searchbook"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card13">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/searchtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:drawablePadding="20dp"
+                android:drawableTint="#8E8B8B"
+                android:textColor="@color/buttoncolor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/searchseats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:textColor="@color/buttoncolor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/searchtime"
+                app:layout_constraintTop_toBottomOf="@+id/searchtime" />
+
+
+            <TextView
+                android:id="@+id/searchinstantbook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:drawablePadding="20dp"
+                android:drawableTint="#8E8B8B"
+                android:textColor="@color/buttoncolor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/searchtime"
+                app:layout_constraintTop_toBottomOf="@+id/searchseats" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_marginBottom="5dp"
+                android:layout_height="1dp"
+                android:background="#D1CECE"
+                app:layout_constraintBottom_toTopOf="@+id/cons11"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#D1CECE"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cons11" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cons11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:padding="8dp"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/searchinstantbook">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView4"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_margin="5dp"
+                    android:layout_marginStart="10dp"
+                    app:cardCornerRadius="50dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/searchpropic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#F1F0F0"
+                        android:scaleType="centerCrop" />
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/searchname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="10dp"
+                    android:singleLine="true"
+                    android:textColor="#8E8B8B"
+                    android:textSize="14sp"
+                    android:maxLines="1"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/searchcall"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/cardView4"
+                    app:layout_constraintTop_toTopOf="@+id/cardView4" />
+
+                <ImageView
+                    android:id="@+id/searchcall"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginEnd="10dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/bluephone" />
+
+                <TextView
+                    android:id="@+id/searchrating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="bottom"
+                    android:includeFontPadding="false"
+                    android:textColor="#8E8B8B"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/searchname"
+                    app:layout_constraintTop_toBottomOf="@+id/searchname" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/searchrating"
+                    app:layout_constraintStart_toEndOf="@+id/searchrating"
+                    app:layout_constraintTop_toTopOf="@+id/searchrating"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/searchvehicle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="10dp"
+                    android:singleLine="true"
+                    android:textColor="#8E8B8B"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    app:layout_constraintEnd_toStartOf="@+id/searchcall"
+                    app:layout_constraintStart_toStartOf="@+id/searchrating"
+                    app:layout_constraintTop_toBottomOf="@+id/searchrating" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:drawablePadding="10dp"
+                android:text="More Info"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cons11" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:maxLength="200"
+                android:textColor="@color/buttoncolor"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:id="@+id/searchmoreinfo"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Departure Time"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/searchtime"
+                app:layout_constraintStart_toStartOf="@+id/searchtime" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Seats Available"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/searchseats"
+                app:layout_constraintStart_toStartOf="@+id/searchseats" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Booking"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toTopOf="@+id/searchinstantbook"
+                app:layout_constraintStart_toStartOf="@+id/searchinstantbook" />
+
+            <ProgressBar
+                android:id="@+id/searchprogressbar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginTop="50dp"
+                android:indeterminateDrawable="@drawable/progressbar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <TextView
+        android:id="@+id/searchbook"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/buttoncolor"
+        android:foreground="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:text="Book (Rs. 250 per seat)"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:enabled="false"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/searchbackbutton"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/backarrow" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

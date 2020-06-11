@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="15dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginLeft="10dp"
+    app:cardElevation="10dp"
+    app:cardCornerRadius="20dp"
+    android:foreground="?attr/selectableItemBackground"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cons8"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/redlayer"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ridetime">
+
+            <TextView
+                android:id="@+id/ridetype"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="15dp"
+                android:text="Offered Ride"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ridestatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginEnd="15dp"
+                android:text="No Bookings"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/fromtolocation" />
+
+        <TextView
+            android:id="@+id/ridefrom"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="20dp"
+            android:gravity="top"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:text="Paonta Sahib"
+            android:textColor="@color/buttoncolor"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/imageView6"
+            app:layout_constraintTop_toTopOf="@+id/imageView6" />
+
+        <TextView
+            android:id="@+id/rideto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:gravity="bottom"
+            android:includeFontPadding="false"
+            android:textColor="#000"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:layout_marginBottom="5dp"
+            android:singleLine="true"
+            android:text="Chandigarh"
+            app:layout_constraintBottom_toBottomOf="@+id/imageView6"
+            app:layout_constraintEnd_toEndOf="@+id/ridefrom"
+            app:layout_constraintStart_toEndOf="@+id/imageView6" />
+
+
+        <TextView
+            android:id="@+id/ridetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="15dp"
+            android:textColor="@color/buttoncolor"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView6" />
+
+        <TextView
+            android:id="@+id/rideseats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:textColor="@color/buttoncolor"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ridetime" />
+
+        <Button
+            android:id="@+id/ratebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_marginEnd="15dp"
+            android:background="@color/yellow"
+            android:text="Rate"
+            android:drawableLeft="@drawable/star"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:enabled="false"
+            android:foreground="?attr/selectableItemBackground"
+            android:paddingLeft="5dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            app:layout_constraintBottom_toTopOf="@+id/cons8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rideto" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/setupbackground"
+    android:layoutAnimation="@anim/layout_lefttoright"
+    tools:context=".FindARide">
+
+    <ImageView
+        android:id="@+id/backofferaride"
+        android:layout_width="25dp"
+        android:layout_height="25sp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:background="@drawable/backarrow"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/t2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="Offer A Ride"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/backofferaride"
+        app:layout_constraintStart_toEndOf="@+id/backofferaride"
+        app:layout_constraintTop_toTopOf="@+id/backofferaride" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardofferaride"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/t2">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+
+            <ImageView
+                android:id="@+id/im1"
+                android:layout_width="50dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/fromtolocation" />
+
+            <TextView
+                android:id="@+id/pickuplocationofferaride"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="10dp"
+                android:background="#FFFFFF"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:hint="Pickup Location"
+                android:maxLines="2"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textColor="#8E8B8B"
+                android:textColorHint="#C6C6C6"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/droplocationofferaride"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/im1"
+                app:layout_constraintTop_toTopOf="@+id/im1" />
+
+            <TextView
+                android:id="@+id/droplocationofferaride"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:background="#FFFFFF"
+                android:foreground="?attr/selectableItemBackground"
+                android:gravity="center_vertical"
+                android:hint="Drop Location"
+                android:maxLines="2"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:textColor="#8E8B8B"
+                android:textColorHint="#C6C6C6"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/im1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/im1"
+                app:layout_constraintTop_toBottomOf="@+id/pickuplocationofferaride" />
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:background="#C6C6C6"
+                app:layout_constraintBottom_toTopOf="@+id/droplocationofferaride"
+                app:layout_constraintEnd_toEndOf="@+id/pickuplocationofferaride"
+                app:layout_constraintStart_toStartOf="@+id/pickuplocationofferaride"
+                app:layout_constraintTop_toBottomOf="@+id/pickuplocationofferaride">
+
+            </RelativeLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/textView5offeraride"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:drawableLeft="@drawable/time"
+        android:drawablePadding="10dp"
+        android:drawableTint="#8C8989"
+        android:text="When Are You Leaving?"
+        android:textColor="#8C8989"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/cardofferaride"
+        app:layout_constraintTop_toBottomOf="@+id/cardofferaride" />
+
+    <TextView
+        android:id="@+id/textView7offeraride"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:drawableLeft="@drawable/passengers"
+        android:drawablePadding="10dp"
+        android:drawableTint="#8C8989"
+        android:text="Seats Available?"
+        android:textColor="#8C8989"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/cardofferaride"
+        app:layout_constraintTop_toBottomOf="@+id/card3" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="30dp"
+        android:id="@+id/card3"
+        android:layout_marginTop="25dp"
+        app:layout_constraintStart_toStartOf="@+id/textView5offeraride"
+        app:layout_constraintTop_toBottomOf="@+id/textView5offeraride">
+
+        <TextView
+            android:id="@+id/timedateofferaride"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button1"
+            android:padding="15dp"
+            android:text="Select Date And Time"
+            android:textColor="@color/buttoncolor"
+            android:foreground="?attr/selectableItemBackground"
+            android:textSize="18sp"
+            android:textStyle="bold"
+ />
+
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/card4"
+        app:cardCornerRadius="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="25dp"
+        app:layout_constraintEnd_toStartOf="@+id/addpassengerofferaride"
+        app:layout_constraintStart_toEndOf="@+id/minuspassengerofferaride"
+        app:layout_constraintTop_toBottomOf="@+id/textView7offeraride" >
+
+    <TextView
+        android:id="@+id/passengersofferaride"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button1"
+        android:gravity="center"
+        android:inputType="number"
+        android:maxLength="2"
+        android:padding="15dp"
+        android:text="1"
+        android:textColor="@color/buttoncolor"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <ImageView
+        android:id="@+id/minuspassengerofferaride"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        app:layout_constraintBottom_toBottomOf="@+id/card4"
+        app:layout_constraintStart_toStartOf="@+id/textView7offeraride"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintTop_toTopOf="@+id/card4"
+        android:background="@drawable/minus" />
+
+    <ImageView
+        android:id="@+id/addpassengerofferaride"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="15dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintBottom_toBottomOf="@+id/card4"
+        app:layout_constraintStart_toEndOf="@+id/card4"
+        app:layout_constraintTop_toTopOf="@+id/card4"
+        app:srcCompat="@drawable/plus" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="20dp"
+        app:cardCornerRadius="30dp"
+        android:layout_marginBottom="20dp"
+        >
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/nextofferaride"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       android:background="@drawable/button2"
+        android:foreground="?attr/selectableItemBackground"
+        app:fabSize="normal"
+        android:src="@drawable/rightarrow"
+         />
+
+    </androidx.cardview.widget.CardView>
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="Select Vehicle"
+        android:textColor="#8C8989"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:drawableLeft="@drawable/car"
+        android:drawablePadding="10dp"
+        app:layout_constraintStart_toStartOf="@+id/minuspassengerofferaride"
+        app:layout_constraintTop_toBottomOf="@+id/card4" />
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="30dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/textView6">
+
+    <TextView
+        android:id="@+id/selectvehicle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button1"
+        android:gravity="center"
+        android:maxWidth="300dp"
+        android:paddingLeft="30dp"
+        android:paddingTop="15dp"
+        android:paddingRight="30dp"
+        android:paddingBottom="15dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:text="Select"
+        android:textColor="@color/buttoncolor"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/textView6"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

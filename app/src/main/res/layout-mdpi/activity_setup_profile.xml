@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/setupbackground"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+       >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cons3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".SetupProfile">
+
+            <TextView
+                android:id="@+id/gotdetailstext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="We Got Your Details"
+                android:textColor="@color/buttoncolor"
+                android:textSize="25sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editdetailstext" />
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/completelottie"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="100dp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/card10"
+                app:layout_constraintTop_toBottomOf="@+id/gotdetailstext"
+                app:lottie_rawRes="@raw/complete" />
+
+            <TextView
+                android:id="@+id/editdetailstext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Fill Up Your Details"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardView"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="10dp"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/editdetailstext">
+
+                <ImageView
+                    android:id="@+id/profilepicture"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/profilepicture" />
+
+            </androidx.cardview.widget.CardView>
+
+
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/edittextselected"
+                android:drawableLeft="@drawable/person"
+                android:drawablePadding="10dp"
+                android:drawableTint="#FFFFFF"
+                android:ems="10"
+                android:hint="Your Name"
+                android:inputType="textPersonName"
+                android:paddingLeft="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#8FFFFFFF"
+                android:textCursorDrawable="@null"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+            <EditText
+                android:id="@+id/phonenumber"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/edittextselected"
+                android:drawableLeft="@drawable/phone"
+                android:drawablePadding="10dp"
+                android:drawableTint="#FFFFFF"
+                android:ems="10"
+                android:hint="Phone"
+                android:inputType="number"
+                android:paddingLeft="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#8FFFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/name" />
+
+
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/edittextselected"
+                android:gravity="center_vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/phonenumber">
+
+                <TextView
+                    android:id="@+id/gendertext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_weight="2"
+                    android:drawableLeft="@drawable/gender"
+                    android:drawablePadding="10dp"
+                    android:drawableTint="#FFFFFF"
+                    android:gravity="center_vertical"
+                    android:text="Gender "
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+
+                <CheckBox
+                    android:id="@+id/malecheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:button="@drawable/checkbox"
+                    android:gravity="center_vertical"
+                    android:text="Male"
+                    android:textColor="#8FFFFFFF"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/femalecheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="5dp"
+                    android:button="@drawable/checkbox"
+                    android:gravity="center_vertical"
+                    android:text="Female"
+                    android:textColor="#8FFFFFFF"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+                <CheckBox
+                    android:id="@+id/othercheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="60dp"
+                    android:layout_marginLeft="5dp"
+                    android:button="@drawable/checkbox"
+                    android:gravity="center_vertical"
+                    android:text="Others"
+                    android:textColor="#8FFFFFFF"
+                    android:textSize="12dp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/dateofbirth"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/edittextselected"
+                android:drawableLeft="@drawable/dateofbirth"
+                android:drawablePadding="10dp"
+                android:drawableTint="#FFFFFF"
+                android:gravity="center_vertical"
+                android:hint="Date Of Birth "
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#8FFFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+            <EditText
+                android:id="@+id/occupation"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/edittextselected"
+                android:drawableLeft="@drawable/occupation"
+                android:drawablePadding="10dp"
+                android:drawableTint="#FFFFFF"
+                android:textCursorDrawable="@null"
+                android:gravity="center_vertical"
+                android:hint="Your Occupation"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#8FFFFFFF"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dateofbirth" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/card10"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="30dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/occupation">
+
+                <Button
+                    android:id="@+id/savebutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:background="@drawable/button2"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:paddingLeft="20dp"
+                    android:paddingRight="20dp"
+                    android:text="Save Details"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+
+            </androidx.cardview.widget.CardView>
+
+            <ImageView
+                android:id="@+id/setupprofileback"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/editdetailstext"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/editdetailstext"
+                app:srcCompat="@drawable/backbutton" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

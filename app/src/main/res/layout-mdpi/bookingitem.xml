@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF"
+    android:layout_marginBottom="10dp">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/bookingitempropic"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            tools:layout_editor_absoluteX="18dp"
+            tools:layout_editor_absoluteY="4dp"
+            tools:srcCompat="@tools:sample/avatars" />
+
+    </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/bookingaccept"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:text="Accept"
+        android:background="@drawable/acceptbutton"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:foreground="?attr/selectableItemBackground"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/bookingreject"
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/deletebutton"
+        android:text="Reject"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="#FFFFFF"
+        android:foreground="?attr/selectableItemBackground"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/bookingaccept" />
+
+    <TextView
+        android:id="@+id/bookingpersonname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:textColor="@color/buttoncolor"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/bookingaccept"
+        app:layout_constraintStart_toEndOf="@+id/cardView6"
+        app:layout_constraintTop_toTopOf="@+id/cardView6" />
+
+    <TextView
+        android:id="@+id/bookingseats"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:textColor="#8E8B8B"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/bookingpersonname"
+        app:layout_constraintTop_toBottomOf="@+id/bookingpersonname" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EFEFEF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

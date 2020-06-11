@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/cons4"
+    android:background="#FFFFFF"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/dialogback"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cross" />
+
+    <TextView
+        android:id="@+id/selectlocationtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:text="Select Location"
+        android:textColor="@color/buttoncolor"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/dialogback"
+        app:layout_constraintStart_toStartOf="@+id/searchlocation"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.pahwa.rideaway.CustomEditText
+        android:id="@+id/searchlocation"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/edittextgrey"
+        android:drawableRight="@drawable/cross"
+        android:drawablePadding="5dp"
+        android:drawableTint="#FFFFFF"
+        android:hint="Search Location..."
+        android:paddingLeft="10dp"
+        android:paddingEnd="10dp"
+        android:singleLine="true"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#8FFFFFFF"
+        android:textCursorDrawable="@null"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/searchbutton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialogback" />
+
+    <fragment
+        android:id="@+id/maps"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchlocation"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageView
+        android:id="@+id/currentlocation"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/searchlocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/searchlocation"
+        app:srcCompat="@drawable/mylocation" />
+
+    <ImageView
+        android:id="@+id/searchbutton"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginEnd="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:src="@drawable/ic_search_black_24dp"
+        android:visibility="visible"
+        app:layout_constraintEnd_toStartOf="@+id/currentlocation"
+        app:layout_constraintTop_toTopOf="@+id/currentlocation" />
+
+    <ImageView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:id="@+id/marker"
+        android:visibility="gone"
+        android:background="@drawable/marker"
+        app:layout_constraintBottom_toBottomOf="@+id/maps"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/maps" />
+
+    <ProgressBar
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="10dp"
+        android:id="@+id/locationprogressbar"
+        android:visibility="gone"
+        android:indeterminateDrawable="@drawable/progressbar"
+        app:layout_constraintBottom_toBottomOf="@+id/searchlocation"
+        app:layout_constraintStart_toEndOf="@+id/searchlocation"
+        app:layout_constraintTop_toTopOf="@+id/searchlocation" />
+
+    <ProgressBar
+        android:id="@+id/locationprogressbar2"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:indeterminateDrawable="@drawable/progressbar"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/searchlocation"
+        app:layout_constraintEnd_toEndOf="@+id/currentlocation"
+        app:layout_constraintTop_toTopOf="@+id/searchlocation" />
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:cardCornerRadius="30dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        >
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/selectableItemBackground"
+        android:visibility="gone"
+        android:src="@drawable/check"
+        app:fabSize="normal"
+       />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toTopOf="@+id/maps" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

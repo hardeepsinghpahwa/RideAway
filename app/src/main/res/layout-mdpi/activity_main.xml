@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:id="@+id/cons"
+    tools:context=".MainActivity">
+
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="80dp"
+        android:src="@drawable/background"
+        app:layout_constraintBottom_toTopOf="@+id/phonenumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:cardCornerRadius="30dp"
+        android:id="@+id/card6"
+        android:layout_marginBottom="20dp">
+
+    <Button
+        android:id="@+id/getverificationcode"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@drawable/button2"
+        android:text="Get Verification Code"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:foreground="?attr/selectableItemBackground"
+       />
+
+    </androidx.cardview.widget.CardView>
+
+    <EditText
+        android:id="@+id/phonenumber"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/button1"
+        android:drawableLeft="@drawable/indiaflag"
+        android:drawablePadding="10dp"
+        android:gravity="left|center_vertical"
+        android:hint="Enter Phone Number"
+        android:inputType="number"
+        android:maxLength="14"
+        android:paddingLeft="20dp"
+        android:textColor="@color/buttoncolor"
+        android:textColorHint="@color/buttoncolor"
+        android:textSize="14sp"
+        android:text="+91 1234567890"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/card6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Going Somewhere? Find Yourself A Ride"
+        android:textColor="@color/buttoncolor"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/back" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

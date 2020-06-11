@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#FFFFFF">
+
+    <EditText
+        android:id="@+id/vehiname"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/button1"
+        android:hint="Vehicle Name, Make, Colour"
+        android:padding="12dp"
+        android:singleLine="true"
+        android:textSize="14sp"
+        android:textColor="@color/buttoncolor"
+        android:textColorHint="#C6C6C6"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/cardView11"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/vehinumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="15dp"
+        android:background="@drawable/button1"
+        android:hint="Vehicle Numer"
+        android:padding="12dp"
+        android:singleLine="true"
+        android:textSize="14sp"
+        android:textColor="@color/buttoncolor"
+        android:textColorHint="#C6C6C6"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/cardView11"
+        app:layout_constraintStart_toStartOf="@+id/vehiname"
+        app:layout_constraintTop_toBottomOf="@+id/vehiname" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        app:cardCornerRadius="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/vehiname"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/vehiname">
+
+
+        <Button
+            android:id="@+id/selectvehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/button2"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="Select"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="20dp"
+        app:cardCornerRadius="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/vehinumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/vehinumber">
+
+
+        <Button
+            android:id="@+id/deletevehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/deletebutton"
+            android:foreground="?attr/selectableItemBackground"
+            android:text="Delete"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
+
+    </androidx.cardview.widget.CardView>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#EFEFEF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

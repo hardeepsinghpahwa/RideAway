@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:id="@+id/cons9"
+    tools:context=".CancelBooking">
+
+    <ImageView
+        android:id="@+id/cancelback"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/blueback" />
+
+    <TextView
+        android:id="@+id/canceltext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="Cancel"
+        android:textColor="@color/buttoncolor"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/cancelback"
+        app:layout_constraintStart_toEndOf="@+id/cancelback"
+        app:layout_constraintTop_toTopOf="@+id/cancelback" />
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="20dp"
+        android:text="Please Select A Reason Of Cancelling"
+        android:textColor="@color/buttoncolor"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/canceltext" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView8"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/textView16"
+        app:layout_constraintStart_toStartOf="@+id/textView16"
+        app:layout_constraintTop_toBottomOf="@+id/textView16">
+
+        <com.tiper.MaterialSpinner
+            android:id="@+id/ridestatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:textSize="12sp"
+            android:hint="Choose A Reason"
+            android:textColor="@color/red"
+            app:spinnerMode="bottomsheet" />
+
+    </androidx.cardview.widget.CardView>
+
+    <EditText
+        android:id="@+id/reason"
+        android:layout_width="0dp"
+        android:layout_height="90dp"
+        android:layout_marginTop="20dp"
+        android:gravity="top"
+        android:padding="10dp"
+        android:hint="Enter Reason"
+        android:visibility="gone"
+        android:textColor="@color/buttoncolor"
+        android:maxLength="100"
+        android:background="@drawable/outlined"
+        app:layout_constraintEnd_toEndOf="@+id/cardView8"
+        app:layout_constraintStart_toStartOf="@+id/cardView8"
+        app:layout_constraintTop_toBottomOf="@+id/cardView8" />
+
+    <Button
+        android:id="@+id/cancelbutton"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/button2"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="@string/action_cancel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ProgressBar
+        android:id="@+id/cancelprogressbar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:visibility="gone"
+        android:indeterminateDrawable="@drawable/progressbar"
+        app:layout_constraintBottom_toBottomOf="@+id/cancelbutton"
+        app:layout_constraintEnd_toStartOf="@+id/cancelbutton"
+        app:layout_constraintTop_toTopOf="@+id/cancelbutton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

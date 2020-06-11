@@ -1,0 +1,435 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/setupbackground">
+
+    <TextView
+        android:id="@+id/textView15"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="Ride Details"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/ridedetbackbutton"
+        app:layout_constraintStart_toEndOf="@+id/ridedetbackbutton"
+        app:layout_constraintTop_toTopOf="@+id/ridedetbackbutton" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card14"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="10dp"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView15">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+
+
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="60dp"
+                android:layout_height="130dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/fromtolocationlarge" />
+
+            <TextView
+                android:id="@+id/ridedetfrom"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:includeFontPadding="false"
+                android:maxLines="2"
+                android:textColor="#8E8B8B"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView7"
+                app:layout_constraintTop_toTopOf="@+id/imageView7" />
+
+            <TextView
+                android:id="@+id/ridedetto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:includeFontPadding="false"
+                android:maxLines="2"
+                android:textColor="#8E8B8B"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView7" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginEnd="10dp"
+                android:background="#D1CECE"
+                app:layout_constraintBottom_toTopOf="@+id/ridedetto"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView7"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetfrom" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/ridedetcancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card14">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/ridedettime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:drawablePadding="20dp"
+                android:drawableTint="#8E8B8B"
+                android:textColor="@color/buttoncolor"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView18" />
+
+            <TextView
+                android:id="@+id/ridedetseats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="20dp"
+                android:drawableTint="#8E8B8B"
+                android:textColor="@color/buttoncolor"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/ridedettime"
+                app:layout_constraintTop_toBottomOf="@+id/seatdetailstext" />
+
+
+            <TextView
+                android:id="@+id/ridedetbooking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:foreground="?attr/selectableItemBackground"
+                android:textColor="@color/buttoncolor"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="@+id/ridedettime"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetbookingreq" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="5dp"
+                android:background="#D1CECE"
+                app:layout_constraintBottom_toTopOf="@+id/cons10"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:background="#D1CECE"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cons10" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cons10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:padding="8dp"
+                android:foreground="?attr/selectableItemBackground"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetbooking">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardView5"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_margin="5dp"
+                    app:cardElevation="0dp"
+                    app:cardCornerRadius="40dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/ridedetpropic"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="#F1F0F0"
+                        android:scaleType="centerCrop" />
+
+                </androidx.cardview.widget.CardView>
+
+                <TextView
+                    android:id="@+id/ridedetname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="10dp"
+                    android:singleLine="true"
+                    android:textColor="#8E8B8B"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:maxLines="1"
+                    app:layout_constraintEnd_toStartOf="@+id/ridedetcall"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/cardView5"
+                    app:layout_constraintTop_toTopOf="@+id/cardView5" />
+
+                <ImageView
+                    android:id="@+id/ridedetcall"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="10dp"
+                    android:foreground="?attr/selectableItemBackground"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/bluephone" />
+
+                <TextView
+                    android:id="@+id/ridedetrating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="bottom"
+                    android:includeFontPadding="false"
+                    android:textColor="#8E8B8B"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/ridedetname"
+                    app:layout_constraintTop_toBottomOf="@+id/ridedetname" />
+
+                <ImageView
+                    android:id="@+id/imageView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/ridedetrating"
+                    app:layout_constraintStart_toEndOf="@+id/ridedetrating"
+                    app:layout_constraintTop_toTopOf="@+id/ridedetrating"
+                    app:srcCompat="@drawable/star" />
+
+                <TextView
+                    android:id="@+id/ridedetvehicle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:singleLine="true"
+                    android:textColor="#8E8B8B"
+                    android:textStyle="bold"
+                    android:text="Maruti Suzuki Wagon R"
+                    app:layout_constraintEnd_toStartOf="@+id/ridedetcall"
+                    app:layout_constraintStart_toStartOf="@+id/ridedetrating"
+                    app:layout_constraintTop_toBottomOf="@+id/ridedetrating" />
+
+                <TextView
+                    android:id="@+id/ridedetvehiclenumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:singleLine="true"
+                    android:textColor="#8E8B8B"
+                    android:visibility="gone"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/ridedetvehicle"
+                    app:layout_constraintTop_toBottomOf="@+id/ridedetvehicle" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <TextView
+                android:id="@+id/textView24"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:text="More Info"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cons10" />
+
+            <TextView
+                android:id="@+id/ridedetmoreinfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:maxLength="200"
+                android:textColor="@color/buttoncolor"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView24" />
+
+            <TextView
+                android:id="@+id/textView18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Departure Time"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/ridedettime"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/seatdetailstext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Seats Available"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/ridedetseats"
+                app:layout_constraintTop_toBottomOf="@+id/ridedettime" />
+
+            <TextView
+                android:id="@+id/bookingtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Booking"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/ridedetseats"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetseats" />
+
+            <ProgressBar
+                android:id="@+id/ridedetprogreebar"
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:indeterminateDrawable="@drawable/progressbar"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ridedetbookingreq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:foreground="?attr/selectableItemBackground"
+                android:textColor="@color/buttoncolor"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="@+id/bookingtext"
+                app:layout_constraintTop_toBottomOf="@+id/bookingtext" />
+
+            <TextView
+                android:id="@+id/statusupdatetext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:text="Status Update"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/ridedetmoreinfo"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetmoreinfo" />
+
+            <com.tiper.MaterialSpinner
+                android:id="@+id/ridestatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:hint="Choose"
+                android:visibility="gone"
+                android:textColor="@color/buttoncolor"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/updatestatus"
+                app:layout_constraintStart_toStartOf="@+id/statusupdatetext"
+                app:layout_constraintTop_toBottomOf="@+id/statusupdatetext"
+                app:spinnerMode="bottomsheet" />
+
+            <Button
+                android:id="@+id/updatestatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:text="Update"
+                android:background="@drawable/button2"
+                android:foreground="?attr/selectableItemBackground"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:textColor="#FFFFFF"
+                app:layout_constraintBottom_toBottomOf="@+id/ridestatus"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ridestatus" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+
+    <ImageView
+        android:id="@+id/ridedetbackbutton"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="30dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/backarrow" />
+
+
+    <TextView
+        android:id="@+id/ridedetcancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/red"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:text="Cancel Booking"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
