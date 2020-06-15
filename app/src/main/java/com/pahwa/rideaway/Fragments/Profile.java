@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -16,6 +18,8 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -32,6 +36,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -56,8 +61,11 @@ import com.pahwa.rideaway.Notification.ApiService;
 import com.pahwa.rideaway.Notification.Client;
 import com.pahwa.rideaway.Notification.Data;
 import com.pahwa.rideaway.Notification.MyResponse;
+import com.pahwa.rideaway.Notification.NotiDatabase;
+import com.pahwa.rideaway.Notification.NotiDetails;
 import com.pahwa.rideaway.Notification.NotificationSender;
 import com.pahwa.rideaway.Notification.SendNoti;
+import com.pahwa.rideaway.OfferARide;
 import com.pahwa.rideaway.R;
 import com.pahwa.rideaway.SetupProfile;
 import com.pahwa.rideaway.profiledetails;
@@ -82,8 +90,13 @@ import org.w3c.dom.Text;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -108,10 +121,15 @@ public class Profile extends Fragment {
     CardView cardView;
     Uri file;
     ImageView notifications;
+    TextView noticount;
     Dialog dialog;
     private RequestQueue mRequestQue;
     private String URL = "https://fcm.googleapis.com/fcm/send";
     NestedScrollView nestedScrollView;
+    NotiDatabase database;
+    List<NotiDetails> details;
+    RecyclerView recyclerView;
+
 
     public Profile() {
         // Required empty public constructor
@@ -143,13 +161,130 @@ public class Profile extends Fragment {
         ratingnum = v.findViewById(R.id.profileratingnum);
         nestedScrollView = v.findViewById(R.id.nestedScrollViewprofile);
         notifications = v.findViewById(R.id.notifications);
+        noticount = v.findViewById(R.id.noticount);
 
+        final Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        database = NotiDatabase.getDatabase(getActivity());
+
+                        database.notiDao().getunread().observe(getActivity(), new Observer<List<NotiDetails>>() {
+                            @Override
+                            public void onChanged(List<NotiDetails> notiDetails) {
+
+                                if (notiDetails != null) {
+                                    noticount.setText(String.valueOf(notiDetails.size()));
+                                } else {
+                                    noticount.setText("0");
+                                }
+                            }
+                        });
+
+                    }
+                });
+            }
+        });
+
+        thread.start();
 
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SendNoti sendNoti=new SendNoti();
-                sendNoti.sendNotification(getActivity(),FirebaseAuth.getInstance().getCurrentUser().getUid(),"Sample","Noti");
+
+                ImageView clear, cross;
+                TextView markasread;
+
+                final Dialog dialog = new Dialog(getActivity());
+                dialog.setContentView(R.layout.notificationdialog);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                dialog.getWindow().setWindowAnimations(R.style.AppTheme_Exit);
+
+
+                recyclerView = dialog.findViewById(R.id.notificationrecyclerview);
+                clear = dialog.findViewById(R.id.clearnotis);
+                markasread = dialog.findViewById(R.id.markasread);
+                cross = dialog.findViewById(R.id.notificatiocross);
+
+                cross.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                database = NotiDatabase.getDatabase(getActivity());
+
+                                database.notiDao().getNotifications().observe(getActivity(), new Observer<List<NotiDetails>>() {
+                                    @Override
+                                    public void onChanged(List<NotiDetails> notiDetails) {
+                                        details = notiDetails;
+                                        if (details != null) {
+
+                                            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+                                            linearLayoutManager.setReverseLayout(true);
+                                            linearLayoutManager.setStackFromEnd(true);
+                                            recyclerView.setLayoutManager(linearLayoutManager);
+
+                                            recyclerView.setAdapter(new NotificationAdapter(details));
+
+                                        } else {
+                                            Log.i("noti", "null");
+                                        }
+                                    }
+                                });
+
+                            }
+                        });
+                    }
+                });
+
+                thread.start();
+
+
+                markasread.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                database.notiDao().markallasread();
+
+                                return null;
+                            }
+                        }.execute();
+                    }
+                });
+
+
+                clear.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                database.notiDao().deleteall();
+
+                                return null;
+                            }
+                        }.execute();
+                    }
+                });
+
+                dialog.show();
             }
         });
 
@@ -471,12 +606,34 @@ public class Profile extends Fragment {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(getActivity(), MainActivity.class));
-                getActivity().finish();
-                customType(getActivity(), "left-to-right");
 
-                MDToast.makeText(getActivity(), "Loggod Out Successfully", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+                FirebaseDatabase.getInstance().getReference().child("Tokens").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        dataSnapshot.child("token").getRef().setValue("").addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    FirebaseAuth.getInstance().signOut();
+                                    startActivity(new Intent(getActivity(), MainActivity.class));
+                                    getActivity().finish();
+                                    customType(getActivity(), "left-to-right");
+
+                                    MDToast.makeText(getActivity(), "Loggod Out Successfully", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
+
+                                }
+                                else {
+                                    MDToast.makeText(getActivity(), "Error Logging Out", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                }
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
 
@@ -585,8 +742,6 @@ public class Profile extends Fragment {
     }
 
 
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -620,21 +775,101 @@ public class Profile extends Fragment {
         return ageS;
     }
 
-private class VehicleViewHolder extends RecyclerView.ViewHolder {
+    private class VehicleViewHolder extends RecyclerView.ViewHolder {
 
-    TextView vehiclename, vehiclenumber;
-    Button select, delete;
+        TextView vehiclename, vehiclenumber;
+        Button select, delete;
 
-    public VehicleViewHolder(@NonNull View itemView) {
-        super(itemView);
+        public VehicleViewHolder(@NonNull View itemView) {
+            super(itemView);
 
-        vehiclename = itemView.findViewById(R.id.vehiname);
-        vehiclenumber = itemView.findViewById(R.id.vehinumber);
-        select = itemView.findViewById(R.id.selectvehicle);
-        delete = itemView.findViewById(R.id.deletevehicle);
+            vehiclename = itemView.findViewById(R.id.vehiname);
+            vehiclenumber = itemView.findViewById(R.id.vehinumber);
+            select = itemView.findViewById(R.id.selectvehicle);
+            delete = itemView.findViewById(R.id.deletevehicle);
+        }
+
     }
 
-}
+    class NotificationAdapter extends RecyclerView.Adapter<NotiViewHolder> {
+
+        List<NotiDetails> data;
+
+        public NotificationAdapter(List<NotiDetails> data) {
+            this.data = data;
+            Log.i("size", String.valueOf(data.size()));
+        }
+
+        @NonNull
+        @Override
+        public NotiViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notiitem, parent, false);
+            return new NotiViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final NotiViewHolder holder, final int position) {
+
+            final NotiDetails notiDetails = data.get(position);
+            holder.body.setText(notiDetails.getBody());
+            holder.title.setText(notiDetails.getTitle());
+
+            if (notiDetails.getRead() != 1) {
+                holder.unread.setVisibility(View.VISIBLE);
+            }
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            NotiDetails notiDetails1 = data.get(holder.getAdapterPosition());
+                            NotiDatabase.getDatabase(getActivity()).notiDao().markasread(notiDetails1.getUid());
+
+                            return null;
+                        }
+                    }.execute();
+                }
+            });
+
+            Date date,date1;
+
+            SimpleDateFormat ymdFormat = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+
+            SimpleDateFormat ymdFormat2 = new SimpleDateFormat("dd MMMM yyyy");
+
+            SimpleDateFormat ymdFormat3 = new SimpleDateFormat("hh:mm aa");
+
+            try {
+                date=ymdFormat.parse(notiDetails.getTime());
+                date1=new Date();
+
+
+                if(ymdFormat2.format(date).equals(ymdFormat2.format(date1)))
+                {
+                    holder.time.setText("Today, "+ ymdFormat3.format(Calendar.getInstance().getTime()));
+                }
+                else if(getCountOfDays(date,date1).equals("1"))
+                {
+                    holder.time.setText("Yesterday, "+ ymdFormat3.format(Calendar.getInstance().getTime()));
+                }
+                else {
+                    holder.time.setText(notiDetails.getTime());
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return data.size();
+        }
+    }
 
     private Intent getFileChooserIntent() {
         String[] mimeTypes = {"image/*", "application/pdf"};
@@ -660,6 +895,67 @@ private class VehicleViewHolder extends RecyclerView.ViewHolder {
         return intent;
     }
 
+    public String getCountOfDays(Date createdDateString, Date expireDateString) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+
+        Date createdConvertedDate = null, expireCovertedDate = null, todayWithZeroTime = null;
+        try {
+            createdConvertedDate = createdDateString;
+            expireCovertedDate = expireDateString;
+
+            Date today = new Date();
+
+            todayWithZeroTime = dateFormat.parse(dateFormat.format(today));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        int cYear = 0, cMonth = 0, cDay = 0;
+
+        if (createdConvertedDate.after(todayWithZeroTime)) {
+            Calendar cCal = Calendar.getInstance();
+            cCal.setTime(createdConvertedDate);
+            cYear = cCal.get(Calendar.YEAR);
+            cMonth = cCal.get(Calendar.MONTH);
+            cDay = cCal.get(Calendar.DAY_OF_MONTH);
+
+        } else {
+            Calendar cCal = Calendar.getInstance();
+            cCal.setTime(todayWithZeroTime);
+            cYear = cCal.get(Calendar.YEAR);
+            cMonth = cCal.get(Calendar.MONTH);
+            cDay = cCal.get(Calendar.DAY_OF_MONTH);
+        }
+
+
+    /*Calendar todayCal = Calendar.getInstance();
+    int todayYear = todayCal.get(Calendar.YEAR);
+    int today = todayCal.get(Calendar.MONTH);
+    int todayDay = todayCal.get(Calendar.DAY_OF_MONTH);
+    */
+
+        Calendar eCal = Calendar.getInstance();
+        eCal.setTime(expireCovertedDate);
+
+        int eYear = eCal.get(Calendar.YEAR);
+        int eMonth = eCal.get(Calendar.MONTH);
+        int eDay = eCal.get(Calendar.DAY_OF_MONTH);
+
+        Calendar date1 = Calendar.getInstance();
+        Calendar date2 = Calendar.getInstance();
+
+        date1.clear();
+        date1.set(cYear, cMonth, cDay);
+        date2.clear();
+        date2.set(eYear, eMonth, eDay);
+
+        long diff = date2.getTimeInMillis() - date1.getTimeInMillis();
+
+        float dayCount = (float) diff / (24 * 60 * 60 * 1000);
+
+        return ("" + (int) dayCount);
+    }
+
     public String getFileName(Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
@@ -681,4 +977,22 @@ private class VehicleViewHolder extends RecyclerView.ViewHolder {
         }
         return result;
     }
+
+    private class NotiViewHolder extends RecyclerView.ViewHolder {
+
+        TextView title, body,time;
+        CardView unread;
+
+        public NotiViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            title = itemView.findViewById(R.id.notititle);
+            body = itemView.findViewById(R.id.notibody);
+            unread = itemView.findViewById(R.id.unreadnoti);
+            time=itemView.findViewById(R.id.notitime);
+
+        }
+
+    }
+
 }

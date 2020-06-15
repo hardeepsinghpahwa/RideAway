@@ -450,14 +450,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/notifications"
+    <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView14"
         android:layout_marginEnd="10dp"
         android:foreground="?attr/selectableItemBackground"
-        android:src="@drawable/notifications"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView14" />
+        android:clipToPadding="false"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:id="@+id/notifications"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:foreground="?attr/selectableItemBackground"
+            android:src="@drawable/notifications"/>
+
+        <TextView
+            android:id="@+id/noticount"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="right|end|top"
+            android:background="@drawable/badge"
+            android:gravity="center"
+            android:padding="3dp"
+            android:textColor="@android:color/white"
+            android:textSize="10sp"/>
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

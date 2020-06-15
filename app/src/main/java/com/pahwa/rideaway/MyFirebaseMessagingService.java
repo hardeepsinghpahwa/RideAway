@@ -14,6 +14,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.room.Room;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -24,8 +25,12 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.pahwa.rideaway.Notification.NotiDatabase;
+import com.pahwa.rideaway.Notification.NotiDetails;
 import com.pahwa.rideaway.Notification.Token;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -67,6 +72,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(@NonNull RemoteMessage remoteMessage) {
         super.onMessageReceived(remoteMessage);
 
+
+
+
         if(!remoteMessage.getData().isEmpty())
         {
             body = remoteMessage.getData().get("Message");
@@ -77,6 +85,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             body=remoteMessage.getNotification().getBody();
             title=remoteMessage.getNotification().getTitle();
         }
+
+        NotiDatabase database=NotiDatabase.getDatabase(getApplicationContext());
+
+        Date date=new Date();
+
+        SimpleDateFormat ymdFormat = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+
+        NotiDetails notiDetails=new NotiDetails(0,title,body,ymdFormat.format(date));
+
+        database.notiDao().add(notiDetails);
+
 
         Intent intent = new Intent(getApplicationContext(), Home.class);
 

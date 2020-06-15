@@ -20,6 +20,7 @@
         app:cnb_menuResource="@menu/bottom_menu"
         app:cnb_orientationMode="horizontal"
         app:cnb_radius="40dp"
+        app:cnb_textAppearance="@style/TextAppearance.AppCompat.Caption"
         android:background="@color/buttoncolor"
         app:cnb_unselectedColor="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -543,6 +543,11 @@ public class SearchResultDetails extends AppCompatActivity {
                                                     customType(SearchResultDetails.this, "bottom-to-up");
                                                     dialog.dismiss();
                                                 } else {
+
+                                                    SendNoti sendNoti = new SendNoti();
+                                                    sendNoti.sendNotification(getApplicationContext(), useruid, "You have a Booking Request", "A new booking request has been recieved. Please check and respond to the request.");
+
+
                                                     Intent intent = new Intent(SearchResultDetails.this, YourRideIsLive.class);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

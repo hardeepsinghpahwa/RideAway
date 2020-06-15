@@ -7,6 +7,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Selection;
@@ -20,6 +23,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.github.razir.progressbutton.ButtonTextAnimatorExtensionsKt;
 import com.github.razir.progressbutton.ProgressButtonHolderKt;
@@ -136,5 +140,13 @@ public class MainActivity extends AppCompatActivity{
         hideSoftKeyboard(MainActivity.this, phone);
         phone.clearFocus();
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        this.registerReceiver(new NetworkBroadcast(), filter);
     }
 }
