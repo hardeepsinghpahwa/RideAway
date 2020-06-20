@@ -118,21 +118,17 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
         if (getArguments().getString("ac").equals("findaride")) {
             if (getArguments().getString("msg").equals("pickup")) {
                 TextView textView = getActivity().findViewById(R.id.pickuplocation);
-                textView.setText(search.getText().toString());
                 textView.setEnabled(true);
             } else {
                 TextView textView = getActivity().findViewById(R.id.droplocation);
-                textView.setText(search.getText().toString());
                 textView.setEnabled(true);
             }
         } else {
             if (getArguments().getString("msg").equals("pickup")) {
                 TextView textView = getActivity().findViewById(R.id.pickuplocationofferaride);
-                textView.setText(search.getText().toString());
                 textView.setEnabled(true);
             } else {
                 TextView textView = getActivity().findViewById(R.id.droplocationofferaride);
-                textView.setText(search.getText().toString());
                 textView.setEnabled(true);
             }
         }
@@ -404,7 +400,7 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
                                         }
                                         String cityName = null;
                                         String stateName = null;
-                                        if (addresses != null) {
+                                        if (addresses != null && addresses.size() > 0) {
                                             cityName = addresses.get(0).getFeatureName();
                                             stateName = addresses.get(0).getLocality();
                                         }
@@ -460,6 +456,16 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
 
                 fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
+                if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
                 fusedLocationClient.getLastLocation()
                         .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                             @Override
@@ -501,6 +507,16 @@ public class LocationDialog extends DialogFragment implements OnMapReadyCallback
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
                     @Override

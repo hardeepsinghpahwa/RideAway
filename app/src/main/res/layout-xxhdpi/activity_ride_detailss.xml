@@ -350,7 +350,7 @@
                 android:textColor="@color/buttoncolor"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="@+id/bookingtext"
                 app:layout_constraintTop_toBottomOf="@+id/bookingtext" />
 
@@ -363,8 +363,8 @@
                 android:textColor="#8E8B8B"
                 android:textStyle="bold"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@+id/ridedetmoreinfo"
-                app:layout_constraintTop_toBottomOf="@+id/ridedetmoreinfo" />
+                app:layout_constraintStart_toStartOf="@+id/ridedetpaymentoptions"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetpaymentoptions" />
 
             <com.tiper.MaterialSpinner
                 android:id="@+id/ridestatus"
@@ -396,6 +396,31 @@
                 app:layout_constraintBottom_toBottomOf="@+id/ridestatus"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/ridestatus" />
+
+            <TextView
+                android:id="@+id/paymenttext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Payment Options"
+                android:layout_marginTop="30dp"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/ridedetmoreinfo"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetmoreinfo" />
+
+            <TextView
+                android:id="@+id/ridedetpaymentoptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="Cash"
+                android:textColor="@color/buttoncolor"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="@+id/paymenttext"
+                app:layout_constraintTop_toBottomOf="@+id/paymenttext" />
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

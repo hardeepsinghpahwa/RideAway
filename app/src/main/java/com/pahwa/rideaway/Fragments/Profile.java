@@ -35,6 +35,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -104,6 +105,7 @@ import dmax.dialog.SpotsDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 
+import static com.pahwa.rideaway.LocationDialog.TAG;
 import static maes.tech.intentanim.CustomIntent.customType;
 
 /**
@@ -120,6 +122,8 @@ public class Profile extends Fragment {
     Button verify;
     CardView cardView;
     Uri file;
+    TextView walletbalance, paymentoptions;
+    Button addmoney, transactions;
     ImageView notifications;
     TextView noticount;
     Dialog dialog;
@@ -129,7 +133,7 @@ public class Profile extends Fragment {
     NotiDatabase database;
     List<NotiDetails> details;
     RecyclerView recyclerView;
-
+    Button addorchange;
 
     public Profile() {
         // Required empty public constructor
@@ -137,7 +141,7 @@ public class Profile extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
@@ -162,6 +166,11 @@ public class Profile extends Fragment {
         nestedScrollView = v.findViewById(R.id.nestedScrollViewprofile);
         notifications = v.findViewById(R.id.notifications);
         noticount = v.findViewById(R.id.noticount);
+        walletbalance = v.findViewById(R.id.walletbalance);
+        addmoney = v.findViewById(R.id.addmoneytowallet);
+        transactions = v.findViewById(R.id.transactions);
+        addorchange = v.findViewById(R.id.profileaddchange);
+        paymentoptions = v.findViewById(R.id.paymentoptions);
 
         final Thread thread = new Thread(new Runnable() {
             @Override
@@ -190,6 +199,155 @@ public class Profile extends Fragment {
         });
 
         thread.start();
+
+
+        addorchange.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final EditText phone,upiid;
+                final CheckBox paytm,googlepay,phonepe;
+                Button save;
+                ImageView cross;
+
+                final Dialog dialog = new Dialog(getActivity());
+                dialog.setContentView(R.layout.setpaymentsdialog);
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
+
+                phone=dialog.findViewById(R.id.addpaymentphone);
+                upiid=dialog.findViewById(R.id.addpaymentupi);
+                paytm=dialog.findViewById(R.id.paytmcheckBox);
+                googlepay=dialog.findViewById(R.id.googlepaycheckBox);
+                phonepe=dialog.findViewById(R.id.phonepecheckbox);
+                save=dialog.findViewById(R.id.setpaymentsavebutton);
+                cross=dialog.findViewById(R.id.setpaymentcross);
+
+                cross.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        phone.setText((dataSnapshot.child("phone").getValue(String.class)).substring(3));
+
+                        if(dataSnapshot.child("payment options").exists())
+                        {
+                            dataSnapshot.child("payment options").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    upiid.setText(dataSnapshot.child("upiid").getValue(String.class));
+                                    if(dataSnapshot.child("Paytm").getValue(String.class).equals("1"))
+                                    {
+                                        paytm.setChecked(true);
+                                    }
+
+                                    if(dataSnapshot.child("PhonePe").getValue(String.class).equals("1"))
+                                    {
+                                        phonepe.setChecked(true);
+                                    }
+
+                                    if(dataSnapshot.child("GooglePay").getValue(String.class).equals("1"))
+                                    {
+                                        googlepay.setChecked(true);
+                                    }
+
+                                    upiid.setText(dataSnapshot.child("upi_id").getValue(String.class));
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+                save.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(phone.getText().toString().length()!=10)
+                        {
+                            MDToast.makeText(getActivity(),"Phone Not Correct",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                        }
+                        else{
+
+                            final String paytmm,phonepee,googlepayy,upi;
+
+                            if(paytm.isChecked())
+                            {
+                                paytmm="1";
+                            }
+                            else paytmm="0";
+
+                            if(phonepe.isChecked())
+                            {
+                                phonepee="1";
+                            }
+                            else phonepee="0";
+
+                            if(googlepay.isChecked())
+                            {
+                                googlepayy="1";
+                            }
+                            else googlepayy="0";
+
+                            upi=upiid.getText().toString();
+
+                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("payment options").addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                    Map<String,Object> det=new HashMap<>();
+                                    det.put("Paytm",paytmm);
+                                    det.put("PhonePe",phonepee);
+                                    det.put("GooglePay",googlepayy);
+                                    det.put("upi_id",upi);
+
+                                    dataSnapshot.getRef().updateChildren(det).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            if(task.isSuccessful())
+                                            {
+                                                MDToast.makeText(getActivity(),"Payment Details Updated",MDToast.LENGTH_SHORT,MDToast.TYPE_SUCCESS).show();
+                                                dialog.dismiss();
+                                            }else {
+                                                MDToast.makeText(getActivity(),"Some Error Occured",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                            }
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+
+                dialog.show();
+            }
+        });
+
 
         notifications.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,6 +485,87 @@ public class Profile extends Fragment {
                     verifytext.setVisibility(View.VISIBLE);
                     verify.setVisibility(View.VISIBLE);
                 }
+
+                if (dataSnapshot.child("walletbalance").exists()) {
+                    walletbalance.setText("₹ " + dataSnapshot.child("walletbalance").getValue(String.class));
+                } else {
+                    walletbalance.setText("₹ 0");
+                }
+
+
+                if(dataSnapshot.child("payment options").exists())
+                {
+                    dataSnapshot.child("payment options").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                            if(dataSnapshot.child("Paytm").getValue(String.class).equals("1"))
+                            {
+                                paymentoptions.setText(paymentoptions.getText()+", Paytm");
+                            }
+
+                            if(dataSnapshot.child("PhonePe").getValue(String.class).equals("1"))
+                            {
+                                paymentoptions.setText(paymentoptions.getText()+", PhonePe");
+                            }
+
+                            if(dataSnapshot.child("GooglePay").getValue(String.class).equals("1"))
+                            {
+                                paymentoptions.setText(paymentoptions.getText()+", GooglePay");
+                            }
+
+                            paymentoptions.setText(paymentoptions.getText()+", UPI");
+
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+                }
+
+                addmoney.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        final EditText money;
+                        Button add;
+
+                        Dialog dialog = new Dialog(getActivity());
+                        dialog.setContentView(R.layout.addmoneydialog);
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
+
+                        money = dialog.findViewById(R.id.moneytoadd);
+                        add = dialog.findViewById(R.id.addmoneybutton);
+
+                        add.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (money.getText().toString().equals("")) {
+                                    MDToast.makeText(getActivity(), "Enter some amount first", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                } else if (Integer.parseInt(money.getText().toString()) < 10) {
+                                    MDToast.makeText(getActivity(), "Minimum 10 can be added", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                } else {
+
+                                }
+                            }
+                        });
+
+                    }
+                });
+
+
+                transactions.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
 
                 gender.setText(profiledetails.getGender());
                 Picasso.get().load(profiledetails.getImage()).resize(300, 300).into(profilepic);
@@ -621,8 +860,7 @@ public class Profile extends Fragment {
 
                                     MDToast.makeText(getActivity(), "Loggod Out Successfully", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
-                                }
-                                else {
+                                } else {
                                     MDToast.makeText(getActivity(), "Error Logging Out", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                 }
                             }
@@ -834,7 +1072,7 @@ public class Profile extends Fragment {
                 }
             });
 
-            Date date,date1;
+            Date date, date1;
 
             SimpleDateFormat ymdFormat = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
 
@@ -843,19 +1081,15 @@ public class Profile extends Fragment {
             SimpleDateFormat ymdFormat3 = new SimpleDateFormat("hh:mm aa");
 
             try {
-                date=ymdFormat.parse(notiDetails.getTime());
-                date1=new Date();
+                date = ymdFormat.parse(notiDetails.getTime());
+                date1 = new Date();
 
 
-                if(ymdFormat2.format(date).equals(ymdFormat2.format(date1)))
-                {
-                    holder.time.setText("Today, "+ ymdFormat3.format(Calendar.getInstance().getTime()));
-                }
-                else if(getCountOfDays(date,date1).equals("1"))
-                {
-                    holder.time.setText("Yesterday, "+ ymdFormat3.format(Calendar.getInstance().getTime()));
-                }
-                else {
+                if (ymdFormat2.format(date).equals(ymdFormat2.format(date1))) {
+                    holder.time.setText("Today, " + ymdFormat3.format(Calendar.getInstance().getTime()));
+                } else if (getCountOfDays(date, date1).equals("1")) {
+                    holder.time.setText("Yesterday, " + ymdFormat3.format(Calendar.getInstance().getTime()));
+                } else {
                     holder.time.setText(notiDetails.getTime());
                 }
             } catch (ParseException e) {
@@ -980,7 +1214,7 @@ public class Profile extends Fragment {
 
     private class NotiViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title, body,time;
+        TextView title, body, time;
         CardView unread;
 
         public NotiViewHolder(@NonNull View itemView) {
@@ -989,7 +1223,7 @@ public class Profile extends Fragment {
             title = itemView.findViewById(R.id.notititle);
             body = itemView.findViewById(R.id.notibody);
             unread = itemView.findViewById(R.id.unreadnoti);
-            time=itemView.findViewById(R.id.notitime);
+            time = itemView.findViewById(R.id.notitime);
 
         }
 

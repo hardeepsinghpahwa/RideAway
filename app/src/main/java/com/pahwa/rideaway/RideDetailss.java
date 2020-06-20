@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -30,8 +32,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -65,15 +70,15 @@ import static maes.tech.intentanim.CustomIntent.customType;
 public class RideDetailss extends AppCompatActivity {
 
 
-    String uid, type;
+    String uid, type, userid;
     TextView from;
     TextView to;
     TextView time;
     TextView bookingconfirm, bookingrequests;
     TextView seats;
-    TextView name;
+    TextView name, paymentoptions;
     TextView rating, statusupdatetext;
-    TextView vehicle, seatdetailstext, bookingtext,vehiclenum;
+    TextView vehicle, seatdetailstext, bookingtext, vehiclenum, paymenttext;
     TextView moreinfo, cancel;
     ImageView propic, call, back;
     ProgressBar progressBar;
@@ -121,9 +126,11 @@ public class RideDetailss extends AppCompatActivity {
         bookingtext = findViewById(R.id.bookingtext);
         updatestatus = findViewById(R.id.updatestatus);
         ridestatus = findViewById(R.id.ridestatus);
+        paymenttext = findViewById(R.id.paymenttext);
         statusupdatetext = findViewById(R.id.statusupdatetext);
         constraintLayout = findViewById(R.id.cons10);
-        vehiclenum=findViewById(R.id.ridedetvehiclenumber);
+        vehiclenum = findViewById(R.id.ridedetvehiclenumber);
+        paymentoptions = findViewById(R.id.ridedetpaymentoptions);
 
         getWindow().setSharedElementEnterTransition(TransitionInflater.from(this).inflateTransition(R.transition.shared_element_transation));
         imageView.setTransitionName("thumbnailTransition");
@@ -147,6 +154,8 @@ public class RideDetailss extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                         final offerdetails offerdetails = dataSnapshot.getValue(com.pahwa.rideaway.offerdetails.class);
 
+                        userid = dataSnapshot.child("userid").getValue(String.class);
+
                         if (offerdetails != null) {
 
                             constraintLayout.setOnClickListener(new View.OnClickListener() {
@@ -160,8 +169,8 @@ public class RideDetailss extends AppCompatActivity {
                                         public void run() {
                                             constraintLayout.setEnabled(true);
                                         }
-                                    },1000);
-                                    final TextView name, phone, occupation, offered, found, gender, age, vehicletext,ratingnum;
+                                    }, 1000);
+                                    final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
                                     final ImageView cross, propic;
                                     final RatingBar ratingBar;
                                     final RecyclerView recyclerView;
@@ -185,7 +194,7 @@ public class RideDetailss extends AppCompatActivity {
                                     propic = dialog.findViewById(R.id.profiledialogpic);
                                     ratingBar = dialog.findViewById(R.id.profiledialograting);
                                     recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
-                                    ratingnum=dialog.findViewById(R.id.profiledialogratingnum);
+                                    ratingnum = dialog.findViewById(R.id.profiledialogratingnum);
 
                                     cross.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -237,26 +246,22 @@ public class RideDetailss extends AppCompatActivity {
                                                 vehicletext.setText("No Vehicles Added");
                                             }
 
-                                            if(dataSnapshot.child("Ratings").exists())
-                                            {
-                                                if(dataSnapshot.child("Ratings").getChildrenCount()==1)
-                                                {
-                                                    ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" rating )");
-                                                }else {
-                                                    ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" ratings )");
+                                            if (dataSnapshot.child("Ratings").exists()) {
+                                                if (dataSnapshot.child("Ratings").getChildrenCount() == 1) {
+                                                    ratingnum.setText("( " + dataSnapshot.child("Ratings").getChildrenCount() + " rating )");
+                                                } else {
+                                                    ratingnum.setText("( " + dataSnapshot.child("Ratings").getChildrenCount() + " ratings )");
                                                 }
                                                 ratingBar.setRating(Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
-                                            }
-                                            else {
+                                            } else {
                                                 ratingnum.setText("( No ratings )");
                                             }
-                                            if(dataSnapshot.child("verified").exists())
-                                            {
-                                                if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
-                                                {
-                                                    name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                            if (dataSnapshot.child("verified").exists()) {
+                                                if (dataSnapshot.child("verified").getValue(String.class).equals("verified")) {
+                                                    name.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(RideDetailss.this, R.drawable.verify), null);
                                                 }
                                             }
+
 
                                             name.setText(profiledetails.getName());
                                             phone.setText(profiledetails.getPhone());
@@ -397,82 +402,161 @@ public class RideDetailss extends AppCompatActivity {
                                             customType(RideDetailss.this, "left-to-right");
 
                                         } else if (ridestatus.getSelectedItem().toString().equals("Ride Completed")) {
+
                                             AlertDialog.Builder builder = new AlertDialog.Builder(RideDetailss.this);
                                             builder.setTitle("Change Status To Ride Completed? This will be the final update!")
                                                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialog, int which) {
-                                                            dataSnapshot.getRef().child("status").setValue("Ride Completed").addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                                                            final RadioGroup radioGroup;
+                                                            final RadioButton cash, paytm, gpay, phonepe;
+                                                            final Button open;
+                                                            final TextView phone, upi, title;
+                                                            final ImageView copyphone, copyupi, cross;
+
+                                                            final Dialog dialog1 = new Dialog(RideDetailss.this);
+                                                            dialog1.setContentView(R.layout.paymentdialog);
+                                                            dialog1.setCanceledOnTouchOutside(false);
+                                                            dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                                            dialog1.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                                                            dialog1.getWindow().setWindowAnimations(R.style.AppTheme_Exit);
+
+                                                            radioGroup = dialog1.findViewById(R.id.paymentradiogroup);
+                                                            cash = dialog1.findViewById(R.id.paymentcash);
+                                                            paytm = dialog1.findViewById(R.id.paymentpaytm);
+                                                            gpay = dialog1.findViewById(R.id.paymentgooglepay);
+                                                            phonepe = dialog1.findViewById(R.id.paymentphonepe);
+                                                            open = dialog1.findViewById(R.id.paymentopenapp);
+                                                            phone = dialog1.findViewById(R.id.paymentphone);
+                                                            upi = dialog1.findViewById(R.id.paymentupi);
+                                                            copyphone = dialog1.findViewById(R.id.copynumber);
+                                                            copyupi = dialog1.findViewById(R.id.copyupi);
+                                                            cross = dialog1.findViewById(R.id.paymentcross);
+                                                            title = dialog1.findViewById(R.id.paymenttitle);
+
+                                                            title.setText("Payment Recieved By?");
+
+                                                            cross.setOnClickListener(new View.OnClickListener() {
                                                                 @Override
-                                                                public void onComplete(@NonNull Task<Void> task) {
+                                                                public void onClick(View v) {
+                                                                    dialog1.dismiss();
+                                                                }
+                                                            });
 
-                                                                    fromPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid);
-                                                                    toPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(uid);
+                                                            open.setText("Select");
+                                                            copyphone.setVisibility(View.GONE);
+                                                            copyupi.setVisibility(View.GONE);
+                                                            phone.setVisibility(View.GONE);
+                                                            upi.setVisibility(View.GONE);
 
-                                                                    fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                        @Override
-                                                                        public void onDataChange(DataSnapshot dataSnapshot1) {
-                                                                            toPath.setValue(dataSnapshot1.getValue(), new DatabaseReference.CompletionListener() {
-                                                                                @Override
-                                                                                public void onComplete(@androidx.annotation.Nullable final DatabaseError databaseError, @NonNull final DatabaseReference databaseReference) {
-                                                                                    if (databaseError != null) {
-                                                                                        System.out.println("Copy failed");
-                                                                                        MDToast.makeText(RideDetailss.this, "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
-                                                                                        progressBar.setVisibility(View.GONE);
-                                                                                        cancel.setEnabled(true);
-                                                                                    } else {
 
-                                                                                        fromPath.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(userid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                    if (dataSnapshot.child("payment options").exists()) {
+
+                                                                        if (dataSnapshot.child("payment options").child("Paytm").getValue(String.class).equals("1")) {
+                                                                            paytm.setVisibility(View.VISIBLE);
+                                                                        }
+
+                                                                        if (dataSnapshot.child("payment options").child("PhonePe").getValue(String.class).equals("1")) {
+                                                                            phonepe.setVisibility(View.VISIBLE);
+                                                                        }
+
+                                                                        if (dataSnapshot.child("payment options").child("GooglePay").getValue(String.class).equals("1")) {
+                                                                            gpay.setVisibility(View.VISIBLE);
+                                                                        }
+
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                }
+                                                            });
+
+
+                                                            open.setOnClickListener(new View.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(View v) {
+
+                                                                    if (radioGroup.getCheckedRadioButtonId() == -1) {
+                                                                        MDToast.makeText(RideDetailss.this, "Select a payment method first", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                                    } else {
+                                                                        String paymentmethod = "Cash";
+                                                                        switch (radioGroup.getCheckedRadioButtonId()) {
+                                                                            case R.id.paymentcash:
+                                                                                paymentmethod = "Cash";
+                                                                                break;
+
+                                                                            case R.id.paymentpaytm:
+                                                                                paymentmethod = "Paytm";
+                                                                                break;
+
+                                                                            case R.id.paymentgooglepay:
+                                                                                paymentmethod = "GooglePay";
+                                                                                break;
+
+                                                                            case R.id.paymentphonepe:
+                                                                                paymentmethod = "PhonePe";
+                                                                                break;
+
+
+                                                                        }
+
+                                                                        final String finalPaymentmethod = paymentmethod;
+                                                                        dataSnapshot.getRef().child("status").setValue("Ride Completed").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                            @Override
+                                                                            public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                fromPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid);
+                                                                                toPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(uid);
+
+                                                                                fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                    @Override
+                                                                                    public void onDataChange(DataSnapshot dataSnapshot1) {
+                                                                                        toPath.setValue(dataSnapshot1.getValue(), new DatabaseReference.CompletionListener() {
                                                                                             @Override
-                                                                                            public void onComplete(@NonNull Task<Void> task) {
-                                                                                                if (task.isSuccessful()) {
-                                                                                                    toPath.child("status").setValue("Ride Completed");
+                                                                                            public void onComplete(@androidx.annotation.Nullable final DatabaseError databaseError, @NonNull final DatabaseReference databaseReference) {
+                                                                                                if (databaseError != null) {
+                                                                                                    System.out.println("Copy failed");
+                                                                                                    MDToast.makeText(RideDetailss.this, "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                                                                    progressBar.setVisibility(View.GONE);
+                                                                                                    cancel.setEnabled(true);
+                                                                                                } else {
 
-                                                                                                    toPath.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                    fromPath.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                                                         @Override
-                                                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
+                                                                                                        public void onComplete(@NonNull Task<Void> task) {
+                                                                                                            if (task.isSuccessful()) {
+                                                                                                                toPath.child("status").setValue("Ride Completed");
+                                                                                                                toPath.child("payment").setValue(finalPaymentmethod);
+                                                                                                                toPath.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                    @Override
+                                                                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
 
-                                                                                                            dataSnapshot2.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                                                @Override
-                                                                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
-                                                                                                                    SendNoti sendNoti=new SendNoti();
-                                                                                                                    sendNoti.sendNotification(getApplicationContext(),dataSnapshot4.getKey(),"Ride Completed!","Status Update. The Offerer has marked the ride as Completed. Don't Forget to rate the ride.");
-                                                                                                                }
+                                                                                                                        dataSnapshot2.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                            @Override
+                                                                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
+                                                                                                                                SendNoti sendNoti = new SendNoti();
+                                                                                                                                sendNoti.sendNotification(getApplicationContext(), dataSnapshot4.getKey(), "Ride Completed!", "Status Update. The Offerer has marked the ride as Completed. Don't Forget to rate the ride.");
+                                                                                                                            }
 
-                                                                                                                @Override
-                                                                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                                                                            @Override
+                                                                                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                                                                }
-                                                                                                            });
+                                                                                                                            }
+                                                                                                                        });
 
-                                                                                                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot2.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                                                @Override
-                                                                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
-                                                                                                                    if (dataSnapshot3.child("offered").exists()) {
-                                                                                                                        dataSnapshot3.child("offered").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("offered").getValue(String.class)) + 1));
-                                                                                                                    } else {
-                                                                                                                        dataSnapshot3.child("offered").getRef().setValue("1");
-                                                                                                                    }
-                                                                                                                }
-
-                                                                                                                @Override
-                                                                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                                                                                                }
-                                                                                                            });
-
-                                                                                                            toPath.child("Booking Confirmed").addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                                                @Override
-                                                                                                                public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
-
-                                                                                                                    for (DataSnapshot dataSnapshot5 : dataSnapshot4.getChildren()) {
-                                                                                                                        FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot5.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                        FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot2.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                                             @Override
                                                                                                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
-                                                                                                                                if (dataSnapshot3.child("found").exists()) {
-                                                                                                                                    dataSnapshot3.child("found").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("found").getValue(String.class)) + 1));
+                                                                                                                                if (dataSnapshot3.child("offered").exists()) {
+                                                                                                                                    dataSnapshot3.child("offered").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("offered").getValue(String.class)) + 1));
                                                                                                                                 } else {
-                                                                                                                                    dataSnapshot3.child("found").getRef().setValue("1");
+                                                                                                                                    dataSnapshot3.child("offered").getRef().setValue("1");
                                                                                                                                 }
                                                                                                                             }
 
@@ -481,59 +565,85 @@ public class RideDetailss extends AppCompatActivity {
 
                                                                                                                             }
                                                                                                                         });
+
+                                                                                                                        toPath.child("Booking Confirmed").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                            @Override
+                                                                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
+
+                                                                                                                                for (DataSnapshot dataSnapshot5 : dataSnapshot4.getChildren()) {
+                                                                                                                                    FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot5.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                                        @Override
+                                                                                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
+                                                                                                                                            if (dataSnapshot3.child("found").exists()) {
+                                                                                                                                                dataSnapshot3.child("found").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("found").getValue(String.class)) + 1));
+                                                                                                                                            } else {
+                                                                                                                                                dataSnapshot3.child("found").getRef().setValue("1");
+                                                                                                                                            }
+                                                                                                                                        }
+
+                                                                                                                                        @Override
+                                                                                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                                                        }
+                                                                                                                                    });
+                                                                                                                                }
+                                                                                                                            }
+
+                                                                                                                            @Override
+                                                                                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                                            }
+                                                                                                                        });
+
                                                                                                                     }
-                                                                                                                }
 
-                                                                                                                @Override
-                                                                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                                                                    @Override
+                                                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                                                                }
-                                                                                                            });
+                                                                                                                    }
+                                                                                                                });
 
-                                                                                                        }
+                                                                                                                progressBar.setVisibility(View.GONE);
+                                                                                                                cancel.setEnabled(true);
+                                                                                                                MDToast.makeText(RideDetailss.this, "Ride Completed", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
-                                                                                                        @Override
-                                                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
+                                                                                                                Intent intent = new Intent(RideDetailss.this, Home.class);
+                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+                                                                                                                startActivity(intent);
+
+                                                                                                                customType(RideDetailss.this, "fadein-to-fadeout");
+                                                                                                                finish();
+
+                                                                                                            } else {
+                                                                                                                progressBar.setVisibility(View.GONE);
+                                                                                                                cancel.setEnabled(true);
+
+                                                                                                                MDToast.makeText(RideDetailss.this, "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                                                                            }
                                                                                                         }
                                                                                                     });
-
-                                                                                                    progressBar.setVisibility(View.GONE);
-                                                                                                    cancel.setEnabled(true);
-                                                                                                    MDToast.makeText(RideDetailss.this, "Ride Completed", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
-
-
-                                                                                                    Intent intent = new Intent(RideDetailss.this, Home.class);
-                                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                                                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                                                                                                    startActivity(intent);
-
-                                                                                                    customType(RideDetailss.this, "fadein-to-fadeout");
-                                                                                                    finish();
-
-                                                                                                } else {
-                                                                                                    progressBar.setVisibility(View.GONE);
-                                                                                                    cancel.setEnabled(true);
-
-                                                                                                    MDToast.makeText(RideDetailss.this, "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                                                                                 }
                                                                                             }
                                                                                         });
                                                                                     }
-                                                                                }
-                                                                            });
-                                                                        }
 
-                                                                        @Override
-                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                                    @Override
+                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                        }
-                                                                    });
+                                                                                    }
+                                                                                });
 
+                                                                            }
+                                                                        });
+                                                                    }
                                                                 }
                                                             });
+
+                                                            dialog1.show();
                                                         }
                                                     }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                                                 @Override
@@ -557,10 +667,9 @@ public class RideDetailss extends AppCompatActivity {
                                                                     dataSnapshot.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
                                                                         @Override
                                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                                            for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
-                                                                            {
-                                                                                SendNoti sendNoti=new SendNoti();
-                                                                                sendNoti.sendNotification(getApplicationContext(),dataSnapshot1.getKey(),"Happy Journey!","Status Update. The Offerer has marked the ride as Started. Have a great ride.");
+                                                                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                                                                SendNoti sendNoti = new SendNoti();
+                                                                                sendNoti.sendNotification(getApplicationContext(), dataSnapshot1.getKey(), "Happy Journey!", "Status Update. The Offerer has marked the ride as Started. Have a great ride.");
                                                                             }
                                                                         }
 
@@ -591,20 +700,20 @@ public class RideDetailss extends AppCompatActivity {
                                     }
                                 });
 
+                                bookingconfirm.setVisibility(View.GONE);
+                                bookingrequests.setVisibility(View.GONE);
 
                                 if (dataSnapshot.child("seats").getValue(String.class).equals("0")) {
-                                    bookingrequests.setText("All Seats Booked");
-                                    bookingrequests.setTextColor(getColor(R.color.green));
-                                    bookingconfirm.setVisibility(View.GONE);
+                                    bookingconfirm.setText("All Seats Booked");
+                                    bookingconfirm.setTextColor(getColor(R.color.green));
+                                    bookingconfirm.setVisibility(View.VISIBLE);
+                                    bookingconfirm.setVisibility(View.VISIBLE);
+                                } else if (!dataSnapshot.child("Booking Requests").exists() && !dataSnapshot.child("Booking Confirmed").exists()) {
+                                    bookingconfirm.setText("No Bookings");
+                                    bookingconfirm.setTextColor(getColor(R.color.red));
+                                    bookingconfirm.setVisibility(View.VISIBLE);
                                 }
-                                else if (!dataSnapshot.child("Booking Requests").exists() && !dataSnapshot.child("Booking Confirmed").exists()) {
-                                    bookingrequests.setText("No Bookings");
-                                    bookingrequests.setTextColor(getColor(R.color.red));
-                                }
-                                else {
-                                    bookingrequests.setVisibility(View.GONE);
-                                    bookingconfirm.setVisibility(View.GONE);
-                                }
+
 
                                 if (dataSnapshot.child("Booking Requests").exists()) {
                                     bookingrequests.setVisibility(View.VISIBLE);
@@ -684,8 +793,8 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                                             @Override
                                                                                                                             public void onComplete(@NonNull Task<Void> task) {
 
-                                                                                                                                SendNoti sendNoti=new SendNoti();
-                                                                                                                                sendNoti.sendNotification(getApplicationContext(),model.getUid(),"Yay! Booking Request Accepted","Your ride booking request is accepted by the offerer. Get ready for the ride.");
+                                                                                                                                SendNoti sendNoti = new SendNoti();
+                                                                                                                                sendNoti.sendNotification(getApplicationContext(), model.getUid(), "Yay! Booking Request Accepted", "Your ride booking request is accepted by the offerer. Get ready for the ride.");
 
                                                                                                                                 MDToast.makeText(RideDetailss.this, "Booking Done", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
@@ -759,8 +868,8 @@ public class RideDetailss extends AppCompatActivity {
                                                                                 public void onComplete(@NonNull Task<Void> task) {
                                                                                     if (task.isSuccessful()) {
 
-                                                                                        SendNoti sendNoti=new SendNoti();
-                                                                                        sendNoti.sendNotification(getApplicationContext(),model.getUid(),"Oh! Booking Request Rejected","Your ride booking request is rejected by the offerer. Try again or find some other ride.");
+                                                                                        SendNoti sendNoti = new SendNoti();
+                                                                                        sendNoti.sendNotification(getApplicationContext(), model.getUid(), "Oh! Booking Request Rejected", "Your ride booking request is rejected by the offerer. Try again or find some other ride.");
 
                                                                                         MDToast.makeText(RideDetailss.this, "Request Rejected", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
                                                                                     } else {
@@ -832,8 +941,8 @@ public class RideDetailss extends AppCompatActivity {
                                     bookingconfirm.setVisibility(View.VISIBLE);
 
                                     if (dataSnapshot.child("seats").getValue(String.class).equals("0")) {
-                                        bookingrequests.setText("All Seats Booked");
-                                        bookingrequests.setTextColor(getColor(R.color.green));
+                                        bookingconfirm.setText("All Seats Booked");
+                                        bookingconfirm.setTextColor(getColor(R.color.green));
                                     } else if (dataSnapshot.child("Booking Confirmed").getChildrenCount() == 1) {
                                         bookingconfirm.setVisibility(View.VISIBLE);
                                         bookingconfirm.setText(dataSnapshot.child("Booking Confirmed").getChildrenCount() + " booking confirmed");
@@ -852,6 +961,7 @@ public class RideDetailss extends AppCompatActivity {
                                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                                         for (final DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                             if (dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                                bookingrequests.setVisibility(View.VISIBLE);
                                                 bookingrequests.setText("Booking Request Sent");
                                                 bookingrequests.setTextColor(getColor(R.color.yellow));
                                                 cancel.setText("Cancel Booking Request");
@@ -888,6 +998,7 @@ public class RideDetailss extends AppCompatActivity {
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                             if (dataSnapshot1.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                                bookingrequests.setVisibility(View.VISIBLE);
                                                 bookingrequests.setText("Booking Confirmed");
                                                 bookingrequests.setTextColor(getColor(R.color.green));
                                                 cancel.setText("Cancel Booking");
@@ -907,6 +1018,183 @@ public class RideDetailss extends AppCompatActivity {
                                                         customType(RideDetailss.this, "left-to-right");
                                                     }
                                                 });
+
+                                                DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+
+                                                try {
+                                                    Date date = df.parse(offerdetails.getTimeanddate());
+
+                                                    if (new Date().compareTo(date) >= 0) {
+                                                        cancel.setVisibility(View.VISIBLE);
+                                                        cancel.setText("Pay Now");
+                                                        cancel.setBackgroundColor(getColor(R.color.buttoncolor));
+                                                        cancel.setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+
+                                                                final RadioGroup radioGroup;
+                                                                final RadioButton cash, paytm, gpay, phonepe;
+                                                                final Button open;
+                                                                final TextView phone, upi;
+                                                                final ImageView copyphone, copyupi, cross;
+
+                                                                final Dialog dialog = new Dialog(RideDetailss.this);
+                                                                dialog.setContentView(R.layout.paymentdialog);
+                                                                dialog.setCanceledOnTouchOutside(false);
+                                                                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                                                dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                                                                dialog.getWindow().setWindowAnimations(R.style.AppTheme_Exit);
+
+                                                                radioGroup = dialog.findViewById(R.id.paymentradiogroup);
+                                                                cash = dialog.findViewById(R.id.paymentcash);
+                                                                paytm = dialog.findViewById(R.id.paymentpaytm);
+                                                                gpay = dialog.findViewById(R.id.paymentgooglepay);
+                                                                phonepe = dialog.findViewById(R.id.paymentphonepe);
+                                                                open = dialog.findViewById(R.id.paymentopenapp);
+                                                                phone = dialog.findViewById(R.id.paymentphone);
+                                                                upi = dialog.findViewById(R.id.paymentupi);
+                                                                copyphone = dialog.findViewById(R.id.copynumber);
+                                                                copyupi = dialog.findViewById(R.id.copyupi);
+                                                                cross = dialog.findViewById(R.id.paymentcross);
+
+                                                                cross.setOnClickListener(new View.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(View v) {
+                                                                        dialog.dismiss();
+                                                                    }
+                                                                });
+
+                                                                copyupi.setOnClickListener(new View.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(View v) {
+                                                                        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                                                                        ClipData clip = ClipData.newPlainText("UPI", upi.getText().toString());
+                                                                        clipboard.setPrimaryClip(clip);
+                                                                        Toast.makeText(RideDetailss.this, "UPI Id copied", Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+
+                                                                copyphone.setOnClickListener(new View.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(View v) {
+                                                                        ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                                                                        ClipData clip = ClipData.newPlainText("Phone Number", phone.getText().toString().substring(3));
+                                                                        clipboard.setPrimaryClip(clip);
+                                                                        Toast.makeText(RideDetailss.this, "Phone Number copied", Toast.LENGTH_SHORT).show();
+
+                                                                    }
+                                                                });
+
+                                                                FirebaseDatabase.getInstance().getReference().child("Profiles").child(userid).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                        if (dataSnapshot.child("payment options").exists()) {
+
+                                                                            if (dataSnapshot.child("payment options").child("Paytm").getValue(String.class).equals("1")) {
+                                                                                paytm.setVisibility(View.VISIBLE);
+                                                                            }
+
+                                                                            if (dataSnapshot.child("payment options").child("PhonePe").getValue(String.class).equals("1")) {
+                                                                                phonepe.setVisibility(View.VISIBLE);
+                                                                            }
+
+                                                                            if (dataSnapshot.child("payment options").child("GooglePay").getValue(String.class).equals("1")) {
+                                                                                gpay.setVisibility(View.VISIBLE);
+                                                                            }
+
+                                                                            if (!dataSnapshot.child("payment options").child("upi_id").getValue(String.class).equals("")) {
+                                                                                upi.setVisibility(View.VISIBLE);
+                                                                                upi.setText(dataSnapshot.child("payment options").child("upi_id").getValue(String.class));
+                                                                                copyupi.setVisibility(View.VISIBLE);
+                                                                            }
+
+                                                                            phone.setText((dataSnapshot.child("phone").getValue(String.class)).substring(3));
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                    }
+                                                                });
+
+
+                                                                radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                                                                    @Override
+                                                                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                                                        open.setVisibility(View.VISIBLE);
+                                                                        if (checkedId == R.id.paymentcash) {
+                                                                            open.setText("Done");
+                                                                        } else {
+                                                                            open.setText("Open App");
+                                                                        }
+                                                                    }
+                                                                });
+
+                                                                open.setOnClickListener(new View.OnClickListener() {
+                                                                    @Override
+                                                                    public void onClick(View v) {
+                                                                        String appPackageName;
+                                                                        PackageManager pm;
+                                                                        Intent appstart;
+
+                                                                        if (radioGroup.getCheckedRadioButtonId() == -1) {
+                                                                            MDToast.makeText(RideDetailss.this,"Select A Payment Option",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                                                        } else {
+                                                                            switch (radioGroup.getCheckedRadioButtonId()) {
+                                                                                case R.id.paymentcash:
+                                                                                    dialog.dismiss();
+                                                                                    break;
+
+                                                                                case R.id.paymentpaytm:
+                                                                                    appPackageName = "net.one97.paytm";
+                                                                                    pm = getPackageManager();
+                                                                                    appstart = pm.getLaunchIntentForPackage(appPackageName);
+                                                                                    if (null != appstart) {
+                                                                                        startActivity(appstart);
+                                                                                    } else {
+                                                                                        MDToast.makeText(RideDetailss.this, "Install PayTm on your device", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                                                    }
+                                                                                    break;
+
+                                                                                case R.id.paymentgooglepay:
+                                                                                    appPackageName = "com.google.apps.nbu.paisa.user";
+                                                                                    pm = getPackageManager();
+                                                                                    appstart = pm.getLaunchIntentForPackage(appPackageName);
+                                                                                    if (null != appstart) {
+                                                                                        startActivity(appstart);
+                                                                                    } else {
+                                                                                        MDToast.makeText(RideDetailss.this, "Install Google Pay on your device", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                                                    }
+                                                                                    break;
+
+                                                                                case R.id.paymentphonepe:
+                                                                                    appPackageName = "com.phonepe.app";
+                                                                                    pm = getPackageManager();
+                                                                                    appstart = pm.getLaunchIntentForPackage(appPackageName);
+                                                                                    if (null != appstart) {
+                                                                                        startActivity(appstart);
+                                                                                    } else {
+                                                                                        MDToast.makeText(RideDetailss.this, "Install PhonePe on your device", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                                                                                    }
+                                                                                    break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                });
+
+
+                                                                dialog.show();
+
+                                                            }
+                                                        });
+                                                    } else {
+                                                        cancel.setVisibility(View.VISIBLE);
+                                                    }
+                                                } catch (ParseException e) {
+                                                    e.printStackTrace();
+                                                }
+
 
                                             }
                                         }
@@ -947,25 +1235,48 @@ public class RideDetailss extends AppCompatActivity {
 
                                     final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
-                                    if(dataSnapshot.child("Ratings").exists())
-                                    {
+                                    if (dataSnapshot.child("Ratings").exists()) {
                                         String s = String.format("%.1f", Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
 
                                         rating.setText(s);
-                                    }
-                                    else {
+                                    } else {
                                         rating.setText("0");
                                     }
 
-                                    if(dataSnapshot.child("verified").exists())
-                                    {
-                                        if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
-                                        {
-                                            name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                    if (dataSnapshot.child("verified").exists()) {
+                                        if (dataSnapshot.child("verified").getValue(String.class).equals("verified")) {
+                                            name.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(RideDetailss.this, R.drawable.verify), null);
                                             name.setCompoundDrawablePadding(5);
                                         }
                                     }
 
+                                    if (dataSnapshot.child("payment options").exists()) {
+                                        dataSnapshot.child("payment options").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                                                if (dataSnapshot.child("Paytm").getValue(String.class).equals("1")) {
+                                                    paymentoptions.setText(paymentoptions.getText() + ", Paytm");
+                                                }
+
+                                                if (dataSnapshot.child("PhonePe").getValue(String.class).equals("1")) {
+                                                    paymentoptions.setText(paymentoptions.getText() + ", PhonePe");
+                                                }
+
+                                                if (dataSnapshot.child("GooglePay").getValue(String.class).equals("1")) {
+                                                    paymentoptions.setText(paymentoptions.getText() + ", GooglePay");
+                                                }
+
+                                                paymentoptions.setText(paymentoptions.getText() + ", UPI");
+
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                            }
+                                        });
+                                    }
                                     name.setText(profiledetails.getName());
                                     Picasso.get().load(profiledetails.getImage()).resize(200, 200).into(propic);
                                     call.setOnClickListener(new View.OnClickListener() {
@@ -1016,6 +1327,11 @@ public class RideDetailss extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
 
+                    userid = dataSnapshot.child("userid").getValue(String.class);
+
+                    paymenttext.setText("Payment Done Through");
+
+                    paymentoptions.setText(dataSnapshot.child("payment").getValue(String.class));
 
                     constraintLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -1028,8 +1344,8 @@ public class RideDetailss extends AppCompatActivity {
                                 public void run() {
                                     constraintLayout.setEnabled(true);
                                 }
-                            },1000);
-                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext,ratingnum;
+                            }, 1000);
+                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
                             final ImageView cross, propic;
                             final RatingBar ratingBar;
                             final RecyclerView recyclerView;
@@ -1053,7 +1369,7 @@ public class RideDetailss extends AppCompatActivity {
                             propic = dialog.findViewById(R.id.profiledialogpic);
                             ratingBar = dialog.findViewById(R.id.profiledialograting);
                             recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
-                            ratingnum=dialog.findViewById(R.id.profiledialogratingnum);
+                            ratingnum = dialog.findViewById(R.id.profiledialogratingnum);
 
                             cross.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -1105,25 +1421,20 @@ public class RideDetailss extends AppCompatActivity {
                                         vehicletext.setText("No Vehicles Added");
                                     }
 
-                                    if(dataSnapshot.child("Ratings").exists())
-                                    {
-                                        if(dataSnapshot.child("Ratings").getChildrenCount()==1)
-                                        {
-                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" rating )");
-                                        }else {
-                                            ratingnum.setText("( "+dataSnapshot.child("Ratings").getChildrenCount()+" ratings )");
+                                    if (dataSnapshot.child("Ratings").exists()) {
+                                        if (dataSnapshot.child("Ratings").getChildrenCount() == 1) {
+                                            ratingnum.setText("( " + dataSnapshot.child("Ratings").getChildrenCount() + " rating )");
+                                        } else {
+                                            ratingnum.setText("( " + dataSnapshot.child("Ratings").getChildrenCount() + " ratings )");
                                         }
                                         ratingBar.setRating(Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
-                                    }
-                                    else {
+                                    } else {
                                         ratingnum.setText("( No ratings )");
                                     }
 
-                                    if(dataSnapshot.child("verified").exists())
-                                    {
-                                        if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
-                                        {
-                                            name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                    if (dataSnapshot.child("verified").exists()) {
+                                        if (dataSnapshot.child("verified").getValue(String.class).equals("verified")) {
+                                            name.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(RideDetailss.this, R.drawable.verify), null);
                                             name.setCompoundDrawablePadding(5);
                                         }
                                     }
@@ -1183,6 +1494,7 @@ public class RideDetailss extends AppCompatActivity {
                         seatdetailstext.setVisibility(View.GONE);
                         bookingtext.setText("Status");
 
+                        bookingrequests.setVisibility(View.VISIBLE);
                         if (dataSnapshot.child("reason").exists()) {
                             bookingrequests.setText("Cancelled");
                             bookingrequests.setTextColor(getColor(R.color.red));
@@ -1205,21 +1517,17 @@ public class RideDetailss extends AppCompatActivity {
 
                                 final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
-                                if(dataSnapshot.child("Ratings").exists())
-                                {
+                                if (dataSnapshot.child("rating").exists()) {
                                     String s = String.format("%.1f", Float.valueOf(dataSnapshot.child("rating").getValue(String.class)));
 
                                     rating.setText(s);
-                                }
-                                else {
+                                } else {
                                     rating.setText("0");
                                 }
 
-                                if(dataSnapshot.child("verified").exists())
-                                {
-                                    if(dataSnapshot.child("verified").getValue(String.class).equals("verified"))
-                                    {
-                                        name.setCompoundDrawablesWithIntrinsicBounds(null,null, ContextCompat.getDrawable(RideDetailss.this,R.drawable.verify),null);
+                                if (dataSnapshot.child("verified").exists()) {
+                                    if (dataSnapshot.child("verified").getValue(String.class).equals("verified")) {
+                                        name.setCompoundDrawablesWithIntrinsicBounds(null, null, ContextCompat.getDrawable(RideDetailss.this, R.drawable.verify), null);
                                         name.setCompoundDrawablePadding(5);
                                     }
                                 }

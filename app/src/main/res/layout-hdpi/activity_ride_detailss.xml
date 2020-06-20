@@ -280,7 +280,7 @@
                 android:text="More Info"
                 android:textColor="#8E8B8B"
                 android:textStyle="bold"
-                android:textSize="10dp"
+                android:textSize="10sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cons10" />
 
@@ -366,14 +366,15 @@
                 android:text="Status Update"
                 android:textColor="#8E8B8B"
                 android:textStyle="bold"
+                android:textSize="10sp"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="@+id/ridedetmoreinfo"
-                app:layout_constraintTop_toBottomOf="@+id/ridedetmoreinfo" />
+                app:layout_constraintStart_toStartOf="@+id/ridedetpaymentoptions"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetpaymentoptions" />
 
             <com.tiper.MaterialSpinner
                 android:id="@+id/ridestatus"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
@@ -389,17 +390,43 @@
             <Button
                 android:id="@+id/updatestatus"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="40dp"
                 android:layout_marginEnd="20dp"
                 android:text="Update"
                 android:background="@drawable/button2"
                 android:foreground="?attr/selectableItemBackground"
                 android:textStyle="bold"
+                android:textSize="12sp"
                 android:visibility="gone"
                 android:textColor="#FFFFFF"
                 app:layout_constraintBottom_toBottomOf="@+id/ridestatus"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/ridestatus" />
+
+            <TextView
+                android:id="@+id/paymenttext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Payment Options"
+                android:layout_marginTop="30dp"
+                android:textColor="#8E8B8B"
+                android:textStyle="bold"
+                android:textSize="10sp"
+                app:layout_constraintStart_toStartOf="@+id/ridedetmoreinfo"
+                app:layout_constraintTop_toBottomOf="@+id/ridedetmoreinfo" />
+
+            <TextView
+                android:id="@+id/ridedetpaymentoptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="Cash"
+                android:textColor="@color/buttoncolor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="@+id/paymenttext"
+                app:layout_constraintTop_toBottomOf="@+id/paymenttext" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.valdesekamdem.library.mdtoast.MDToast;
 
 public class NetworkBroadcast extends BroadcastReceiver {
 
@@ -36,7 +37,7 @@ public class NetworkBroadcast extends BroadcastReceiver {
             if(dialog!=null)
             {
                 dialog.dismiss();
-                Toast.makeText(context,"Connection Succesfull",Toast.LENGTH_SHORT).show();
+                MDToast.makeText(context,"Connection Succesfull",MDToast.LENGTH_SHORT,MDToast.TYPE_SUCCESS).show();
             }
         }
         else{

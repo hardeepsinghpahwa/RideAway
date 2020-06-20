@@ -29,7 +29,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.firebase.database.FirebaseDatabase;
 import com.pahwa.rideaway.Fragments.HomeFragment;
 import com.pahwa.rideaway.Fragments.Profile;
@@ -39,7 +38,6 @@ import com.pahwa.rideaway.Notification.AppExecutors;
 import com.pahwa.rideaway.Notification.NotiDao;
 import com.pahwa.rideaway.Notification.NotiDatabase;
 import com.pahwa.rideaway.Notification.NotiDetails;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -55,8 +53,8 @@ public class Home extends AppCompatActivity {
     ConstraintLayout constraintLayout;
     int startingPosition = 0;
 
-    ImageView clear,cross;
-    TextView markasread,title;
+    ImageView clear, cross;
+    TextView markasread, title;
     RecyclerView recyclerView;
     NotiDatabase database;
     List<NotiDetails> details;
@@ -113,8 +111,8 @@ public class Home extends AppCompatActivity {
         recyclerView = dialog.findViewById(R.id.notificationrecyclerview);
         clear = dialog.findViewById(R.id.clearnotis);
         markasread = dialog.findViewById(R.id.markasread);
-        cross=dialog.findViewById(R.id.notificatiocross);
-        title=dialog.findViewById(R.id.textView19);
+        cross = dialog.findViewById(R.id.notificatiocross);
+        title = dialog.findViewById(R.id.textView19);
 
         title.setText("You have unread Notis");
         cross.setOnClickListener(new View.OnClickListener() {
@@ -124,8 +122,7 @@ public class Home extends AppCompatActivity {
             }
         });
 
-        new AsyncTask<Void,Void,List<NotiDetails>>()
-        {
+        new AsyncTask<Void, Void, List<NotiDetails>>() {
 
             @Override
             protected List<NotiDetails> doInBackground(Void... voids) {
@@ -137,9 +134,8 @@ public class Home extends AppCompatActivity {
             @Override
             protected void onPostExecute(List<NotiDetails> notiDetails) {
                 super.onPostExecute(notiDetails);
-                if(notiDetails!=null)
-                {
-                    if(notiDetails.size()!=0) {
+                if (notiDetails != null) {
+                    if (notiDetails.size() != 0) {
                         dialog.show();
                         recyclerView.setLayoutManager(new LinearLayoutManager(Home.this));
                         recyclerView.setAdapter(new NotificationAdapter(notiDetails));
@@ -149,8 +145,6 @@ public class Home extends AppCompatActivity {
                 }
             }
         }.execute();
-
-
 
 
         markasread.setOnClickListener(new View.OnClickListener() {
@@ -185,8 +179,6 @@ public class Home extends AppCompatActivity {
 
 
     }
-
-
 
     class NotificationAdapter extends RecyclerView.Adapter<NotiViewHolder> {
 
@@ -230,7 +222,7 @@ public class Home extends AppCompatActivity {
                 }
             });
 
-            Date date,date1;
+            Date date, date1;
 
             SimpleDateFormat ymdFormat = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
 
@@ -239,19 +231,15 @@ public class Home extends AppCompatActivity {
             SimpleDateFormat ymdFormat3 = new SimpleDateFormat("hh:mm aa");
 
             try {
-                date=ymdFormat.parse(notiDetails.getTime());
-                date1=new Date();
+                date = ymdFormat.parse(notiDetails.getTime());
+                date1 = new Date();
 
 
-                if(ymdFormat2.format(date).equals(ymdFormat2.format(date1)))
-                {
-                    holder.time.setText("Today, "+ ymdFormat3.format(Calendar.getInstance().getTime()));
-                }
-                else if(getCountOfDays(date,date1).equals("1"))
-                {
-                    holder.time.setText("Yesterday, "+ ymdFormat3.format(Calendar.getInstance().getTime()));
-                }
-                else {
+                if (ymdFormat2.format(date).equals(ymdFormat2.format(date1))) {
+                    holder.time.setText("Today, " + ymdFormat3.format(Calendar.getInstance().getTime()));
+                } else if (getCountOfDays(date, date1).equals("1")) {
+                    holder.time.setText("Yesterday, " + ymdFormat3.format(Calendar.getInstance().getTime()));
+                } else {
                     holder.time.setText(notiDetails.getTime());
                 }
             } catch (ParseException e) {
@@ -268,7 +256,7 @@ public class Home extends AppCompatActivity {
 
     private class NotiViewHolder extends RecyclerView.ViewHolder {
 
-        TextView title, body,time;
+        TextView title, body, time;
         CardView unread;
 
         public NotiViewHolder(@NonNull View itemView) {
@@ -277,7 +265,7 @@ public class Home extends AppCompatActivity {
             title = itemView.findViewById(R.id.notititle);
             body = itemView.findViewById(R.id.notibody);
             unread = itemView.findViewById(R.id.unreadnoti);
-            time=itemView.findViewById(R.id.notitime);
+            time = itemView.findViewById(R.id.notitime);
         }
 
     }

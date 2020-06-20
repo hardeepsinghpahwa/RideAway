@@ -192,6 +192,8 @@ public class PastRides extends Fragment {
                     }
                     else {
                         holder.rate.setEnabled(true);
+                        holder.rate.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(getResources(), R.drawable.whitestar, null),null, null, null);
+
                     }
                 }
 

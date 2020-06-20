@@ -149,4 +149,10 @@ public class MainActivity extends AppCompatActivity{
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         this.registerReceiver(new NetworkBroadcast(), filter);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.unregisterReceiver(new NetworkBroadcast());
+    }
 }

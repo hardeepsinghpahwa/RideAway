@@ -11,6 +11,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.valdesekamdem.library.mdtoast.MDToast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,7 +38,7 @@ public class SendNoti {
                     public void onResponse(Call<MyResponse> call, retrofit2.Response<MyResponse> response) {
                         if (response.code() == 200) {
                             if (response.body().success != 1) {
-                                Toast.makeText(context, "Failed ", Toast.LENGTH_LONG);
+                                MDToast.makeText(context, "Failed ", MDToast.LENGTH_LONG,MDToast.TYPE_ERROR).show();
                             }
                         }
                     }
