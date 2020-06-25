@@ -12,6 +12,7 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -58,6 +59,7 @@ public class Home extends AppCompatActivity {
     RecyclerView recyclerView;
     NotiDatabase database;
     List<NotiDetails> details;
+    NetworkBroadcast networkBroadcast;
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(4);
 
@@ -303,12 +305,6 @@ public class Home extends AppCompatActivity {
         }
 
 
-    /*Calendar todayCal = Calendar.getInstance();
-    int todayYear = todayCal.get(Calendar.YEAR);
-    int today = todayCal.get(Calendar.MONTH);
-    int todayDay = todayCal.get(Calendar.DAY_OF_MONTH);
-    */
-
         Calendar eCal = Calendar.getInstance();
         eCal.setTime(expireCovertedDate);
 
@@ -331,4 +327,19 @@ public class Home extends AppCompatActivity {
         return ("" + (int) dayCount);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
+    }
 }

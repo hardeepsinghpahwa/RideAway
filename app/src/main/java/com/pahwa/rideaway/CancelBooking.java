@@ -6,6 +6,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -47,6 +49,7 @@ public class CancelBooking extends AppCompatActivity {
     ImageView back;
     ProgressBar progressBar;
     DatabaseReference fromPath, toPath;
+    NetworkBroadcast networkBroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -318,5 +321,20 @@ public class CancelBooking extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         customType(CancelBooking.this, "right-to-left");
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
     }
 }

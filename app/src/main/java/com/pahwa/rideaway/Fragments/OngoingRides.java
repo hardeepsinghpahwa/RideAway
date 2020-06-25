@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.pahwa.rideaway.Notification.Data;
 import com.pahwa.rideaway.R;
 import com.pahwa.rideaway.RideDetailss;
 import com.pahwa.rideaway.SearchResultDetails;
@@ -31,7 +32,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.Objects;
 
 import static maes.tech.intentanim.CustomIntent.customType;
@@ -44,6 +51,7 @@ public class OngoingRides extends Fragment {
     ArrayList<ridedetails> rides;
     LottieAnimationView progressBar, nodata;
     TextView nodatatext;
+    SimpleDateFormat df;
 
     public OngoingRides() {
         // Required empty public constructor
@@ -55,7 +63,7 @@ public class OngoingRides extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_ongoing_rides, container, false);
-
+        df= new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
         rides = new ArrayList<>();
 
         recyclerView = v.findViewById(R.id.ongoingridesrecyclerview);
@@ -96,23 +104,42 @@ public class OngoingRides extends Fragment {
                             }
                         }
 
-                        ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey());
+
+                        Date date= null;
+                        try {
+                            date = df.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                        ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey());
 
                         rides.add(ridedetails);
 
                     } else if (dataSnapshot1.child("Booking Requests").exists()) {
+                        Date date= null;
+                        try {
+                            date = df.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Requests").getChildren()) {
                             Log.i("req", dataSnapshot2.getKey());
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Requested", dataSnapshot1.getKey());
+                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Requested", dataSnapshot1.getKey());
 
                                 rides.add(ridedetails);
                             }
                         }
                     } else if (dataSnapshot1.child("Booking Confirmed").exists()) {
+                        Date date= null;
+                        try {
+                            date = df.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Confirmed").getChildren()) {
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Confirmed", dataSnapshot1.getKey());
+                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Confirmed", dataSnapshot1.getKey());
 
                                 rides.add(ridedetails);
                             }
@@ -121,8 +148,17 @@ public class OngoingRides extends Fragment {
 
                 }
 
+                Collections.sort(rides, new Comparator<ridedetails>() {
+                    public int compare(ridedetails o1, ridedetails o2) {
+                        if (o1.getDate() == null || o2.getDate() == null)
+                            return 0;
+                        return o2.getDate().compareTo(o1.getDate());
+                    }
+                });
+
                 Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
                 recyclerView.scheduleLayoutAnimation();
+
 
                 if (recyclerView.getAdapter().getItemCount() == 0) {
                     progressBar.setVisibility(View.GONE);
@@ -160,7 +196,9 @@ public class OngoingRides extends Fragment {
             holder.from.setText(det.getFrom());
             holder.type.setText(det.getType());
             holder.to.setText(det.getTo());
-            holder.time.setText(det.getTime());
+
+
+            holder.time.setText(df.format(det.getDate()));
 
             if (det.getSeats().equals("1")) {
                 holder.seats.setText(det.getSeats() + " seat left");

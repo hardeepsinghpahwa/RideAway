@@ -16,9 +16,11 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,7 +65,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static maes.tech.intentanim.CustomIntent.customType;
 
@@ -91,7 +96,8 @@ public class RideDetailss extends AppCompatActivity {
     Button updatestatus;
     List<String> categories;
     String st;
-
+    NetworkBroadcast networkBroadcast;
+    Float seatsno = Float.valueOf(0);
     FirebaseRecyclerAdapter<bookingdetails, BookingViewHolder> firebaseRecyclerAdapter;
     FirebaseRecyclerAdapter<vehicledetails, VehicleHolder> firebaseRecyclerAdapter2;
 
@@ -170,7 +176,7 @@ public class RideDetailss extends AppCompatActivity {
                                             constraintLayout.setEnabled(true);
                                         }
                                     }, 1000);
-                                    final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
+                                    final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum,report;
                                     final ImageView cross, propic;
                                     final RatingBar ratingBar;
                                     final RecyclerView recyclerView;
@@ -195,6 +201,7 @@ public class RideDetailss extends AppCompatActivity {
                                     ratingBar = dialog.findViewById(R.id.profiledialograting);
                                     recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
                                     ratingnum = dialog.findViewById(R.id.profiledialogratingnum);
+                                    report=dialog.findViewById(R.id.report);
 
                                     cross.setOnClickListener(new View.OnClickListener() {
                                         @Override
@@ -240,11 +247,26 @@ public class RideDetailss extends AppCompatActivity {
                                     FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+                                            final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
                                             if (!dataSnapshot.child("Vehicles").exists()) {
                                                 vehicletext.setText("No Vehicles Added");
                                             }
+
+                                            if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(userid))
+                                            {
+                                                report.setVisibility(View.GONE);
+                                            }
+
+                                            report.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent intent=new Intent(RideDetailss.this,ReportUser.class);
+                                                    intent.putExtra("name",profiledetails.getName());
+                                                    intent.putExtra("uid",userid);
+                                                    startActivity(intent);
+                                                }
+                                            });
 
                                             if (dataSnapshot.child("Ratings").exists()) {
                                                 if (dataSnapshot.child("Ratings").getChildrenCount() == 1) {
@@ -265,7 +287,7 @@ public class RideDetailss extends AppCompatActivity {
 
                                             name.setText(profiledetails.getName());
                                             phone.setText(profiledetails.getPhone());
-                                            occupation.setText(profiledetails.getOccupation());
+                                            occupation.setText(profiledetails.getOccupation().substring(3));
                                             gender.setText(profiledetails.getGender());
                                             if (dataSnapshot.child("offered").exists()) {
                                                 offered.setText(dataSnapshot.child("offered").getValue(String.class));
@@ -485,7 +507,7 @@ public class RideDetailss extends AppCompatActivity {
                                                                     if (radioGroup.getCheckedRadioButtonId() == -1) {
                                                                         MDToast.makeText(RideDetailss.this, "Select a payment method first", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                                                     } else {
-                                                                        String paymentmethod = "Cash";
+                                                                        String paymentmethod = "";
                                                                         switch (radioGroup.getCheckedRadioButtonId()) {
                                                                             case R.id.paymentcash:
                                                                                 paymentmethod = "Cash";
@@ -531,62 +553,110 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                         @Override
                                                                                                         public void onComplete(@NonNull Task<Void> task) {
                                                                                                             if (task.isSuccessful()) {
+
                                                                                                                 toPath.child("status").setValue("Ride Completed");
                                                                                                                 toPath.child("payment").setValue(finalPaymentmethod);
                                                                                                                 toPath.addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                                     @Override
-                                                                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot2) {
+                                                                                                                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot2) {
 
                                                                                                                         dataSnapshot2.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
                                                                                                                             @Override
                                                                                                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
                                                                                                                                 SendNoti sendNoti = new SendNoti();
                                                                                                                                 sendNoti.sendNotification(getApplicationContext(), dataSnapshot4.getKey(), "Ride Completed!", "Status Update. The Offerer has marked the ride as Completed. Don't Forget to rate the ride.");
-                                                                                                                            }
 
-                                                                                                                            @Override
-                                                                                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                                                                            }
-                                                                                                                        });
+                                                                                                                                FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot2.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                                    @Override
+                                                                                                                                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot3) {
+                                                                                                                                        seatsno = Float.valueOf(0);
+                                                                                                                                        if (dataSnapshot3.child("offered").exists()) {
+                                                                                                                                            dataSnapshot3.child("offered").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("offered").getValue(String.class)) + 1));
+                                                                                                                                        } else {
+                                                                                                                                            dataSnapshot3.child("offered").getRef().setValue("1");
+                                                                                                                                        }
 
-                                                                                                                        FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot2.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                                                            @Override
-                                                                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
-                                                                                                                                if (dataSnapshot3.child("offered").exists()) {
-                                                                                                                                    dataSnapshot3.child("offered").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("offered").getValue(String.class)) + 1));
-                                                                                                                                } else {
-                                                                                                                                    dataSnapshot3.child("offered").getRef().setValue("1");
-                                                                                                                                }
-                                                                                                                            }
+                                                                                                                                        progressBar.setVisibility(View.GONE);
+                                                                                                                                        cancel.setEnabled(true);
+                                                                                                                                        MDToast.makeText(RideDetailss.this, "Ride Completed", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
-                                                                                                                            @Override
-                                                                                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                                                                            }
-                                                                                                                        });
+                                                                                                                                        Intent intent = new Intent(RideDetailss.this, Home.class);
+                                                                                                                                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                                                                                                        dialog1.dismiss();
+                                                                                                                                        startActivity(intent);
+                                                                                                                                        customType(RideDetailss.this, "fadein-to-fadeout");
 
-                                                                                                                        toPath.child("Booking Confirmed").addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                                                            @Override
-                                                                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
 
-                                                                                                                                for (DataSnapshot dataSnapshot5 : dataSnapshot4.getChildren()) {
-                                                                                                                                    FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot5.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                                                                                        @Override
-                                                                                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
-                                                                                                                                            if (dataSnapshot3.child("found").exists()) {
-                                                                                                                                                dataSnapshot3.child("found").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("found").getValue(String.class)) + 1));
-                                                                                                                                            } else {
-                                                                                                                                                dataSnapshot3.child("found").getRef().setValue("1");
+                                                                                                                                        dataSnapshot2.child("Booking Confirmed").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                                            @Override
+                                                                                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                                                                                                for (DataSnapshot dataSnapshot4 : dataSnapshot.getChildren()) {
+                                                                                                                                                    seatsno = seatsno + Float.valueOf(dataSnapshot4.child("seats").getValue(String.class));
+                                                                                                                                                }
+
+                                                                                                                                                if (dataSnapshot3.child("commision").exists()) {
+                                                                                                                                                    dataSnapshot3.child("commision").getRef().setValue(String.valueOf(Float.valueOf(dataSnapshot3.child("commision").getValue(String.class)) + 0.05 * Float.valueOf(dataSnapshot2.child("price").getValue(String.class)) * seatsno));
+                                                                                                                                                } else {
+                                                                                                                                                    dataSnapshot3.getRef().child("commision").setValue(String.valueOf(0.05 * Float.valueOf(dataSnapshot2.child("price").getValue(String.class)) * seatsno));
+
+                                                                                                                                                }
+
+                                                                                                                                                Map<String, String> details = new HashMap<>();
+                                                                                                                                                details.put("from", dataSnapshot2.child("pickupname").getValue(String.class));
+                                                                                                                                                details.put("to", dataSnapshot2.child("dropname").getValue(String.class));
+                                                                                                                                                details.put("date", dataSnapshot2.child("timeanddate").getValue(String.class));
+                                                                                                                                                details.put("seats", String.valueOf(seatsno));
+                                                                                                                                                details.put("price", dataSnapshot2.child("price").getValue(String.class));
+
+                                                                                                                                                dataSnapshot3.getRef().child("Commisions").child(UUID.randomUUID().toString()).setValue(details);
+
                                                                                                                                             }
-                                                                                                                                        }
 
-                                                                                                                                        @Override
-                                                                                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                                                                                            @Override
+                                                                                                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                                                                                                                                        }
-                                                                                                                                    });
-                                                                                                                                }
+                                                                                                                                            }
+                                                                                                                                        });
+
+                                                                                                                                        toPath.child("Booking Confirmed").addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                                            @Override
+                                                                                                                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot4) {
+
+                                                                                                                                                for (DataSnapshot dataSnapshot5 : dataSnapshot4.getChildren()) {
+                                                                                                                                                    FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot5.getKey()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                                                        @Override
+                                                                                                                                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot3) {
+
+
+                                                                                                                                                            if (dataSnapshot3.child("found").exists()) {
+                                                                                                                                                                dataSnapshot3.child("found").getRef().setValue(String.valueOf(Integer.parseInt(dataSnapshot3.child("found").getValue(String.class)) + 1));
+                                                                                                                                                            } else {
+                                                                                                                                                                dataSnapshot3.child("found").getRef().setValue("1");
+                                                                                                                                                            }
+                                                                                                                                                        }
+
+                                                                                                                                                        @Override
+                                                                                                                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                                                                        }
+                                                                                                                                                    });
+                                                                                                                                                }
+                                                                                                                                            }
+
+                                                                                                                                            @Override
+                                                                                                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                                                            }
+                                                                                                                                        });
+                                                                                                                                    }
+
+                                                                                                                                    @Override
+                                                                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                                                    }
+                                                                                                                                });
                                                                                                                             }
 
                                                                                                                             @Override
@@ -603,20 +673,7 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                                     }
                                                                                                                 });
 
-                                                                                                                progressBar.setVisibility(View.GONE);
-                                                                                                                cancel.setEnabled(true);
-                                                                                                                MDToast.makeText(RideDetailss.this, "Ride Completed", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
-
-                                                                                                                Intent intent = new Intent(RideDetailss.this, Home.class);
-                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                                                                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                                                                                                                startActivity(intent);
-
-                                                                                                                customType(RideDetailss.this, "fadein-to-fadeout");
-                                                                                                                finish();
 
                                                                                                             } else {
                                                                                                                 progressBar.setVisibility(View.GONE);
@@ -952,6 +1009,91 @@ public class RideDetailss extends AppCompatActivity {
                                     }
                                     bookingconfirm.setTextColor(getColor(R.color.green));
 
+                                    bookingconfirm.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            {
+
+                                                final Dialog dialog1 = new Dialog(RideDetailss.this);
+                                                dialog1.setContentView(R.layout.bookingsdialog);
+                                                dialog1.setCanceledOnTouchOutside(false);
+                                                dialog1.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                                                dialog1.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+
+                                                Query query = FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(uid).child("Booking Confirmed");
+                                                FirebaseRecyclerOptions<bookingdetails> options = new FirebaseRecyclerOptions.Builder<bookingdetails>()
+                                                        .setQuery(query, new SnapshotParser<bookingdetails>() {
+                                                            @NonNull
+                                                            @Override
+                                                            public bookingdetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                                                return new bookingdetails(snapshot.child("seats").getValue(String.class), snapshot.getKey());
+                                                            }
+                                                        }).build();
+
+
+                                                firebaseRecyclerAdapter = new FirebaseRecyclerAdapter<bookingdetails, BookingViewHolder>(options) {
+                                                    @Override
+                                                    protected void onBindViewHolder(@NonNull final BookingViewHolder holder, int position, @NonNull final bookingdetails model) {
+                                                        holder.seats.setText(model.getSeats() + " seats booked");
+
+                                                        FirebaseDatabase.getInstance().getReference().child("Profiles").child(model.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                                                                Picasso.get().load(dataSnapshot.child("image").getValue(String.class)).resize(200, 200).into(holder.propic);
+                                                                holder.name.setText(dataSnapshot.child("name").getValue(String.class));
+
+                                                                holder.accept.setVisibility(View.GONE);
+                                                                holder.reject.setVisibility(View.GONE);
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                            }
+                                                        });
+                                                    }
+
+
+                                                    @NonNull
+                                                    @Override
+                                                    public BookingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                                                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.bookingitem, parent, false);
+                                                        return new BookingViewHolder(view);
+                                                    }
+                                                };
+
+
+                                                firebaseRecyclerAdapter.startListening();
+                                                TextView title;
+                                                RecyclerView recyclerView;
+                                                ImageView cross;
+
+
+                                                title = dialog1.findViewById(R.id.bookingtitle);
+                                                recyclerView = dialog1.findViewById(R.id.bookingsrecyclerview);
+                                                cross = dialog1.findViewById(R.id.bookingscross);
+
+                                                recyclerView.setLayoutManager(new LinearLayoutManager(RideDetailss.this));
+                                                recyclerView.setAdapter(firebaseRecyclerAdapter);
+                                                title.setText("Booking Confirmed");
+                                                title.setTextColor(getColor(R.color.yellow));
+
+
+                                                cross.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View v) {
+                                                        dialog1.dismiss();
+                                                        firebaseRecyclerAdapter.stopListening();
+                                                    }
+                                                });
+
+
+                                                dialog1.show();
+
+                                            }
+                                        }
+                                    });
 
                                 }
                             } else {
@@ -1078,7 +1220,7 @@ public class RideDetailss extends AppCompatActivity {
                                                                     @Override
                                                                     public void onClick(View v) {
                                                                         ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                                                                        ClipData clip = ClipData.newPlainText("Phone Number", phone.getText().toString().substring(3));
+                                                                        ClipData clip = ClipData.newPlainText("Phone Number", phone.getText().toString());
                                                                         clipboard.setPrimaryClip(clip);
                                                                         Toast.makeText(RideDetailss.this, "Phone Number copied", Toast.LENGTH_SHORT).show();
 
@@ -1139,7 +1281,7 @@ public class RideDetailss extends AppCompatActivity {
                                                                         Intent appstart;
 
                                                                         if (radioGroup.getCheckedRadioButtonId() == -1) {
-                                                                            MDToast.makeText(RideDetailss.this,"Select A Payment Option",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                                                            MDToast.makeText(RideDetailss.this, "Select A Payment Option", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                                                         } else {
                                                                             switch (radioGroup.getCheckedRadioButtonId()) {
                                                                                 case R.id.paymentcash:
@@ -1345,7 +1487,7 @@ public class RideDetailss extends AppCompatActivity {
                                     constraintLayout.setEnabled(true);
                                 }
                             }, 1000);
-                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
+                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum,report;
                             final ImageView cross, propic;
                             final RatingBar ratingBar;
                             final RecyclerView recyclerView;
@@ -1370,6 +1512,7 @@ public class RideDetailss extends AppCompatActivity {
                             ratingBar = dialog.findViewById(R.id.profiledialograting);
                             recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
                             ratingnum = dialog.findViewById(R.id.profiledialogratingnum);
+                            report=dialog.findViewById(R.id.report);
 
                             cross.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -1415,7 +1558,7 @@ public class RideDetailss extends AppCompatActivity {
                             FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+                                    final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
                                     if (!dataSnapshot.child("Vehicles").exists()) {
                                         vehicletext.setText("No Vehicles Added");
@@ -1438,9 +1581,23 @@ public class RideDetailss extends AppCompatActivity {
                                             name.setCompoundDrawablePadding(5);
                                         }
                                     }
+                                    if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(userid))
+                                    {
+                                        report.setVisibility(View.GONE);
+                                    }
+
+                                    report.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent=new Intent(RideDetailss.this,ReportUser.class);
+                                            intent.putExtra("name",profiledetails.getName());
+                                            intent.putExtra("uid",userid);
+                                            startActivity(intent);
+                                        }
+                                    });
 
                                     name.setText(profiledetails.getName());
-                                    phone.setText(profiledetails.getPhone());
+                                    phone.setText(profiledetails.getPhone().substring(3));
                                     occupation.setText(profiledetails.getOccupation());
                                     gender.setText(profiledetails.getGender());
                                     if (dataSnapshot.child("offered").exists()) {
@@ -1628,5 +1785,21 @@ public class RideDetailss extends AppCompatActivity {
 
             textView = itemView.findViewById(R.id.vehiclee);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
     }
 }

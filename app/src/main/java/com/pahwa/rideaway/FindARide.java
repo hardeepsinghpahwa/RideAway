@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -44,9 +46,9 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
     public double pickuplat = 200, pickuplong = 200, droplat = 200, droplong = 200;
     ImageView minus, add, back;
     Button find;
-    ArrayList<offerdetails> results;
-    ArrayList<String>uids;
+    ArrayList<details> results;
     ProgressBar progressBar;
+    NetworkBroadcast networkBroadcast;
     ConstraintLayout constraintLayout;
 
 
@@ -66,7 +68,6 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
         progressBar = findViewById(R.id.findarideprogressbar);
         constraintLayout = findViewById(R.id.cons6);
         results = new ArrayList<>();
-        uids =new ArrayList<>();
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,7 +138,6 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
             @Override
             public void onClick(View v) {
                 results.clear();
-                uids.clear();
                 Animation shake = AnimationUtils.loadAnimation(FindARide.this, R.anim.shake);
 
                 if (pickuplat == 200 || pickuplong == 200) {
@@ -198,10 +198,9 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
 
                                             if(date.compareTo(dateobj)>0)
                                             {
-                                                offerdetails offerdetails = new offerdetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("vehiclename").getValue(String.class),dataSnapshot1.child("vehiclenumber").getValue(String.class), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
+                                                details offerdetails = new details(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), dataSnapshot1.child("price").getValue(String.class), dataSnapshot1.child("instant").getValue(String.class), dataSnapshot1.child("moreinfo").getValue(String.class), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("vehiclename").getValue(String.class),dataSnapshot1.child("vehiclenumber").getValue(String.class),dataSnapshot1.getKey(), dataSnapshot1.child("pickuplat").getValue(Double.class), dataSnapshot1.child("pickuplong").getValue(Double.class), dataSnapshot1.child("droplat").getValue(Double.class), dataSnapshot1.child("droplong").getValue(Double.class));
 
                                                 results.add(offerdetails);
-                                                uids.add(dataSnapshot1.getKey());
                                             }
 
                                         }
@@ -215,7 +214,6 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
                                         intent.putExtra("results", results);
                                         intent.putExtra("from", pickup.getText().toString());
                                         intent.putExtra("to", drop.getText().toString());
-                                        intent.putStringArrayListExtra("uids",uids);
                                         startActivity(intent);
                                         customType(FindARide.this, "left-to-right");
 
@@ -328,4 +326,21 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
     private double rad2deg(double rad) {
         return (rad * 180.0 / Math.PI);
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
+    }
 }
+

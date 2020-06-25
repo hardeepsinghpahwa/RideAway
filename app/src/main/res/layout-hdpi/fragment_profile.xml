@@ -191,7 +191,7 @@
                 app:cardCornerRadius="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView9">
+                app:layout_constraintTop_toBottomOf="@+id/card20">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -203,17 +203,18 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:layout_marginTop="15dp"
-                        android:text="Wallet Balance"
+                        android:text="Commision Balance"
                         android:textColor="#8E8B8B"
-                        android:textStyle="bold"
                         android:textSize="10sp"
+                        android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/walletbalance"
+                        android:id="@+id/commisionbalance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="15dp"
                         android:textColor="@color/buttoncolor"
                         android:textSize="14sp"
@@ -223,37 +224,19 @@
                         app:layout_constraintTop_toBottomOf="@+id/textView27" />
 
                     <Button
-                        android:id="@+id/transactions"
+                        android:id="@+id/paybutton"
                         android:layout_width="wrap_content"
                         android:layout_height="25dp"
-                        android:layout_marginTop="11dp"
-                        android:layout_marginEnd="20dp"
+                        android:layout_marginEnd="15dp"
                         android:layout_marginBottom="10dp"
                         android:background="@drawable/button2"
                         android:foreground="?attr/selectableItemBackground"
-                        android:text="Transactions"
+                        android:text="Pay"
                         android:textColor="#FFFFFF"
                         android:textSize="8sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/addmoneytowallet" />
-
-                    <Button
-                        android:id="@+id/addmoneytowallet"
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/button2"
-                         android:text="Add Money"
-                        android:textColor="#FFFFFF"
-                        android:textSize="8sp"
-                        android:textStyle="bold"
-                        android:foreground="?attr/selectableItemBackground"
-                        app:layout_constraintBottom_toTopOf="@+id/transactions"
-                        app:layout_constraintEnd_toEndOf="@+id/transactions"
-                        app:layout_constraintStart_toStartOf="@+id/transactions"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintEnd_toEndOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -270,7 +253,7 @@
                 app:cardCornerRadius="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView15">
+                app:layout_constraintTop_toBottomOf="@+id/cardView9">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/cons12"
@@ -326,7 +309,7 @@
                 app:cardCornerRadius="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/card20">
+                app:layout_constraintTop_toBottomOf="@+id/cardView15">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -341,8 +324,8 @@
                         android:layout_marginTop="15dp"
                         android:text="Rides Completed"
                         android:textColor="#8E8B8B"
-                        android:textStyle="bold"
                         android:textSize="10sp"
+                        android:textStyle="bold"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 

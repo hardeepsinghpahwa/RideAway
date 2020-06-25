@@ -6,6 +6,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -43,6 +45,7 @@ public class OfferRideDetails extends AppCompatActivity {
     ProgressBar progressBar;
     Animation shake;
     String distance;
+    NetworkBroadcast networkBroadcast;
     String pickupname,dropname,timedate,seats,vname,vnumber;
     double pickuplat,pickuplong,droplat,droplong;
 
@@ -232,5 +235,21 @@ public class OfferRideDetails extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         customType(OfferRideDetails.this,"right-to-left");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
     }
 }

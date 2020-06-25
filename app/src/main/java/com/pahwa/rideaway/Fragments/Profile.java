@@ -3,11 +3,11 @@ package com.pahwa.rideaway.Fragments;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,7 +18,6 @@ import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,44 +30,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.airbnb.lottie.LottieAnimationView;
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.Continuation;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pahwa.rideaway.MainActivity;
-import com.pahwa.rideaway.Notification.ApiService;
-import com.pahwa.rideaway.Notification.Client;
-import com.pahwa.rideaway.Notification.Data;
-import com.pahwa.rideaway.Notification.MyResponse;
 import com.pahwa.rideaway.Notification.NotiDatabase;
 import com.pahwa.rideaway.Notification.NotiDetails;
-import com.pahwa.rideaway.Notification.NotificationSender;
-import com.pahwa.rideaway.Notification.SendNoti;
-import com.pahwa.rideaway.OfferARide;
 import com.pahwa.rideaway.R;
 import com.pahwa.rideaway.SetupProfile;
+import com.pahwa.rideaway.commisiondetails;
 import com.pahwa.rideaway.profiledetails;
 import com.pahwa.rideaway.vehicledetails;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -85,14 +67,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -102,10 +79,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import dmax.dialog.SpotsDialog;
-import retrofit2.Call;
-import retrofit2.Callback;
 
-import static com.pahwa.rideaway.LocationDialog.TAG;
 import static maes.tech.intentanim.CustomIntent.customType;
 
 /**
@@ -113,9 +87,8 @@ import static maes.tech.intentanim.CustomIntent.customType;
  */
 public class Profile extends Fragment {
 
-
     Button logout;
-    TextView offered, found, age, gender, rating, phone, name, occupation, verifytext, ratingnum;
+    TextView offered, found, age, gender, rating, phone, name, occupation, verifytext, ratingnum,commisionbalance;
     ImageView vehicles, profilepic, edit;
     ProgressBar progressBar;
     FirebaseRecyclerAdapter<vehicledetails, VehicleViewHolder> firebaseRecyclerAdapter;
@@ -123,7 +96,7 @@ public class Profile extends Fragment {
     CardView cardView;
     Uri file;
     TextView walletbalance, paymentoptions;
-    Button addmoney, transactions;
+    Button paycommision;
     ImageView notifications;
     TextView noticount;
     Dialog dialog;
@@ -134,6 +107,7 @@ public class Profile extends Fragment {
     List<NotiDetails> details;
     RecyclerView recyclerView;
     Button addorchange;
+    FirebaseRecyclerAdapter<commisiondetails, CommisionViewHolder> firebaseRecyclerAdapter2;
 
     public Profile() {
         // Required empty public constructor
@@ -166,11 +140,11 @@ public class Profile extends Fragment {
         nestedScrollView = v.findViewById(R.id.nestedScrollViewprofile);
         notifications = v.findViewById(R.id.notifications);
         noticount = v.findViewById(R.id.noticount);
-        walletbalance = v.findViewById(R.id.walletbalance);
-        addmoney = v.findViewById(R.id.addmoneytowallet);
-        transactions = v.findViewById(R.id.transactions);
+        walletbalance = v.findViewById(R.id.commisionbalance);
+        paycommision = v.findViewById(R.id.paybutton);
         addorchange = v.findViewById(R.id.profileaddchange);
         paymentoptions = v.findViewById(R.id.paymentoptions);
+        commisionbalance=v.findViewById(R.id.commisionbalance);
 
         final Thread thread = new Thread(new Runnable() {
             @Override
@@ -205,8 +179,8 @@ public class Profile extends Fragment {
             @Override
             public void onClick(View v) {
 
-                final EditText phone,upiid;
-                final CheckBox paytm,googlepay,phonepe;
+                final EditText phone, upiid;
+                final CheckBox paytm, googlepay, phonepe;
                 Button save;
                 ImageView cross;
 
@@ -217,13 +191,13 @@ public class Profile extends Fragment {
                 dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
 
-                phone=dialog.findViewById(R.id.addpaymentphone);
-                upiid=dialog.findViewById(R.id.addpaymentupi);
-                paytm=dialog.findViewById(R.id.paytmcheckBox);
-                googlepay=dialog.findViewById(R.id.googlepaycheckBox);
-                phonepe=dialog.findViewById(R.id.phonepecheckbox);
-                save=dialog.findViewById(R.id.setpaymentsavebutton);
-                cross=dialog.findViewById(R.id.setpaymentcross);
+                phone = dialog.findViewById(R.id.addpaymentphone);
+                upiid = dialog.findViewById(R.id.addpaymentupi);
+                paytm = dialog.findViewById(R.id.paytmcheckBox);
+                googlepay = dialog.findViewById(R.id.googlepaycheckBox);
+                phonepe = dialog.findViewById(R.id.phonepecheckbox);
+                save = dialog.findViewById(R.id.setpaymentsavebutton);
+                cross = dialog.findViewById(R.id.setpaymentcross);
 
                 cross.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -237,24 +211,20 @@ public class Profile extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         phone.setText((dataSnapshot.child("phone").getValue(String.class)).substring(3));
 
-                        if(dataSnapshot.child("payment options").exists())
-                        {
+                        if (dataSnapshot.child("payment options").exists()) {
                             dataSnapshot.child("payment options").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                     upiid.setText(dataSnapshot.child("upiid").getValue(String.class));
-                                    if(dataSnapshot.child("Paytm").getValue(String.class).equals("1"))
-                                    {
+                                    if (dataSnapshot.child("Paytm").getValue(String.class).equals("1")) {
                                         paytm.setChecked(true);
                                     }
 
-                                    if(dataSnapshot.child("PhonePe").getValue(String.class).equals("1"))
-                                    {
+                                    if (dataSnapshot.child("PhonePe").getValue(String.class).equals("1")) {
                                         phonepe.setChecked(true);
                                     }
 
-                                    if(dataSnapshot.child("GooglePay").getValue(String.class).equals("1"))
-                                    {
+                                    if (dataSnapshot.child("GooglePay").getValue(String.class).equals("1")) {
                                         googlepay.setChecked(true);
                                     }
 
@@ -281,53 +251,44 @@ public class Profile extends Fragment {
                 save.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(phone.getText().toString().length()!=10)
-                        {
-                            MDToast.makeText(getActivity(),"Phone Not Correct",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
-                        }
-                        else{
+                        if (phone.getText().toString().length() != 10) {
+                            MDToast.makeText(getActivity(), "Phone Not Correct", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
+                        } else {
 
-                            final String paytmm,phonepee,googlepayy,upi;
+                            final String paytmm, phonepee, googlepayy, upi;
 
-                            if(paytm.isChecked())
-                            {
-                                paytmm="1";
-                            }
-                            else paytmm="0";
+                            if (paytm.isChecked()) {
+                                paytmm = "1";
+                            } else paytmm = "0";
 
-                            if(phonepe.isChecked())
-                            {
-                                phonepee="1";
-                            }
-                            else phonepee="0";
+                            if (phonepe.isChecked()) {
+                                phonepee = "1";
+                            } else phonepee = "0";
 
-                            if(googlepay.isChecked())
-                            {
-                                googlepayy="1";
-                            }
-                            else googlepayy="0";
+                            if (googlepay.isChecked()) {
+                                googlepayy = "1";
+                            } else googlepayy = "0";
 
-                            upi=upiid.getText().toString();
+                            upi = upiid.getText().toString();
 
                             FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("payment options").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                                    Map<String,Object> det=new HashMap<>();
-                                    det.put("Paytm",paytmm);
-                                    det.put("PhonePe",phonepee);
-                                    det.put("GooglePay",googlepayy);
-                                    det.put("upi_id",upi);
+                                    Map<String, Object> det = new HashMap<>();
+                                    det.put("Paytm", paytmm);
+                                    det.put("PhonePe", phonepee);
+                                    det.put("GooglePay", googlepayy);
+                                    det.put("upi_id", upi);
 
                                     dataSnapshot.getRef().updateChildren(det).addOnCompleteListener(new OnCompleteListener<Void>() {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
-                                            if(task.isSuccessful())
-                                            {
-                                                MDToast.makeText(getActivity(),"Payment Details Updated",MDToast.LENGTH_SHORT,MDToast.TYPE_SUCCESS).show();
+                                            if (task.isSuccessful()) {
+                                                MDToast.makeText(getActivity(), "Payment Details Updated", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
                                                 dialog.dismiss();
-                                            }else {
-                                                MDToast.makeText(getActivity(),"Some Error Occured",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                                            } else {
+                                                MDToast.makeText(getActivity(), "Some Error Occured", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
                                             }
                                         }
                                     });
@@ -341,7 +302,6 @@ public class Profile extends Fragment {
                         }
                     }
                 });
-
 
 
                 dialog.show();
@@ -452,7 +412,7 @@ public class Profile extends Fragment {
 
         FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
 
                 profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
@@ -470,7 +430,7 @@ public class Profile extends Fragment {
                     if (dataSnapshot.child("verified").getValue(String.class).equals("verified")) {
                         verify.setVisibility(View.GONE);
                         verifytext.setText("Verified User");
-                        verifytext.setTextColor(getActivity().getColor(R.color.buttoncolor));
+                        verifytext.setTextColor(Color.parseColor("#2196F3"));
                         verifytext.setTextSize(18);
                         verifytext.setVisibility(View.VISIBLE);
 
@@ -493,28 +453,24 @@ public class Profile extends Fragment {
                 }
 
 
-                if(dataSnapshot.child("payment options").exists())
-                {
+                if (dataSnapshot.child("payment options").exists()) {
                     dataSnapshot.child("payment options").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            if(dataSnapshot.child("Paytm").getValue(String.class).equals("1"))
-                            {
-                                paymentoptions.setText(paymentoptions.getText()+", Paytm");
+                            if (dataSnapshot.child("Paytm").getValue(String.class).equals("1")) {
+                                paymentoptions.setText(paymentoptions.getText() + ", Paytm");
                             }
 
-                            if(dataSnapshot.child("PhonePe").getValue(String.class).equals("1"))
-                            {
-                                paymentoptions.setText(paymentoptions.getText()+", PhonePe");
+                            if (dataSnapshot.child("PhonePe").getValue(String.class).equals("1")) {
+                                paymentoptions.setText(paymentoptions.getText() + ", PhonePe");
                             }
 
-                            if(dataSnapshot.child("GooglePay").getValue(String.class).equals("1"))
-                            {
-                                paymentoptions.setText(paymentoptions.getText()+", GooglePay");
+                            if (dataSnapshot.child("GooglePay").getValue(String.class).equals("1")) {
+                                paymentoptions.setText(paymentoptions.getText() + ", GooglePay");
                             }
 
-                            paymentoptions.setText(paymentoptions.getText()+", UPI");
+                            paymentoptions.setText(paymentoptions.getText() + ", UPI");
 
                         }
 
@@ -526,11 +482,11 @@ public class Profile extends Fragment {
 
                 }
 
-                addmoney.setOnClickListener(new View.OnClickListener() {
+                paycommision.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        final EditText money;
+                        /*final EditText money;
                         Button add;
 
                         Dialog dialog = new Dialog(getActivity());
@@ -554,33 +510,100 @@ public class Profile extends Fragment {
 
                                 }
                             }
+                        });*/
+
+                        TextView totalcomm;
+                        RecyclerView commrecyclerView;
+                        Button pay;
+                        ImageView cross;
+
+                        final Dialog dialog = new Dialog(getActivity());
+                        dialog.setContentView(R.layout.commisiondialog);
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                        dialog.getWindow().setWindowAnimations(R.style.AppTheme_Exit);
+
+                        commrecyclerView = dialog.findViewById(R.id.commisionrecyview);
+                        cross = dialog.findViewById(R.id.commcross);
+                        pay = dialog.findViewById(R.id.paycommision);
+                        totalcomm = dialog.findViewById(R.id.totalcommision);
+
+                        cross.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
                         });
 
+                        if (dataSnapshot.child("commision").exists())
+                            totalcomm.setText("₹ "+dataSnapshot.child("commision").getValue(String.class));
+
+
+                        Query query = FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Commisions");
+
+                        FirebaseRecyclerOptions<commisiondetails> options = new FirebaseRecyclerOptions.Builder<commisiondetails>()
+                                .setQuery(query, new SnapshotParser<commisiondetails>() {
+                                    @NonNull
+                                    @Override
+                                    public commisiondetails parseSnapshot(@NonNull DataSnapshot snapshot) {
+                                        return new commisiondetails(snapshot.child("from").getValue(String.class), snapshot.child("to").getValue(String.class), snapshot.child("date").getValue(String.class), snapshot.child("price").getValue(String.class), snapshot.child("seats").getValue(String.class));
+                                    }
+                                }).build();
+
+
+                        firebaseRecyclerAdapter2 = new FirebaseRecyclerAdapter<commisiondetails, CommisionViewHolder>(options) {
+                            @Override
+                            protected void onBindViewHolder(@NonNull CommisionViewHolder holder, int position, @NonNull commisiondetails model) {
+                                holder.from.setText(model.getFrom());
+                                holder.to.setText(model.getTo());
+                                holder.date.setText(model.getDate());
+
+                                holder.commision.setText(model.getSeats() + " X " + (0.05 * Float.valueOf(model.getTotalprice())) + " = " + (Float.valueOf(model.getSeats()) * (0.05 * Float.valueOf(model.getTotalprice()))));
+
+                                holder.price.setText(model.getSeats() + " X " + (model.getTotalprice()) + " = " + (Float.valueOf(model.getSeats()) * Float.valueOf(model.getTotalprice())));
+                            }
+
+                            @NonNull
+                            @Override
+                            public CommisionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.commisionitem, parent, false);
+                                return new CommisionViewHolder(view);
+                            }
+                        };
+
+
+                        firebaseRecyclerAdapter2.startListening();
+
+                        commrecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+                        commrecyclerView.setAdapter(firebaseRecyclerAdapter2);
+
+                        dialog.show();
                     }
                 });
 
-
-                transactions.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
 
                 gender.setText(profiledetails.getGender());
                 Picasso.get().load(profiledetails.getImage()).resize(300, 300).into(profilepic);
-                phone.setText(profiledetails.getPhone());
+                phone.setText(profiledetails.getPhone().substring(3));
                 name.setText(profiledetails.getName());
                 occupation.setText(profiledetails.getOccupation());
+                if(dataSnapshot.child("commision").exists())
+                {
+                    commisionbalance.setText("₹ "+dataSnapshot.child("commision").getValue(String.class));
+                }
+                else {
+                    commisionbalance.setText("₹ 0");
+                }
 
-                if (dataSnapshot.child("offeredrides").exists()) {
-                    offered.setText(dataSnapshot.child("offeredrides").getValue(String.class));
+                if (dataSnapshot.child("offered").exists()) {
+                    offered.setText(dataSnapshot.child("offered").getValue(String.class));
                 } else {
                     offered.setText("0");
                 }
 
-                if (dataSnapshot.child("foundrides").exists()) {
-                    found.setText(dataSnapshot.child("foundrides").getValue(String.class));
+                if (dataSnapshot.child("found").exists()) {
+                    found.setText(dataSnapshot.child("found").getValue(String.class));
                 } else {
                     found.setText("0");
                 }
@@ -1229,4 +1252,25 @@ public class Profile extends Fragment {
 
     }
 
+    private class CommisionViewHolder extends RecyclerView.ViewHolder {
+
+        TextView from, to, date, price, commision;
+
+        public CommisionViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            from = itemView.findViewById(R.id.commfrom);
+            to = itemView.findViewById(R.id.commto);
+            date = itemView.findViewById(R.id.commdate);
+            price = itemView.findViewById(R.id.commtotalprice);
+            commision = itemView.findViewById(R.id.commtotalcommision);
+
+        }
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        
+    }
 }

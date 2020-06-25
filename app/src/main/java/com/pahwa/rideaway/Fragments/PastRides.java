@@ -40,7 +40,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Objects;
 
 import static maes.tech.intentanim.CustomIntent.customType;
 
@@ -53,6 +59,7 @@ public class PastRides extends Fragment {
     ArrayList<ridedetails> rides;
     LottieAnimationView progressBar, nodata;
     TextView nodatatext;
+    SimpleDateFormat df;
 
     public PastRides() {
         // Required empty public constructor
@@ -66,6 +73,7 @@ public class PastRides extends Fragment {
         View v = inflater.inflate(R.layout.fragment_past_rides, container, false);
 
         rides = new ArrayList<>();
+        df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
 
         recyclerView = v.findViewById(R.id.recyclerviewhistory);
 
@@ -85,13 +93,20 @@ public class PastRides extends Fragment {
                     if (dataSnapshot1.child("userid").getValue(String.class).equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
                         String status = "Cancelled";
 
+                        Date date = null;
+                        try {
+                            date = df.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
                         if (dataSnapshot1.child("reason").exists()) {
-                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                             rides.add(ridedetails);
                         } else {
                             status = "Completed";
-                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                             rides.add(ridedetails);
                         }
@@ -100,12 +115,19 @@ public class PastRides extends Fragment {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Requests").getChildren()) {
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
 
+                                Date date = null;
+                                try {
+                                    date = df.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
                                 if (dataSnapshot1.child("reason").exists()) {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 } else {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 }
@@ -115,12 +137,18 @@ public class PastRides extends Fragment {
                     } else if (dataSnapshot1.child("Booking Confirmed").exists()) {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Confirmed").getChildren()) {
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                                Date date= null;
+                                try {
+                                    date = df.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
                                 if (dataSnapshot1.child("reason").exists()) {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 } else {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), dataSnapshot1.child("timeanddate").getValue(String.class), dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 }
@@ -130,7 +158,16 @@ public class PastRides extends Fragment {
 
                 }
 
-                recyclerView.getAdapter().notifyDataSetChanged();
+
+                Collections.sort(rides, new Comparator<ridedetails>() {
+                    public int compare(ridedetails o1, ridedetails o2) {
+                        if (o1.getDate() == null || o2.getDate() == null)
+                            return 0;
+                        return o2.getDate().compareTo(o1.getDate());
+                    }
+                });
+
+                Objects.requireNonNull(recyclerView.getAdapter()).notifyDataSetChanged();
                 recyclerView.scheduleLayoutAnimation();
 
                 if (recyclerView.getAdapter().getItemCount() == 0) {
@@ -170,7 +207,8 @@ public class PastRides extends Fragment {
             holder.from.setText(det.getFrom());
             holder.type.setText(det.getType());
             holder.to.setText(det.getTo());
-            holder.time.setText(det.getTime());
+
+            holder.time.setText(df.format(det.getDate()));
 
             if (det.getStatus().equals("Cancelled")) {
                 holder.constraintLayout.setBackground(ContextCompat.getDrawable(getActivity(), R.drawable.redlayer));
@@ -188,11 +226,10 @@ public class PastRides extends Fragment {
                     if (dataSnapshot.child("rating").exists()) {
                         holder.rate.setEnabled(false);
                         holder.rate.setText(dataSnapshot.child("rating").getValue(String.class));
-                        holder.rate.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(getResources(), R.drawable.check, null),null, null, null);
-                    }
-                    else {
+                        holder.rate.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(getResources(), R.drawable.check, null), null, null, null);
+                    } else {
                         holder.rate.setEnabled(true);
-                        holder.rate.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(getResources(), R.drawable.whitestar, null),null, null, null);
+                        holder.rate.setCompoundDrawablesWithIntrinsicBounds(ResourcesCompat.getDrawable(getResources(), R.drawable.whitestar, null), null, null, null);
 
                     }
                 }
@@ -248,13 +285,13 @@ public class PastRides extends Fragment {
                                                     FirebaseDatabase.getInstance().getReference().child("Profiles").child(det.getUserid()).child("Ratings").addListenerForSingleValueEvent(new ValueEventListener() {
                                                         @Override
                                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                            float rat=0;
+                                                            float rat = 0;
 
-                                                            for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren()){
-                                                                rat=rat+Float.valueOf(dataSnapshot.child(dataSnapshot1.getKey()).getValue(String.class));
+                                                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                                                rat = rat + Float.valueOf(dataSnapshot.child(dataSnapshot1.getKey()).getValue(String.class));
                                                             }
 
-                                                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(det.getUserid()).child("rating").setValue(String.valueOf(rat/dataSnapshot.getChildrenCount()));
+                                                            FirebaseDatabase.getInstance().getReference().child("Profiles").child(det.getUserid()).child("rating").setValue(String.valueOf(rat / dataSnapshot.getChildrenCount()));
                                                         }
 
                                                         @Override

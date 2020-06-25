@@ -10,8 +10,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -66,6 +68,7 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
     FloatingActionButton find;
     FirebaseRecyclerAdapter<vehicledetails, VehicleViewHolder> firebaseRecyclerAdapter;
     String vname,vnumber;
+    NetworkBroadcast networkBroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -530,5 +533,19 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
             delete=itemView.findViewById(R.id.deletevehicle);
         }
     }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
+    }
 }

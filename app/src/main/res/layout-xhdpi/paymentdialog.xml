@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/roundeddialog">
+
+    <TextView
+        android:id="@+id/paymenttitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Payment Options"
+        android:textSize="20sp"
+        android:textColor="#8E8B8B"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/paymentphone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="9882243485"
+        android:textColor="@color/buttoncolor"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/paymenttitle"
+        app:layout_constraintStart_toStartOf="@+id/paymenttitle"
+        app:layout_constraintTop_toBottomOf="@+id/paymenttitle" />
+
+    <ImageView
+        android:id="@+id/copynumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:src="@drawable/copy"
+        app:layout_constraintBottom_toBottomOf="@+id/paymentphone"
+        app:layout_constraintStart_toEndOf="@+id/paymentphone"
+        app:layout_constraintTop_toTopOf="@+id/paymentphone" />
+
+    <ImageView
+        android:id="@+id/copyupi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:src="@drawable/copy"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/paymentupi"
+        app:layout_constraintStart_toEndOf="@+id/paymentupi"
+        app:layout_constraintTop_toTopOf="@+id/paymentupi" />
+
+    <RadioGroup
+        android:id="@+id/paymentradiogroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentupi">
+
+        <RadioButton
+            android:id="@+id/paymentcash"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:drawableLeft="@drawable/cash"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:textColor="@color/buttoncolor"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/paymentpaytm"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/paytm"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:visibility="gone"
+            android:textColor="@color/buttoncolor"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/paymentgooglepay"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/googlepay"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:visibility="gone"
+            android:textColor="@color/buttoncolor"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <RadioButton
+            android:id="@+id/paymentphonepe"
+            android:layout_width="wrap_content"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:drawableLeft="@drawable/phonepe"
+            android:drawablePadding="5dp"
+            android:paddingLeft="10dp"
+            android:visibility="gone"
+            android:textColor="@color/buttoncolor"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/paymentopenapp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:background="@drawable/button2"
+        android:foreground="?attr/selectableItemBackground"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:text="Open"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paymentradiogroup"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <ImageView
+        android:id="@+id/paymentcross"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:foreground="?attr/selectableItemBackground"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/cross" />
+
+    <TextView
+        android:id="@+id/paymentupi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="paytmupi@5498544"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:textColor="@color/buttoncolor"
+        app:layout_constraintEnd_toEndOf="@+id/paymentphone"
+        app:layout_constraintStart_toStartOf="@+id/paymentphone"
+        app:layout_constraintTop_toBottomOf="@+id/paymentphone" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

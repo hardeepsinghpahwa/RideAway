@@ -7,7 +7,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Editable;
@@ -60,6 +62,7 @@ public class PhoneVerification extends AppCompatActivity {
     String v_id;
     Button proceed;
     ImageView back;
+    NetworkBroadcast networkBroadcast;
     LinearLayout linearLayout;
     LottieAnimationView animationView;
     ConstraintLayout constraintLayout;
@@ -532,6 +535,20 @@ public class PhoneVerification extends AppCompatActivity {
                 });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
+    }
 
 }

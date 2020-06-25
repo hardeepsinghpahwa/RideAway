@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -77,7 +79,7 @@ public class SearchResultDetails extends AppCompatActivity {
     ImageView imageView;
     int seat;
     String useruid;
-
+    NetworkBroadcast networkBroadcast;
     FirebaseRecyclerAdapter<vehicledetails, VehicleHolder> firebaseRecyclerAdapter2;
     ConstraintLayout constraintLayout;
 
@@ -187,7 +189,7 @@ public class SearchResultDetails extends AppCompatActivity {
                                 }
                             }, 1000);
 
-                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum;
+                            final TextView name, phone, occupation, offered, found, gender, age, vehicletext, ratingnum,report;
                             final ImageView cross, propic;
                             final RatingBar ratingBar;
                             final RecyclerView recyclerView;
@@ -213,6 +215,7 @@ public class SearchResultDetails extends AppCompatActivity {
                             ratingBar = dialog.findViewById(R.id.profiledialograting);
                             recyclerView = dialog.findViewById(R.id.profiledialogrecyclerview);
                             ratingnum = dialog.findViewById(R.id.profiledialogratingnum);
+                            report=dialog.findViewById(R.id.report);
 
                             cross.setOnClickListener(new View.OnClickListener() {
                                 @Override
@@ -258,11 +261,25 @@ public class SearchResultDetails extends AppCompatActivity {
                             FirebaseDatabase.getInstance().getReference().child("Profiles").child(dataSnapshot.child("userid").getValue(String.class)).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
+                                    final profiledetails profiledetails = dataSnapshot.getValue(com.pahwa.rideaway.profiledetails.class);
 
+                                    if(FirebaseAuth.getInstance().getCurrentUser().getUid().equals(useruid))
+                                    {
+                                        report.setVisibility(View.GONE);
+                                    }
                                     if (!dataSnapshot.child("Vehicles").exists()) {
                                         vehicletext.setText("No Vehicles Added");
                                     }
+
+                                    report.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            Intent intent=new Intent(SearchResultDetails.this,ReportUser.class);
+                                            intent.putExtra("name",profiledetails.getName());
+                                            intent.putExtra("uid",useruid);
+                                            startActivity(intent);
+                                        }
+                                    });
 
                                     if (dataSnapshot.child("Ratings").exists()) {
                                         if (dataSnapshot.child("Ratings").getChildrenCount() == 1) {
@@ -284,7 +301,7 @@ public class SearchResultDetails extends AppCompatActivity {
 
 
                                     name.setText(profiledetails.getName());
-                                    phone.setText(profiledetails.getPhone());
+                                    phone.setText(profiledetails.getPhone().substring(3));
                                     occupation.setText(profiledetails.getOccupation());
                                     gender.setText(profiledetails.getGender());
                                     if (dataSnapshot.child("offered").exists()) {
@@ -535,8 +552,6 @@ public class SearchResultDetails extends AppCompatActivity {
 
                                                     Intent intent = new Intent(SearchResultDetails.this, YourRideIsLive.class);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                                     intent.putExtra("class", "inbook");
                                                     startActivity(intent);
                                                     finish();
@@ -550,8 +565,6 @@ public class SearchResultDetails extends AppCompatActivity {
 
                                                     Intent intent = new Intent(SearchResultDetails.this, YourRideIsLive.class);
                                                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                                     intent.putExtra("class", "reqbook");
                                                     startActivity(intent);
                                                     finish();
@@ -630,5 +643,21 @@ public class SearchResultDetails extends AppCompatActivity {
         String ageS = ageInt.toString();
 
         return ageS;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
     }
 }

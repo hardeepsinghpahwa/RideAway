@@ -35,13 +35,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     EditText phone;
     ConstraintLayout constraintLayout;
     ImageView imageView;
     Button getverificationcode;
-
+    NetworkBroadcast networkBroadcast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,17 +142,22 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        this.registerReceiver(new NetworkBroadcast(), filter);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
     }
 
+
     @Override
-    protected void onPause() {
-        super.onPause();
-        this.unregisterReceiver(new NetworkBroadcast());
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
     }
+
 }

@@ -7,12 +7,26 @@
     android:background="@drawable/roundeddialog"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/report"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/report"
+        android:gravity="center"
+        android:text="Report User"
+        android:textColor="@color/red"
+        android:textSize="12sp"
+        android:foreground="?attr/selectableItemBackground"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView13"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         app:cardCornerRadius="50dp"
         app:cardElevation="10dp"
         app:layout_constraintStart_toStartOf="parent"

@@ -38,7 +38,7 @@ public class SendNoti {
                     public void onResponse(Call<MyResponse> call, retrofit2.Response<MyResponse> response) {
                         if (response.code() == 200) {
                             if (response.body().success != 1) {
-                                MDToast.makeText(context, "Failed ", MDToast.LENGTH_LONG,MDToast.TYPE_ERROR).show();
+                                //MDToast.makeText(context, "Failed ", MDToast.LENGTH_LONG,MDToast.TYPE_ERROR).show();
                             }
                         }
                     }

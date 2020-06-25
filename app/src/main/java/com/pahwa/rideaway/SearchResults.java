@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -23,7 +25,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 
 import static maes.tech.intentanim.CustomIntent.customType;
 
@@ -31,17 +39,19 @@ public class SearchResults extends AppCompatActivity {
 
     RecyclerView recyclerView;
     TextView from, to, results;
-    ArrayList<offerdetails> items;
-    ArrayList<String> uids;
+    ArrayList<details> items;
     ImageView back;
+    NetworkBroadcast networkBroadcast;
+    DateFormat format;
+    Date date1,date2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
 
-        items = (ArrayList<offerdetails>) getIntent().getSerializableExtra("results");
-        uids=getIntent().getStringArrayListExtra("uids");
+        items = (ArrayList<details>) getIntent().getSerializableExtra("results");
+        format= new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
 
         recyclerView = findViewById(R.id.searchrecyclerview);
 
@@ -56,6 +66,24 @@ public class SearchResults extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onBackPressed();
+            }
+        });
+
+
+        Collections.sort(items, new Comparator<details>() {
+            public int compare(details o1, details o2) {
+                if (o1.getTimeanddate() == null || o2.getTimeanddate() == null)
+                    return 0;
+
+               try {
+                   date1=format.parse(o2.getTimeanddate());
+                   date2=format.parse(o1.getTimeanddate());
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                return date2.compareTo(date1);
             }
         });
 
@@ -87,7 +115,7 @@ public class SearchResults extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull final SearchViewHolder holder, final int position) {
 
-            offerdetails offerdetails = items.get(position);
+            final details offerdetails = items.get(position);
 
             if(offerdetails.getSeats().equals("1"))
             {
@@ -147,7 +175,7 @@ public class SearchResults extends AppCompatActivity {
 
                     ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(SearchResults.this, pair1);
                     Intent intent=new Intent(SearchResults.this,SearchResultDetails.class);
-                    intent.putExtra("uid",uids.get(position));
+                    intent.putExtra("uid",items.get(position).getUid());
                     startActivity(intent,optionsCompat.toBundle());
                 }
             });
@@ -185,5 +213,21 @@ public class SearchResults extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         customType(SearchResults.this, "right-to-left");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+        filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+        networkBroadcast=new NetworkBroadcast();
+        this.registerReceiver(networkBroadcast, filter);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
     }
 }

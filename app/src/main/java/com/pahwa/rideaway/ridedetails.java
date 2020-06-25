@@ -1,8 +1,33 @@
 package com.pahwa.rideaway;
 
+import com.pahwa.rideaway.Notification.Data;
+
+import java.util.Date;
+
 public class ridedetails {
 
-    String from,to,time,seats,type,status,uid,userid;
+    String from,to,seats,type,status,uid,userid;
+
+    Date date;
+
+    public ridedetails(String from, String to, Date date, String seats, String type, String status, String uid) {
+        this.from = from;
+        this.to = to;
+        this.date = date;
+        this.seats = seats;
+        this.type = type;
+        this.status = status;
+        this.uid = uid;
+        this.userid = userid;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public String getFrom() {
         return from;
@@ -18,14 +43,6 @@ public class ridedetails {
 
     public void setTo(String to) {
         this.to = to;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
     }
 
     public String getSeats() {
@@ -60,15 +77,6 @@ public class ridedetails {
         this.uid = uid;
     }
 
-    public ridedetails(String from, String to, String time, String seats, String type, String status, String uid) {
-        this.from = from;
-        this.to = to;
-        this.time = time;
-        this.seats = seats;
-        this.type = type;
-        this.status = status;
-        this.uid = uid;
-    }
 
     public String getUserid() {
         return userid;
@@ -78,10 +86,10 @@ public class ridedetails {
         this.userid = userid;
     }
 
-    public ridedetails(String from, String to, String time, String seats, String type, String status, String uid, String userid) {
+    public ridedetails(String from, String to, Date date, String seats, String type, String status, String uid, String userid) {
         this.from = from;
         this.to = to;
-        this.time = time;
+        this.date = date;
         this.seats = seats;
         this.type = type;
         this.status = status;
