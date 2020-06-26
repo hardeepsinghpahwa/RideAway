@@ -120,8 +120,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         getApplicationContext(), "222")
                         .setContentTitle(title)
                         .setAutoCancel(true)
-                        .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.mipmap.ic_launcher))
-                        .setSmallIcon(R.drawable.age)
+                        .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
+                        .setLargeIcon(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.mipmap.rideawayiconround))
+                        .setSmallIcon(R.drawable.noti)
                         .setContentText(body)
                         .setContentIntent(pi);
 

@@ -111,7 +111,7 @@ public class OngoingRides extends Fragment {
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
-                        ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey());
+                        ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(),dataSnapshot1.child("price").getValue(String.class));
 
                         rides.add(ridedetails);
 
@@ -125,7 +125,7 @@ public class OngoingRides extends Fragment {
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Requests").getChildren()) {
                             Log.i("req", dataSnapshot2.getKey());
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Requested", dataSnapshot1.getKey());
+                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Requested", dataSnapshot1.getKey(),dataSnapshot1.child("price").getValue(String.class));
 
                                 rides.add(ridedetails);
                             }
@@ -139,7 +139,7 @@ public class OngoingRides extends Fragment {
                         }
                         for (DataSnapshot dataSnapshot2 : dataSnapshot1.child("Booking Confirmed").getChildren()) {
                             if (dataSnapshot2.getKey().equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Confirmed", dataSnapshot1.getKey());
+                                ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Confirmed", dataSnapshot1.getKey(),dataSnapshot1.child("price").getValue(String.class));
 
                                 rides.add(ridedetails);
                             }
@@ -196,7 +196,7 @@ public class OngoingRides extends Fragment {
             holder.from.setText(det.getFrom());
             holder.type.setText(det.getType());
             holder.to.setText(det.getTo());
-
+            holder.price.setText("₹ "+det.getPrice());
 
             holder.time.setText(df.format(det.getDate()));
 
@@ -250,7 +250,7 @@ public class OngoingRides extends Fragment {
 
     private class RideViewHolder extends RecyclerView.ViewHolder {
 
-        TextView from, to, time, seats, type, status;
+        TextView from, to, time, seats, type, status,price;
         ImageView imageView;
         ConstraintLayout constraintLayout;
 
@@ -265,7 +265,7 @@ public class OngoingRides extends Fragment {
             status = itemView.findViewById(R.id.ridestatus);
             constraintLayout = itemView.findViewById(R.id.cons8);
             imageView = itemView.findViewById(R.id.imageView6);
-
+            price=itemView.findViewById(R.id.ridepricee);
         }
     }
 

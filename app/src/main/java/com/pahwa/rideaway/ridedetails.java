@@ -6,11 +6,11 @@ import java.util.Date;
 
 public class ridedetails {
 
-    String from,to,seats,type,status,uid,userid;
+    String from, to, seats, type, status, uid, userid, price;
 
     Date date;
 
-    public ridedetails(String from, String to, Date date, String seats, String type, String status, String uid) {
+    public ridedetails(String from, String to, Date date, String seats, String type, String status, String uid, String price) {
         this.from = from;
         this.to = to;
         this.date = date;
@@ -19,6 +19,7 @@ public class ridedetails {
         this.status = status;
         this.uid = uid;
         this.userid = userid;
+        this.price = price;
     }
 
     public Date getDate() {
@@ -86,7 +87,7 @@ public class ridedetails {
         this.userid = userid;
     }
 
-    public ridedetails(String from, String to, Date date, String seats, String type, String status, String uid, String userid) {
+    public ridedetails(String from, String to, Date date, String seats, String type, String status, String uid, String userid, String price) {
         this.from = from;
         this.to = to;
         this.date = date;
@@ -95,8 +96,17 @@ public class ridedetails {
         this.status = status;
         this.uid = uid;
         this.userid = userid;
+        this.price = price;
     }
 
     public ridedetails() {
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 }

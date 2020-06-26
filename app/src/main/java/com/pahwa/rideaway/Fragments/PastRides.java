@@ -101,12 +101,12 @@ public class PastRides extends Fragment {
                         }
 
                         if (dataSnapshot1.child("reason").exists()) {
-                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("price").getValue(String.class));
 
                             rides.add(ridedetails);
                         } else {
                             status = "Completed";
-                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                            ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Offered Ride", status, dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("price").getValue(String.class));
 
                             rides.add(ridedetails);
                         }
@@ -123,11 +123,11 @@ public class PastRides extends Fragment {
                                 }
 
                                 if (dataSnapshot1.child("reason").exists()) {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("price").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 } else {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("price").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 }
@@ -144,11 +144,11 @@ public class PastRides extends Fragment {
                                     e.printStackTrace();
                                 }
                                 if (dataSnapshot1.child("reason").exists()) {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Cancelled", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("price").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 } else {
-                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class));
+                                    ridedetails ridedetails = new ridedetails(dataSnapshot1.child("pickupname").getValue(String.class), dataSnapshot1.child("dropname").getValue(String.class), date, dataSnapshot1.child("seats").getValue(String.class), "Found Ride", "Completed", dataSnapshot1.getKey(), dataSnapshot1.child("userid").getValue(String.class),dataSnapshot1.child("price").getValue(String.class));
 
                                     rides.add(ridedetails);
                                 }
@@ -207,6 +207,7 @@ public class PastRides extends Fragment {
             holder.from.setText(det.getFrom());
             holder.type.setText(det.getType());
             holder.to.setText(det.getTo());
+            holder.price.setText("₹ "+det.getPrice());
 
             holder.time.setText(df.format(det.getDate()));
 
@@ -371,7 +372,7 @@ public class PastRides extends Fragment {
 
     private class RideViewHolder extends RecyclerView.ViewHolder {
 
-        TextView from, to, time, seats, type, status;
+        TextView from, to, time, seats, type, status,price;
         ConstraintLayout constraintLayout;
         ImageView imageView;
         Button rate;
@@ -388,6 +389,7 @@ public class PastRides extends Fragment {
             constraintLayout = itemView.findViewById(R.id.cons8);
             imageView = itemView.findViewById(R.id.imageView6);
             rate = itemView.findViewById(R.id.ratebutton);
+            price=itemView.findViewById(R.id.ridepricee);
 
         }
     }

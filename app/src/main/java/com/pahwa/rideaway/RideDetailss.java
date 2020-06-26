@@ -860,6 +860,22 @@ public class RideDetailss extends AppCompatActivity {
                                                                                                                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                                                                                                                         if (dataSnapshot.child("seats").getValue(String.class).equals("0")) {
                                                                                                                                             if (dataSnapshot.child("Booking Requests").exists()) {
+
+                                                                                                                                                dataSnapshot.child("Booking Requests").getRef().addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                                                                                                    @Override
+                                                                                                                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                                                                                                                        for(DataSnapshot dataSnapshot2:dataSnapshot.getChildren()){
+                                                                                                                                                            SendNoti sendNoti = new SendNoti();
+                                                                                                                                                            sendNoti.sendNotification(getApplicationContext(), dataSnapshot2.getKey(), "Seats For The Ride Are Booked!", "The seats for the ride you requested for are now all booked. Please search for another ride now.");
+                                                                                                                                                        }
+                                                                                                                                                    }
+
+                                                                                                                                                    @Override
+                                                                                                                                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                                                                                                                                    }
+                                                                                                                                                });
+
                                                                                                                                                 dataSnapshot.child("Booking Requests").getRef().removeValue();
                                                                                                                                                 dialog.dismiss();
                                                                                                                                             }
