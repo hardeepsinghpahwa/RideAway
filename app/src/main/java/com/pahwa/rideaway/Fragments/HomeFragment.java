@@ -29,6 +29,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.pahwa.rideaway.FindARide;
+import com.pahwa.rideaway.Notification.Data;
 import com.pahwa.rideaway.OfferARide;
 import com.pahwa.rideaway.R;
 import com.pahwa.rideaway.commisiondetails;
@@ -44,6 +45,7 @@ public class HomeFragment extends Fragment {
 
     Button findaride, offeraride;
     FirebaseRecyclerAdapter<commisiondetails, CommisionViewHolder> firebaseRecyclerAdapter2;
+    int a=0;
 
 
     public HomeFragment() {
@@ -73,10 +75,33 @@ public class HomeFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                a=0;
+                FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for(DataSnapshot dataSnapshot1:dataSnapshot.getChildren())
+                        {
+                            if(dataSnapshot1.child("userid").getValue(String.class).equals(FirebaseAuth.getInstance().getCurrentUser().getUid()))
+                            {
+                                if(dataSnapshot1.child("status").exists() && dataSnapshot1.child("status").getValue(String.class).equals("Ride Started"))
+                                {
+                                    a++;
+                                }
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
                 FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.child("commision").exists()) {
+                        if (dataSnapshot.child("commision").exists() ) {
                             if (!dataSnapshot.child("commision").getValue(String.class).equals("0")) {
 
                                 MDToast.makeText(getActivity(), "You have pending commision to pay", MDToast.LENGTH_SHORT, MDToast.TYPE_ERROR).show();
@@ -150,15 +175,21 @@ public class HomeFragment extends Fragment {
 
                                 dialog.show();
                             }
-                            else {
+                            else if(a==0){
                                 startActivity(new Intent(getActivity(), OfferARide.class));
                                 customType(getActivity(), "left-to-right");
                             }
+                            else {
+                                MDToast.makeText(getActivity(),"You have imcomplete ride. First complete that and then offer another one",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
+                            }
 
-                        } else {
+                        } else if(a==0){
+
                             startActivity(new Intent(getActivity(), OfferARide.class));
                             customType(getActivity(), "left-to-right");
-
+                        }
+                        else {
+                            MDToast.makeText(getActivity(),"You have imcomplete ride. First complete that and then offer another one",MDToast.LENGTH_SHORT,MDToast.TYPE_ERROR).show();
                         }
                     }
                     @Override
@@ -188,4 +219,5 @@ public class HomeFragment extends Fragment {
 
         }
     }
+
 }

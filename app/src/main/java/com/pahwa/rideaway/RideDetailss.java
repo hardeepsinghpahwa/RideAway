@@ -1487,6 +1487,13 @@ public class RideDetailss extends AppCompatActivity {
 
                     userid = dataSnapshot.child("userid").getValue(String.class);
 
+
+                    if(dataSnapshot.child("reason").exists())
+                    {
+                        paymenttext.setVisibility(View.GONE);
+                        paymentoptions.setVisibility(View.GONE);
+                    }
+
                     paymenttext.setText("Payment Done Through");
 
                     paymentoptions.setText(dataSnapshot.child("payment").getValue(String.class));

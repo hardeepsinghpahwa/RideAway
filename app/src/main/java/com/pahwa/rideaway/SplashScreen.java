@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -26,6 +27,7 @@ import com.valdesekamdem.library.mdtoast.MDToast;
 
 public class SplashScreen extends AppCompatActivity {
 
+    NetworkBroadcast networkBroadcast;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,64 +37,25 @@ public class SplashScreen extends AppCompatActivity {
             @Override
             public void run() {
 
-                ConnectivityManager cm =
-                        (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+                Intent service = new Intent(getApplicationContext(), RideService.class);
+                startService(service);
 
-                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                boolean isConnected = activeNetwork != null &&
-                        activeNetwork.isConnectedOrConnecting();
+                IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+                filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
+                networkBroadcast=new NetworkBroadcast();
+                SplashScreen.this.registerReceiver(networkBroadcast, filter);
 
-
-                if(isConnected)
-                {
-                  }
-                else {
-                    {
-                        Button retry;
-
-                        final Dialog dialog=new Dialog(getApplicationContext());
-                        dialog.setCancelable(false);
-                        dialog.setContentView(R.layout.nointernetdialog);
-                        dialog.getWindow().setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-                        dialog.getWindow().setWindowAnimations(R.style.AppTheme_rightleft);
-                        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-                        dialog.show();
-
-                        retry=dialog.findViewById(R.id.retry);
-
-                        retry.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                ConnectivityManager cm =
-                                        (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-                                NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-                                boolean isConnected = activeNetwork != null &&
-                                        activeNetwork.isConnectedOrConnecting();
-
-                                if(isConnected)
-                                {
-                                    dialog.dismiss();
-                                }
-                            }
-                        });
-
-                    }
-                }
-                if(FirebaseAuth.getInstance().getCurrentUser()!=null )
-                {
-                    final DatabaseReference databaseReference= FirebaseDatabase.getInstance().getReference();
+                if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                    final DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     databaseReference.child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            if(dataSnapshot.exists())
-                            {
-                                startActivity(new Intent(SplashScreen.this,Home.class));
+                            if (dataSnapshot.exists()) {
+                                startActivity(new Intent(SplashScreen.this, Home.class));
                                 finish();
-                            }
-                            else {
-                                startActivity(new Intent(SplashScreen.this,SetupProfile.class));
+                            } else {
+                                startActivity(new Intent(SplashScreen.this, SetupProfile.class));
                                 finish();
                             }
                         }
@@ -103,12 +66,16 @@ public class SplashScreen extends AppCompatActivity {
                         }
                     });
 
-                }
-                else {
-                    startActivity(new Intent(SplashScreen.this,MainActivity.class));
+                } else {
+                    startActivity(new Intent(SplashScreen.this, MainActivity.class));
                     finish();
                 }
             }
-        },2000);
+        }, 2000);
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(networkBroadcast);
     }
 }

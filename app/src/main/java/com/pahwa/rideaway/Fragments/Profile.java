@@ -88,7 +88,7 @@ import static maes.tech.intentanim.CustomIntent.customType;
 public class Profile extends Fragment {
 
     Button logout;
-    TextView offered, found, age, gender, rating, phone, name, occupation, verifytext, ratingnum,commisionbalance;
+    TextView offered, found, age, gender, rating, phone, name, occupation, verifytext, ratingnum, commisionbalance;
     ImageView vehicles, profilepic, edit;
     ProgressBar progressBar;
     FirebaseRecyclerAdapter<vehicledetails, VehicleViewHolder> firebaseRecyclerAdapter;
@@ -144,7 +144,7 @@ public class Profile extends Fragment {
         paycommision = v.findViewById(R.id.paybutton);
         addorchange = v.findViewById(R.id.profileaddchange);
         paymentoptions = v.findViewById(R.id.paymentoptions);
-        commisionbalance=v.findViewById(R.id.commisionbalance);
+        commisionbalance = v.findViewById(R.id.commisionbalance);
 
         final Thread thread = new Thread(new Runnable() {
             @Override
@@ -470,7 +470,9 @@ public class Profile extends Fragment {
                                 paymentoptions.setText(paymentoptions.getText() + ", GooglePay");
                             }
 
-                            paymentoptions.setText(paymentoptions.getText() + ", UPI");
+                            if (!dataSnapshot.child("upi_id").getValue(String.class).equals("")) {
+                                paymentoptions.setText(paymentoptions.getText() + ", UPI");
+                            }
 
                         }
 
@@ -537,7 +539,7 @@ public class Profile extends Fragment {
                         });
 
                         if (dataSnapshot.child("commision").exists())
-                            totalcomm.setText("₹ "+dataSnapshot.child("commision").getValue(String.class));
+                            totalcomm.setText("₹ " + dataSnapshot.child("commision").getValue(String.class));
 
 
                         Query query = FirebaseDatabase.getInstance().getReference().child("Profiles").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("Commisions");
@@ -588,11 +590,9 @@ public class Profile extends Fragment {
                 phone.setText(profiledetails.getPhone().substring(3));
                 name.setText(profiledetails.getName());
                 occupation.setText(profiledetails.getOccupation());
-                if(dataSnapshot.child("commision").exists())
-                {
-                    commisionbalance.setText("₹ "+dataSnapshot.child("commision").getValue(String.class));
-                }
-                else {
+                if (dataSnapshot.child("commision").exists()) {
+                    commisionbalance.setText("₹ " + dataSnapshot.child("commision").getValue(String.class));
+                } else {
                     commisionbalance.setText("₹ 0");
                 }
 
@@ -1109,9 +1109,9 @@ public class Profile extends Fragment {
 
 
                 if (ymdFormat2.format(date).equals(ymdFormat2.format(date1))) {
-                    holder.time.setText("Today, " + ymdFormat3.format(Calendar.getInstance().getTime()));
+                    holder.time.setText("Today, " + ymdFormat3.format(date.getTime()));
                 } else if (getCountOfDays(date, date1).equals("1")) {
-                    holder.time.setText("Yesterday, " + ymdFormat3.format(Calendar.getInstance().getTime()));
+                    holder.time.setText("Yesterday, " + ymdFormat3.format(date.getTime()));
                 } else {
                     holder.time.setText(notiDetails.getTime());
                 }
@@ -1271,6 +1271,6 @@ public class Profile extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        
+
     }
 }

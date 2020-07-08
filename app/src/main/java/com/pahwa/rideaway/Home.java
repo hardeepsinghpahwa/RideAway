@@ -23,41 +23,54 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.pahwa.rideaway.Fragments.HomeFragment;
 import com.pahwa.rideaway.Fragments.Profile;
 import com.pahwa.rideaway.Fragments.Rides;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.pahwa.rideaway.Notification.NotiDatabase;
 import com.pahwa.rideaway.Notification.NotiDetails;
+import com.pahwa.rideaway.Notification.SendNoti;
+import com.valdesekamdem.library.mdtoast.MDToast;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static maes.tech.intentanim.CustomIntent.customType;
 
 public class Home extends AppCompatActivity {
 
     ChipNavigationBar chipNavigationBar;
     ConstraintLayout constraintLayout;
-    int startingPosition = 0;
-
     ImageView clear, cross;
     TextView markasread, title;
     RecyclerView recyclerView;
     NotiDatabase database;
-    List<NotiDetails> details;
     NetworkBroadcast networkBroadcast;
-    static final ExecutorService databaseWriteExecutor =
-            Executors.newFixedThreadPool(4);
+    SimpleDateFormat df;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
 
         chipNavigationBar = findViewById(R.id.bottomnav);
         constraintLayout = findViewById(R.id.cons3);
@@ -322,7 +335,7 @@ public class Home extends AppCompatActivity {
         super.onResume();
         IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-        networkBroadcast=new NetworkBroadcast();
+        networkBroadcast = new NetworkBroadcast();
         this.registerReceiver(networkBroadcast, filter);
 
     }
@@ -331,5 +344,90 @@ public class Home extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         this.unregisterReceiver(networkBroadcast);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+
+        FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    Date date = null;
+                    try {
+                        date = df.parse(dataSnapshot1.child("timeanddate").getValue(String.class));
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    Date date1 = new Date();
+
+                    if (date1.after(date) && !dataSnapshot1.child("Booking Confirmed").exists()) {
+                        final DatabaseReference fromPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(dataSnapshot1.getKey());
+                        final DatabaseReference toPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(dataSnapshot1.getKey());
+                        fromPath.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(final DataSnapshot dataSnapshot1) {
+                                toPath.setValue(dataSnapshot1.getValue(), new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(@androidx.annotation.Nullable final DatabaseError databaseError, @NonNull final DatabaseReference databaseReference) {
+                                        if (databaseError != null) {
+                                            System.out.println("Copy failed");
+                                        } else {
+                                            toPath.child("reason").setValue("Auto Cancelled");
+
+                                            fromPath.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+                                                    if (task.isSuccessful()) {
+
+                                                        SendNoti sendNoti = new SendNoti();
+                                                        sendNoti.sendNotification(getApplicationContext(), dataSnapshot1.child("userid").getValue(String.class), "Ride Auto Cancelled!", "Your ride has been auto cancelled due to no bookings.");
+
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+
+                    }
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        
+
+
     }
 }
