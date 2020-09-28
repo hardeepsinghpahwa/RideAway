@@ -173,7 +173,7 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                 dateTimeDialogFragment.setDefaultDateTime(Calendar.getInstance().getTime());
 
                 try {
-                    dateTimeDialogFragment.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("dd MMMM YYYY", Locale.getDefault()));
+                    dateTimeDialogFragment.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()));
                 } catch (SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException e) {
                 }
 
@@ -362,7 +362,7 @@ public class OfferARide extends AppCompatActivity implements LocationDialog.Loca
                                 dialog.dismiss();
 
 
-                                    select.setText(firebaseRecyclerAdapter.getItem(position).getVehiclename());
+                                select.setText(firebaseRecyclerAdapter.getItem(position).getVehiclename());
                                 vname=firebaseRecyclerAdapter.getItem(position).getVehiclename();
                                 vnumber=firebaseRecyclerAdapter.getItem(position).getVehiclenumber();
                             }

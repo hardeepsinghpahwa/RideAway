@@ -5,8 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.view.View;
@@ -193,6 +197,16 @@ public class CancelBooking extends AppCompatActivity {
                                                         cancel.setEnabled(true);
                                                         MDToast.makeText(CancelBooking.this, "Cancellation Succesful", MDToast.LENGTH_SHORT, MDToast.TYPE_SUCCESS).show();
 
+
+                                                        SharedPreferences sharedpreferences = getSharedPreferences("Myprefs", Context.MODE_PRIVATE);
+
+                                                        Intent intent1 = new Intent(getApplicationContext(), NotificationReciever.class);
+                                                        intent1.putExtra("title", "Ride Starting Time Has Arrived!");
+                                                        intent1.putExtra("text", "Your Ride Starting Time has arrived.Do not Forget to update your ride status. Have a great journey");
+                                                        PendingIntent pending = PendingIntent.getBroadcast(getApplicationContext(), sharedpreferences.getInt(uid,0), intent1, PendingIntent.FLAG_UPDATE_CURRENT);
+                                                        // Cancel notification
+                                                        AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(getApplicationContext().ALARM_SERVICE);
+                                                        manager.cancel(pending);
 
                                                         databaseReference.child("reason").setValue(r);
 

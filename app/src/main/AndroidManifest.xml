@@ -11,6 +11,9 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
 
     <supports-screens
         android:anyDensity="true"
@@ -56,7 +59,14 @@
             android:theme="@style/NoBarAppTheme" />
         <activity
             android:name=".OfferRideDetails"
-            android:theme="@style/NoBarAppTheme" />
+            android:theme="@style/NoBarAppTheme" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.ALTERNATIVE" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -71,21 +81,28 @@
             android:theme="@style/NoBarAppTheme" />
         <activity
             android:name=".FindARide"
-            android:theme="@style/NoBarAppTheme" />
+            android:theme="@style/NoBarAppTheme" >
+        </activity>
         <activity
             android:name=".Home"
-            android:theme="@style/NoBarAppTheme" />
+            android:theme="@style/NoBarAppTheme" >
+
+        </activity>
         <activity
             android:name=".SetupProfile"
             android:theme="@style/NoBarAppTheme"
-            android:windowSoftInputMode="stateVisible|adjustPan" />
+            android:windowSoftInputMode="stateVisible|adjustPan" >
+
+
+
+        </activity>
         <activity
             android:name=".PhoneVerification"
             android:theme="@style/NoBarAppTheme2" />
         <activity
             android:name=".MainActivity"
             android:theme="@style/NoBarAppTheme"
-            android:windowSoftInputMode="stateVisible|adjustResize"></activity>
+            android:windowSoftInputMode="stateVisible|adjustPan"></activity>
 
         <service
             android:name=".MyFirebaseMessagingService"
@@ -103,9 +120,9 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".RideService"
-            android:enabled="true"
-            android:exported="false"/>
+        <receiver
+            android:name=".NotificationReciever"
+            android:enabled="true" />
 
     </application>
 

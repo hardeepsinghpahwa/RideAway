@@ -252,7 +252,7 @@ public class FindARide extends AppCompatActivity implements LocationDialog.Locat
                 dateTimeDialogFragment.setDefaultDateTime(Calendar.getInstance().getTime());
 
                 try {
-                    dateTimeDialogFragment.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("dd MMMM YYYY", Locale.getDefault()));
+                    dateTimeDialogFragment.setSimpleDateMonthAndDayFormat(new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()));
                 } catch (SwitchDateTimeDialogFragment.SimpleDateMonthAndDayFormatException e) {
                 }
 

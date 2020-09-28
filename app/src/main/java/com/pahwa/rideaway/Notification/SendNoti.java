@@ -33,7 +33,6 @@ public class SendNoti {
                 NotificationSender sender = new NotificationSender(data, usertoken);
                 apiService.sendNotifcation(sender).enqueue(new Callback<MyResponse>() {
 
-
                     @Override
                     public void onResponse(Call<MyResponse> call, retrofit2.Response<MyResponse> response) {
                         if (response.code() == 200) {

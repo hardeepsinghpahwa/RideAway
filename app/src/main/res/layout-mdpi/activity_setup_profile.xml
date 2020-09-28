@@ -11,6 +11,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/setupscroll"
         android:scrollbars="vertical"
        >
 
@@ -148,50 +149,50 @@
                     android:id="@+id/gendertext"
                     android:layout_width="wrap_content"
                     android:layout_height="60dp"
-                    android:layout_weight="2"
                     android:drawableLeft="@drawable/gender"
                     android:drawablePadding="10dp"
                     android:drawableTint="#FFFFFF"
                     android:gravity="center_vertical"
                     android:text="Gender "
                     android:textColor="#FFFFFF"
-                    android:textSize="14sp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
 
                 <CheckBox
                     android:id="@+id/malecheck"
                     android:layout_width="wrap_content"
-                    android:layout_height="60dp"
+                    android:layout_height="match_parent"
                     android:button="@drawable/checkbox"
                     android:gravity="center_vertical"
                     android:text="Male"
                     android:textColor="#8FFFFFFF"
-                    android:textSize="12dp"
+                    android:layout_marginLeft="10dp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
                 <CheckBox
                     android:id="@+id/femalecheck"
                     android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
                     android:button="@drawable/checkbox"
                     android:gravity="center_vertical"
                     android:text="Female"
                     android:textColor="#8FFFFFFF"
-                    android:textSize="12dp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
                 <CheckBox
                     android:id="@+id/othercheck"
                     android:layout_width="wrap_content"
-                    android:layout_height="60dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="8dp"
                     android:button="@drawable/checkbox"
                     android:gravity="center_vertical"
                     android:text="Others"
                     android:textColor="#8FFFFFFF"
-                    android:textSize="12dp"
+                    android:textSize="10sp"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -251,7 +252,7 @@
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="20dp"
-                app:cardCornerRadius="30dp"
+                app:cardCornerRadius="25dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

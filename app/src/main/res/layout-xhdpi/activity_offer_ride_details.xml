@@ -38,7 +38,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
@@ -50,17 +50,17 @@
             android:id="@+id/priceperseat"
             android:layout_width="match_parent"
             android:layout_height="80dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="15dp"
             android:background="#FFFFFF"
             android:drawableLeft="@drawable/price"
             android:drawablePadding="5dp"
             android:hint="Enter Price Per Seat"
             android:inputType="number"
             android:maxLength="5"
-            android:textColorHint="#C6C6C6"
             android:padding="10dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="15dp"
             android:textColor="@color/buttoncolor"
+            android:textColorHint="#C6C6C6"
             android:textSize="25sp"
             android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@+id/textView9"
@@ -88,7 +88,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:drawableLeft="@drawable/instantbook"
         android:drawablePadding="10dp"
         android:drawableTint="#8C8989"
@@ -133,7 +133,7 @@
         android:id="@+id/textView8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:drawableLeft="@drawable/info"
         android:drawablePadding="10dp"
         android:drawableTint="#8C8989"
@@ -168,28 +168,27 @@
 
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/card8"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/card8"
-        app:cardCornerRadius="30dp"
-        android:layout_marginBottom="30dp"
-        >
+        app:layout_constraintStart_toStartOf="parent">
 
-    <Button
-        android:id="@+id/makeoffer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Make Offer"
-       android:background="@drawable/button2"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:paddingLeft="25dp"
-        android:paddingRight="25dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+        <Button
+            android:id="@+id/makeoffer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button2"
+            android:paddingLeft="25dp"
+            android:paddingRight="25dp"
+            android:text="Make Offer"
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
     </androidx.cardview.widget.CardView>
 

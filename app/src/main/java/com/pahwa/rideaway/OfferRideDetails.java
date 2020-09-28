@@ -5,8 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,6 +34,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.Random;
 import java.util.UUID;
 
 import static maes.tech.intentanim.CustomIntent.customType;
@@ -196,11 +207,39 @@ public class OfferRideDetails extends AppCompatActivity {
 
                     offerdetails offerdetails=new offerdetails(pickupname,dropname,timedate,seats,price.getText().toString(),in,moreinfo.getText().toString(),FirebaseAuth.getInstance().getCurrentUser().getUid(),vname,vnumber,pickuplat,pickuplong,droplat,droplong);
 
-                    FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(UUID.randomUUID().toString()).setValue(offerdetails).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    final String random=UUID.randomUUID().toString();
+                    Random random1=new Random();
+
+                    final int randomnum=random1.nextInt(10000);
+
+                    FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(random).setValue(offerdetails).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if(task.isSuccessful())
                             {
+                                SharedPreferences sharedpreferences = getSharedPreferences("Myprefs", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.putInt(random,randomnum);
+                                editor.commit();
+
+                                Intent intent2 = new Intent(getApplicationContext(), NotificationReciever.class);
+                                intent2.putExtra("title", "Ride Starting Time Has Arrived! Update Status To Ride Started.");
+                                intent2.putExtra("text", "Your Ride Starting Time has arrived.Do not Forget to update your ride status when the ride starts. Have a great journey");
+                                PendingIntent pending = PendingIntent.getBroadcast(getApplicationContext(), randomnum, intent2, PendingIntent.FLAG_UPDATE_CURRENT);
+                                // Schdedule notification
+                                AlarmManager manager = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+
+                                Calendar cal = Calendar.getInstance();
+                                DateFormat df = new SimpleDateFormat("dd MMMM yyyy, hh:mm aa");
+                                try {
+                                    cal.setTime(df.parse(timedate));// all done
+                                    manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), pending);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+
+
                                 finish();
 
                                 Intent intent=new Intent(OfferRideDetails.this,YourRideIsLive.class);
@@ -251,5 +290,15 @@ public class OfferRideDetails extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         this.unregisterReceiver(networkBroadcast);
+    }
+
+    public static void scheduleNotification(Context context, long time, String title, String text) {
+        Intent intent = new Intent(context, NotificationReciever.class);
+        intent.putExtra("title", title);
+        intent.putExtra("text", text);
+        PendingIntent pending = PendingIntent.getBroadcast(context, 42, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Schdedule notification
+        AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        manager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pending);
     }
 }

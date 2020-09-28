@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         app:cardCornerRadius="10dp"
         app:cardElevation="10dp"
@@ -146,7 +146,7 @@
         android:id="@+id/textView7offeraride"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:drawableLeft="@drawable/passengers"
         android:drawablePadding="10dp"
         android:drawableTint="#8C8989"
@@ -158,11 +158,11 @@
         app:layout_constraintTop_toBottomOf="@+id/card3" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/card3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="30dp"
-        android:id="@+id/card3"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="25dp"
         app:layout_constraintStart_toStartOf="@+id/textView5offeraride"
         app:layout_constraintTop_toBottomOf="@+id/textView5offeraride">
 
@@ -171,41 +171,41 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/button1"
+            android:foreground="?attr/selectableItemBackground"
             android:padding="15dp"
+            android:singleLine="true"
             android:text="Select Date And Time"
             android:textColor="@color/buttoncolor"
-            android:foreground="?attr/selectableItemBackground"
             android:textSize="16sp"
-            android:textStyle="bold"
- />
+            android:textStyle="bold" />
 
 
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/card4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/card4"
-        app:cardCornerRadius="30dp"
         android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="25dp"
         app:layout_constraintEnd_toStartOf="@+id/addpassengerofferaride"
         app:layout_constraintStart_toEndOf="@+id/minuspassengerofferaride"
-        app:layout_constraintTop_toBottomOf="@+id/textView7offeraride" >
+        app:layout_constraintTop_toBottomOf="@+id/textView7offeraride">
 
-    <TextView
-        android:id="@+id/passengersofferaride"
-        android:layout_width="60dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button1"
-        android:gravity="center"
-        android:inputType="number"
-        android:maxLength="2"
-        android:padding="12dp"
-        android:text="1"
-        android:textColor="@color/buttoncolor"
-        android:textSize="16sp"
-        android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/passengersofferaride"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button1"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="2"
+            android:padding="12dp"
+            android:text="1"
+            android:textColor="@color/buttoncolor"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
     </androidx.cardview.widget.CardView>
 
@@ -256,13 +256,13 @@
         android:id="@+id/textView6"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
+        android:drawableLeft="@drawable/car"
+        android:drawablePadding="10dp"
         android:text="Select Vehicle"
         android:textColor="#8C8989"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:drawableLeft="@drawable/car"
-        android:drawablePadding="10dp"
         app:layout_constraintStart_toStartOf="@+id/minuspassengerofferaride"
         app:layout_constraintTop_toBottomOf="@+id/card4" />
 
@@ -270,29 +270,31 @@
     <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="30dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="10dp"
+        app:cardCornerRadius="25dp"
         app:layout_constraintStart_toStartOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/textView6">
 
-    <TextView
-        android:id="@+id/selectvehicle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/button1"
-        android:gravity="center"
-        android:maxWidth="300dp"
-        android:paddingLeft="25dp"
-        android:paddingTop="12dp"
-        android:paddingRight="25dp"
-        android:paddingBottom="12dp"
-        android:foreground="?attr/selectableItemBackground"
-        android:text="Select"
-        android:textColor="@color/buttoncolor"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@+id/textView6"
-        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+        <TextView
+            android:id="@+id/selectvehicle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/button1"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:maxWidth="300dp"
+            android:paddingLeft="25dp"
+            android:paddingTop="12dp"
+            android:paddingRight="25dp"
+            android:singleLine="true"
+            android:maxLength="50"
+            android:paddingBottom="12dp"
+            android:text="Select"
+            android:textColor="@color/buttoncolor"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/textView6"
+            app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
     </androidx.cardview.widget.CardView>
 

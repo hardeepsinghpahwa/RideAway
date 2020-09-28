@@ -185,6 +185,7 @@ public class Home extends AppCompatActivity {
 
     }
 
+
     class NotificationAdapter extends RecyclerView.Adapter<NotiViewHolder> {
 
         List<NotiDetails> data;
@@ -426,7 +427,6 @@ public class Home extends AppCompatActivity {
 
             }
         });
-        
 
 
     }

@@ -43,7 +43,7 @@ import static maes.tech.intentanim.CustomIntent.customType;
 public class HomeFragment extends Fragment {
 
 
-    Button findaride, offeraride;
+    TextView findaride, offeraride;
     FirebaseRecyclerAdapter<commisiondetails, CommisionViewHolder> firebaseRecyclerAdapter2;
     int a=0;
 

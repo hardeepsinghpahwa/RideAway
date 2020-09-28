@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.Activity;
@@ -76,6 +77,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
     String number = "";
     CardView cardView;
     ImageView back;
+    NestedScrollView nestedScrollView;
     LottieAnimationView lottieAnimationView;
     ConstraintLayout constraintLayout;
     String ac;
@@ -109,6 +111,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
         occupation = findViewById(R.id.occupation);
         back = findViewById(R.id.setupprofileback);
         editdetailstext = findViewById(R.id.editdetailstext);
+        nestedScrollView=findViewById(R.id.setupscroll);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -465,6 +468,7 @@ public class SetupProfile extends AppCompatActivity implements DatePickerDialog.
                                                 lottieAnimationView.playAnimation();
                                                 constraintLayout.setBackgroundColor(Color.WHITE);
 
+                                                nestedScrollView.smoothScrollTo(0,0);
 
                                                 save.setOnClickListener(new View.OnClickListener() {
                                                     @Override

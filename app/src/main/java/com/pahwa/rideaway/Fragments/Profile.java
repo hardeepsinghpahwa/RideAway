@@ -67,6 +67,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.valdesekamdem.library.mdtoast.MDToast;
 
+import org.json.JSONObject;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -120,7 +124,8 @@ public class Profile extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        logout = v.findViewById(R.id.logout);
+
+         logout = v.findViewById(R.id.logout);
         offered = v.findViewById(R.id.profileoffered);
         found = v.findViewById(R.id.profilefound);
         age = v.findViewById(R.id.profileage);
@@ -537,6 +542,15 @@ public class Profile extends Fragment {
                                 dialog.dismiss();
                             }
                         });
+
+
+                        pay.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                
+                            }
+                        });
+
 
                         if (dataSnapshot.child("commision").exists())
                             totalcomm.setText("₹ " + dataSnapshot.child("commision").getValue(String.class));
@@ -1272,5 +1286,20 @@ public class Profile extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
+    }
+    public static String hashCal(String type, String hashString) {
+        StringBuilder hash = new StringBuilder();
+        MessageDigest messageDigest = null;
+        try {
+            messageDigest = MessageDigest.getInstance(type);
+            messageDigest.update(hashString.getBytes());
+            byte[] mdbytes = messageDigest.digest();
+            for (byte hashByte : mdbytes) {
+                hash.append(Integer.toString((hashByte & 0xff) + 0x100, 16).substring(1));
+            }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return hash.toString();
     }
 }

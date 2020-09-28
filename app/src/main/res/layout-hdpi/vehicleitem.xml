@@ -50,7 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        app:cardCornerRadius="30dp"
+        app:cardCornerRadius="25dp"
         app:layout_constraintBottom_toBottomOf="@+id/vehiname"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/vehiname">
@@ -75,7 +75,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        app:cardCornerRadius="30dp"
+        app:cardCornerRadius="25dp"
         app:layout_constraintBottom_toBottomOf="@+id/vehinumber"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/vehinumber">

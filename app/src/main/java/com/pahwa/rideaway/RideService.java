@@ -68,10 +68,9 @@ public class RideService extends Service {
                                 long seconds = diff / 1000;
                                 long minutes = seconds / 60;
                                 long hours = minutes / 60;
-                                long days = hours / 24;
 
                                 Log.i("min", String.valueOf(minutes));
-                                if(minutes>5)
+                                if(hours>2)
                                 {
                                     final DatabaseReference fromPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("Active").child(dataSnapshot1.getKey());
                                     final DatabaseReference toPath = FirebaseDatabase.getInstance().getReference().child("Rides").child("History").child(dataSnapshot1.getKey());
@@ -120,7 +119,8 @@ public class RideService extends Service {
             }
         });
 
-        return super.onStartCommand(intent, flags, startId);
+
+        return START_STICKY;
     }
 
     @Override
